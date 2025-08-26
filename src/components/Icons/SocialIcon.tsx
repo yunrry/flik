@@ -1,5 +1,5 @@
 import React from 'react';
-import { SocialIconProps } from '../../../types/icon.types';
+import { SocialIconProps } from '../../types/icon.types';
 import { Icon } from './Icon';
 
 export const SocialIcon: React.FC<SocialIconProps> = (props) => {

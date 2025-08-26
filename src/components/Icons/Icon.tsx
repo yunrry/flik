@@ -1,7 +1,7 @@
 import React from 'react';
-import { IconProps } from '../../../types/icon.types';
-import { getIconSize, getIconColor } from '../../../utils/iconTheme';
-import { getIconComponent } from '../../../utils/iconRegistry';
+import { IconProps } from '../../types/icon.types';
+import { getIconSize, getIconColor } from '../../utils/iconTheme';
+import { getIconComponent } from '../../utils/iconRegistry';
 
 export interface BaseIconProps extends IconProps {
   name: string;

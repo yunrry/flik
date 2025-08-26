@@ -13,4 +13,4 @@ export type {
   StatusIconProps,
   IconSize,
   IconTheme,
-} from '../../../types/icon.types';
+} from '../../types/icon.types';

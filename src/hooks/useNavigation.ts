@@ -1,0 +1,81 @@
+// src/hooks/useNavigation.ts
+
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigationStore, NAVIGATION_TABS } from '../stores/navigationStore';
+import { NavigationTabName } from '../types/navigation.types';
+
+export const useNavigation = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { 
+    activeTab, 
+    isVisible, 
+    previousTab, 
+    tabs,
+    setActiveTab, 
+    hideNavigation, 
+    showNavigation, 
+    toggleNavigation 
+  } = useNavigationStore();
+
+  // URL 변경시 활성 탭 동기화
+  useEffect(() => {
+    const currentTab = tabs.find(tab => tab.path === location.pathname);
+    if (currentTab && currentTab.name !== activeTab) {
+      setActiveTab(currentTab.name);
+    }
+  }, [location.pathname, activeTab, setActiveTab, tabs]);
+
+  // 탭 클릭 핸들러
+  const handleNavigationClick = (tabName: NavigationTabName) => {
+    const tab = tabs.find(t => t.name === tabName);
+    if (tab) {
+      setActiveTab(tabName);
+      navigate(tab.path);
+    }
+  };
+
+  // 현재 탭 정보 가져오기
+  const getCurrentTab = () => {
+    return tabs.find(tab => tab.name === activeTab);
+  };
+
+  // 특정 탭으로 이동
+  const navigateToTab = (tabName: NavigationTabName) => {
+    handleNavigationClick(tabName);
+  };
+
+  // 이전 탭으로 돌아가기
+  const goToPreviousTab = () => {
+    if (previousTab) {
+      handleNavigationClick(previousTab);
+    }
+  };
+
+  // 현재 경로가 네비게이션 페이지인지 확인
+  const isNavigationPage = () => {
+    return tabs.some(tab => tab.path === location.pathname);
+  };
+
+  return {
+    // State
+    activeTab,
+    isVisible,
+    previousTab,
+    tabs,
+    
+    // Computed
+    currentTab: getCurrentTab(),
+    isNavigationPage: isNavigationPage(),
+    
+    // Actions
+    handleNavigationClick,
+    navigateToTab,
+    goToPreviousTab,
+    hideNavigation,
+    showNavigation,
+    toggleNavigation,
+    setActiveTab,
+  };
+};
