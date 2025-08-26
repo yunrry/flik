@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import LocationPermissionModal from '../components/Location/LocationPermissionModal';
-
+import { LocationPermissionModal } from '../components/Location';
+import { LocationSelector } from '../components/Location';
+import { CurrentLocationButton } from '../components/Location';
 
 interface UserLocation {
   coordinates: {
@@ -23,10 +24,24 @@ const FlikPage: React.FC = () => {
     const { user } = useAuthStore();
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<UserLocation | null>(null);
+    const [selectedLocation, setSelectedLocation] = useState('성수역 1번 출구');
+
+  const handleLocationChange = (location: string) => {
+    setSelectedLocation(location);
+    console.log('선택된 지역:', location);
+  };
   
     // 위치 권한 상태 관리
     const [isFirstVisit, setIsFirstVisit] = useState(true);
   
+    const handleLocationUpdate = (location: any) => {
+      console.log('위치 업데이트:', location);
+    };
+  
+    const handleLocationSelect = (location: string) => {
+      console.log('선택된 지역:', location);
+    };
+
     // 첫 방문 시 위치 권한 모달 표시
     useEffect(() => {
       // localStorage에서 위치 권한 상태 확인
@@ -139,6 +154,15 @@ const FlikPage: React.FC = () => {
   
         {/* 메인 콘텐츠 */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+        <LocationSelector
+        selectedLocation={selectedLocation}
+        onLocationSelect={handleLocationChange}
+        className="w-fit"
+      />
+          <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
+      </div>
+   
           {/* 웰컴 섹션 */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div className="flex items-center justify-between">
