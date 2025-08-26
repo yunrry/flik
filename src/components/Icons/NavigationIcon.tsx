@@ -1,26 +1,20 @@
 import React from 'react';
-import { NavigationIconProps } from '../../../types/icon.types';
+import { NavigationIconProps } from '../../types/icon.types';
 import { HomeIcon, MyIcon, SaveIcon, FlikIcon } from './SvgIcons';
 
-export const NavigationIcon: React.FC<NavigationIconProps & { name: string; size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' }> = (props) => {
-  const { name, isActive = false, variant = 'default', className = '', size = 'md', ...rest } = props;
-  
-  // 디버깅 로그 추가
-  console.log('NavigationIcon props:', { name, className, size, isActive });
-  
-
-
+export const NavigationIcon: React.FC<NavigationIconProps & { name: string; size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' }> = (props) => {
+  const { name, isActive = false, variant = 'default', className = '', size = 'xl', ...rest } = props;
   
   const renderIcon = () => {
     switch (name) {
       case 'home':
-        return <HomeIcon className={className} isActive={isActive} size={size} />;
+        return <HomeIcon isActive={isActive} size={size} />;
       case 'my':
-        return <MyIcon className={className} isActive={isActive} size={size} />;
+        return <MyIcon isActive={isActive} size={size} />;
       case 'save':
-        return <SaveIcon className={className} isActive={isActive} size={size} />;
+        return <SaveIcon isActive={isActive} size={size} />;
       case 'flik':
-        return <FlikIcon className={className} isActive={isActive} size={size} />;
+        return <FlikIcon isActive={isActive} size={size} />;
       default:
         return null;
     }
@@ -28,7 +22,7 @@ export const NavigationIcon: React.FC<NavigationIconProps & { name: string; size
   
   return (
     <div 
-      className="inline-block"
+    className={`inline-block ${className}`}
       onClick={rest.onClick}
       role="button"
       tabIndex={0}

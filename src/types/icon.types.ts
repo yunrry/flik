@@ -42,5 +42,5 @@ export const ICON_SIZE_PX = {
   sm: 20,
   md: 24,
   lg: 32,
-  xl: 40,
+  xl: 60,
 } as const;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusIconProps } from '../../../types/icon.types';
+import { StatusIconProps } from '../../types/icon.types';
 import { Icon } from './Icon';
 
 export const StatusIcon: React.FC<StatusIconProps> = (props) => {

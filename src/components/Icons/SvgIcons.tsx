@@ -12,7 +12,7 @@ const getSizeStyles = (size: string = 'md') => {
     sm: { width: '16px', height: '16px' },
     md: { width: '20px', height: '20px' },
     lg: { width: '24px', height: '24px' },
-    xl: { width: '32px', height: '32px' },
+    xl: { width: '40px', height: '40px' },
   };
   return sizeStyles[size as keyof typeof sizeStyles] || sizeStyles.md;
 
@@ -41,7 +41,7 @@ export const HomeIcon: React.FC<IconProps> = ({ isActive, size = 'md' }) => {
 };
 
 
-export const MyIcon: React.FC<IconProps> = ({ className = '', isActive, size = 'md' }) => {
+export const MyIcon: React.FC<IconProps> = ({ isActive, size = 'md' }) => {
   const sizeStyles = getSizeStyles(size);
 
   return (
@@ -67,7 +67,7 @@ export const MyIcon: React.FC<IconProps> = ({ className = '', isActive, size = '
   );
 };
 
-export const SaveIcon: React.FC<IconProps> = ({ className = '', isActive, size = 'md' }) => {
+export const SaveIcon: React.FC<IconProps> = ({ isActive, size = 'md' }) => {
   const sizeStyles = getSizeStyles(size);
   
   return (
@@ -90,7 +90,7 @@ export const SaveIcon: React.FC<IconProps> = ({ className = '', isActive, size =
   );
 };
 
-export const FlikIcon: React.FC<IconProps> = ({ className = '', isActive, size = 'md' }) => {
+export const FlikIcon: React.FC<IconProps> = ({ isActive, size = 'md' }) => {
   const sizeStyles = getSizeStyles(size);
 
   return (
