@@ -35,16 +35,19 @@ function IconGallary() {
         <div className="flex gap-4 items-center">
           <NavigationIcon 
             name="home" 
+            size="lg"
             isActive={activeNavigation === 'home'} 
             onClick={() => handleNavigationClick('home')}
           />
           <NavigationIcon 
             name="my" 
+            size="lg"
             isActive={activeNavigation === 'my'} 
             onClick={() => handleNavigationClick('my')}
           />
           <NavigationIcon 
             name="save" 
+            size="lg"
             isActive={activeNavigation === 'save'} 
             onClick={() => handleNavigationClick('save')}
           />
@@ -86,6 +89,64 @@ function IconGallary() {
           <StatusIcon status="error" variant="animated" />
         </div>
       </div> */}
+
+      {/* Icon Size System */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Icon Size System</h2>
+        <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <span className="w-16 text-sm text-gray-600">12px (xs):</span>
+            <div className="w-3 h-3">
+              <NavigationIcon name="home" size="xs" />
+            </div>
+            <span className="text-xs text-gray-500">w-3 h-3</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="w-16 text-sm text-gray-600">16px (sm):</span>
+            <div className="w-4 h-4">
+              <NavigationIcon name="home" size="sm" />
+            </div>
+            <span className="text-xs text-gray-500">w-4 h-4</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="w-16 text-sm text-gray-600">20px (md):</span>
+
+              <NavigationIcon name="home" size="md" />
+            <span className="text-xs text-gray-500">w-5 h-5</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="w-16 text-sm text-gray-600">24px (lg):</span>
+  
+              <NavigationIcon name="home" size="lg" />
+
+            <span className="text-xs text-gray-500">w-6 h-6</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="w-16 text-sm text-gray-600">32px (xl):</span>
+
+              <NavigationIcon name="home" size="xl" />
+     
+            <span className="text-xs text-gray-500">w-8 h-8</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 테스트 - className과 size 확인 */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Icon Test</h2>
+        <div className="flex gap-4 items-center">
+          <NavigationIcon 
+            name="home" 
+            size="xs" 
+            className="text-red-500 bg-blue-100 p-2 rounded"
+          />
+          <NavigationIcon 
+            name="my" 
+            size="lg" 
+            className="text-green-500 border-2 border-green-500"
+          />
+        </div>
+      </div>
     </div>
   );
 }

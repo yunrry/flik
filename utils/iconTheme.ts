@@ -1,12 +1,11 @@
 import { IconSize, IconTheme } from '../types/icon.types';
 
 export const ICON_SIZES: IconSize = {
-  xs: 'w-3 h-3',
-  sm: 'w-4 h-4',
-  md: 'w-6 h-6',
-  lg: 'w-8 h-8',
-  xl: 'w-10 h-10',
-  '2xl': 'w-12 h-12',
+  xs: 'w-4 h-4',      // 16px (w-4 = 16px)
+  sm: 'w-5 h-5',      // 20px (w-5 = 20px)
+  md: 'w-6 h-6',      // 24px (w-6 = 24px)
+  lg: 'w-8 h-8',      // 32px (w-8 = 32px)
+  xl: 'w-10 h-10',    // 40px (w-10 = 40px)
 };
 
 export const ICON_COLORS = {
@@ -37,4 +36,16 @@ export const getIconColor = (theme: IconTheme, colorKey: keyof typeof ICON_COLOR
 
 export const getIconSize = (size: keyof IconSize = 'md') => {
   return ICON_SIZES[size];
+};
+
+// 픽셀 단위로 크기 가져오기
+export const getIconSizePx = (size: keyof IconSize = 'md') => {
+  const sizeMap = {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 32,
+    xl: 40,
+  };
+  return sizeMap[size];
 };

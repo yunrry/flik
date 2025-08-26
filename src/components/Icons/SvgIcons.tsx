@@ -1,11 +1,29 @@
 import React from 'react';
 
-export const HomeIcon: React.FC<{ className?: string; isActive?: boolean }> = ({ className = '', isActive }) => {
+interface IconProps {
+  className?: string;
+  isActive?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+const getSizeStyles = (size: string = 'md') => {
+  const sizeStyles = {
+    xs: { width: '12px', height: '12px' },
+    sm: { width: '16px', height: '16px' },
+    md: { width: '20px', height: '20px' },
+    lg: { width: '24px', height: '24px' },
+    xl: { width: '32px', height: '32px' },
+  };
+  return sizeStyles[size as keyof typeof sizeStyles] || sizeStyles.md;
+
+}
+export const HomeIcon: React.FC<IconProps> = ({ isActive, size = 'md' }) => {
+  const sizeStyles = getSizeStyles(size);
+
   return (
     <svg 
-      className={className} 
-      width="32" 
-      height="39" 
+      className={`svg-${size}`}
+      style={sizeStyles}
       viewBox="0 0 32 39" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
@@ -22,12 +40,14 @@ export const HomeIcon: React.FC<{ className?: string; isActive?: boolean }> = ({
   );
 };
 
-export const MyIcon: React.FC<{ className?: string; isActive?: boolean }> = ({ className = '', isActive }) => {
+
+export const MyIcon: React.FC<IconProps> = ({ className = '', isActive, size = 'md' }) => {
+  const sizeStyles = getSizeStyles(size);
+
   return (
     <svg 
-      className={className} 
-      width="32" 
-      height="39" 
+    className={`svg-${size}`}
+    style={sizeStyles}
       viewBox="0 0 32 39" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
@@ -47,12 +67,13 @@ export const MyIcon: React.FC<{ className?: string; isActive?: boolean }> = ({ c
   );
 };
 
-export const SaveIcon: React.FC<{ className?: string; isActive?: boolean }> = ({ className = '', isActive }) => {
+export const SaveIcon: React.FC<IconProps> = ({ className = '', isActive, size = 'md' }) => {
+  const sizeStyles = getSizeStyles(size);
+  
   return (
     <svg 
-      className={className} 
-      width="32" 
-      height="39" 
+    className={`svg-${size}`}
+    style={sizeStyles}
       viewBox="0 0 32 39" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
@@ -69,13 +90,14 @@ export const SaveIcon: React.FC<{ className?: string; isActive?: boolean }> = ({
   );
 };
 
-export const FlikIcon: React.FC<{ className?: string; isActive?: boolean }> = ({ className = '', isActive }) => {
+export const FlikIcon: React.FC<IconProps> = ({ className = '', isActive, size = 'md' }) => {
+  const sizeStyles = getSizeStyles(size);
+
   return (
     <svg 
-      className={className} 
-      width="32" 
-      height="39" 
-      viewBox="0 0 32 39" 
+    className={`svg-${size}`}
+    style={sizeStyles}
+          viewBox="0 0 32 39" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -86,7 +108,8 @@ export const FlikIcon: React.FC<{ className?: string; isActive?: boolean }> = ({
       <path 
         d="M14.9062 29.3438V30.0469H13.6367V31.5605H14.8672V32.2734H8.45117V31.5605H9.69141V30.0469H8.41211V29.3438H14.9062ZM15.6582 32.918V33.6504H7.67969V32.918H15.6582ZM14.6523 34.334V36.3359H9.55469V37.0391H14.8965V37.7422H8.64648V35.6816H13.7344V35.0273H8.63672V34.334H14.6523ZM10.6094 31.5605H12.709V30.0469H10.6094V31.5605ZM23.5781 29.0898V34.4316H22.6504V29.0898H23.5781ZM23.5781 34.8809V37.8301H22.6504V35.6426H17.6504V34.8809H23.5781ZM20.7852 29.5977V32.0977H17.6895V33.2207C19.2178 33.2158 20.3457 33.1621 21.6738 32.9668L21.791 33.7188C20.3652 33.9434 19.1641 33.9824 17.5137 33.9824H16.7812V31.375H19.8672V30.3496H16.7617V29.5977H20.7852Z" 
         fill={isActive ? "#FF6B35" : "#333333"}
-      />
-    </svg>
-  );
-};
+        />
+      </svg>
+    );
+  };
+  
