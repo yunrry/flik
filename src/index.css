@@ -5,6 +5,21 @@
 @tailwind components;
 @tailwind utilities;
 
+
+:root {
+  --header-height-default: 4rem; /* 64px */
+  --header-height-extended: 12rem; /* 96px */
+}
+
+/* 헤더 높이별 유틸리티 클래스 */
+.pt-header-default {
+  padding-top: var(--header-height-default);
+}
+
+.pt-header-extended {
+  padding-top: var(--header-height-extended);
+}
+
 /* BottomNavigation 완전 고정 */
 .bottom-navigation-fixed {
   position: fixed !important;

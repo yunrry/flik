@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAuthStore } from '../stores/authStore';
+import { HeaderBar } from '../components/Layout';
 
 const MyPage: React.FC = () => {
   const { user, logout } = useAuthStore();
@@ -13,17 +14,12 @@ const MyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-gray-900">
-              마이페이지
-            </h1>
-          </div>
-        </div>
-      </header>
+   {/* 헤더 */}
+   <HeaderBar variant="my" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+{/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
+<main className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
         {/* 프로필 섹션 */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center space-x-4">
@@ -118,7 +114,7 @@ const MyPage: React.FC = () => {
             FLIK v1.0.0
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

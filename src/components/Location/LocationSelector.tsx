@@ -146,7 +146,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
           color="#333333" 
           variant="pin"
         />
-        <span className="text-sm font-medium text-gray-900">
+        <span className="text-md font-medium text-gray-900">
           {selectedLocation}
         </span>
         <svg 

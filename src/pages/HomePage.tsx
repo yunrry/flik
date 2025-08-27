@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import LocationPermissionModal from '../components/Location/LocationPermissionModal';
+import { HeaderBar } from '../components/Layout';
+import { useNavigate } from 'react-router-dom';
 
 interface UserLocation {
   coordinates: {
@@ -21,34 +22,8 @@ interface UserLocation {
 
 const HomePage: React.FC = () => {
   const { user } = useAuthStore();
-  const [showLocationModal, setShowLocationModal] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<UserLocation | null>(null);
-
-  // 임시로 위치 스토어가 없을 때를 대비한 상태 관리
-  const [isFirstVisit, setIsFirstVisit] = useState(true);
-
-  // 첫 방문 시 위치 권한 모달 표시
-  useEffect(() => {
-    if (isFirstVisit) {
-      const timer = setTimeout(() => {
-        setShowLocationModal(true);
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isFirstVisit]);
-
-  const handleLocationSuccess = (location: UserLocation) => {
-    console.log('위치 허용됨:', location);
-    setCurrentLocation(location);
-    setIsFirstVisit(false);
-  };
-
-  const handleLocationSkip = () => {
-    console.log('위치 권한 스킵됨');
-    setIsFirstVisit(false);
-  };
-
+  const navigate = useNavigate();
+  
   // 임시 피드 데이터
   const feedItems = [
     {
@@ -86,40 +61,13 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-blue-600">
-                FLIK
-              </h1>
-              {currentLocation && (
-                <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
-                  📍 위치 활성화
-                </span>
-              )}
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-              <button className="p-2 text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M15 17h5l-5 5v-5zM6 2v16a2 2 0 002 2h5v-4a1 1 0 011-1h4V4a2 2 0 00-2-2H8a2 2 0 00-2 2z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 메인 콘텐츠 */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <HeaderBar 
+  variant="back-from-sido" 
+  region="busan"  // 부산 지역
+  onBack={() => navigate('/nationwide')}
+/>
+      {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
+      <main className="pt-header-extended max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* 웰컴 섹션 */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between">
@@ -128,10 +76,10 @@ const HomePage: React.FC = () => {
                 안녕하세요, {user?.nickname}님! 👋
               </h2>
               <p className="text-gray-600 text-sm">
-                {currentLocation 
-                  ? '주변의 멋진 순간들을 발견해보세요'
-                  : 'FLIK에서 특별한 순간들을 공유해보세요'
-                }
+    
+        
+              'FLIK에서 특별한 순간들을 공유해보세요'
+        
               </p>
             </div>
             <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
@@ -140,22 +88,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* 현재 위치 정보 */}
-        {currentLocation && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center space-x-2">
-              <span className="text-blue-600">📍</span>
-              <div>
-                <p className="text-blue-800 font-medium">현재 위치</p>
-                <p className="text-blue-600 text-sm">
-                  위도: {currentLocation.coordinates.latitude.toFixed(4)}, 
-                  경도: {currentLocation.coordinates.longitude.toFixed(4)}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
+      
         {/* 피드 */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -235,13 +168,7 @@ const HomePage: React.FC = () => {
         </div>
       </main>
 
-      {/* 위치 권한 모달 */}
-      <LocationPermissionModal
-        // isOpen={showLocationModal}
-        // onClose={() => setShowLocationModal(false)}
-        // onSuccess={handleLocationSuccess}
-        // onSkip={handleLocationSkip}
-      />
+    
     </div>
   );
 };
