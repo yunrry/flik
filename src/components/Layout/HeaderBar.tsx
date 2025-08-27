@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { HeaderProps } from '../../types/header.types';
 import { RegionCode, REGION_CONFIG } from '../../types/region.types';
 import { LogoIcon, SettingIcon, BackArrowIcon } from '../Icons';
+import SearchComponent from '../search/SearchComponent';
 
 const HeaderBar: React.FC<HeaderProps> = ({
   variant,
@@ -105,6 +106,17 @@ const HeaderBar: React.FC<HeaderProps> = ({
         );
         
       case 'backWithMore':
+        return (
+          <button
+            onClick={onBack}
+            className="p-2 -ml-2 text-gray-700 hover:text-gray-900 transition-colors"
+            aria-label="뒤로가기"
+          >
+            <BackArrowIcon size="md" color="default" />
+          </button>
+        );
+
+      case 'backWithSearch':
         return (
           <button
             onClick={onBack}
@@ -221,6 +233,18 @@ const HeaderBar: React.FC<HeaderProps> = ({
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
+          </button>
+        );
+      
+      case 'backWithSearch':
+        return (
+          <button
+            onClick={onBack}
+            className="p-2 -mr-2 text-gray-700 hover:text-gray-900 transition-colors"
+            aria-label="검색"
+          >
+            <div className="p-2 -mr-2 text-gray-700 hover:text-gray-900 transition-colors"> search </div>
+            <SearchComponent/>
           </button>
         );
       

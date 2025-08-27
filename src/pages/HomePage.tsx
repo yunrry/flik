@@ -62,8 +62,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
       <HeaderBar 
-  variant="back-from-sido" 
-  region="busan"  // 부산 지역
+  variant="backWithSearch" 
   onBack={() => navigate('/nationwide')}
 />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
