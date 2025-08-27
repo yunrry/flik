@@ -62,7 +62,7 @@ const MainBanner: React.FC<MainBannerProps> = ({
   const currentBanner = banners[currentIndex];
 
   return (
-    <div className={`relative w-full h-64 sm:h-80 md:h-96 overflow-hidden rounded-lg ${className}`}>
+    <div className={`relative w-full h-56 sm:h-52 md:h-64 overflow-hidden rounded-lg ${className}`}>
       {/* 배너 이미지 */}
       <div 
         className="absolute inset-0 bg-cover bg-center transition-all duration-500"

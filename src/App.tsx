@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import SavePage from './pages/SavePage';
 import FlikPage from './pages/FlikPage';
+import NationwidePage from './pages/NationwidePage';
 import IconGallary from './pages/IconGallary';
 
 // Layouts
@@ -84,6 +85,17 @@ function App() {
               <ProtectedRoute>
                 <NavigationPageWrapper>
                   <FlikPage />
+                </NavigationPageWrapper>
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/nationwide" 
+            element={
+              <ProtectedRoute>
+                <NavigationPageWrapper>
+                  <NationwidePage />
                 </NavigationPageWrapper>
               </ProtectedRoute>
             } 

@@ -69,7 +69,7 @@ const HomePage: React.FC = () => {
       {/* 헤더 */}
       <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-header-default max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="pt-header-default w-full sm:max-w-7xl sm:mx-auto px-2 sm:px-6 lg:px-8 py-6">
 
 
      {/* 메인 배너 섹션 */}
@@ -91,13 +91,10 @@ const HomePage: React.FC = () => {
 
         {/* 지역별 장소 카테고리 섹션 */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4 px-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              지역별 장소 찾기
+          <div className="flex items-start justify-between mb-2 px-2">
+            <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
+              지역별 플릭 장소
             </h3>
-            <button className="text-sm text-blue-600 hover:text-blue-700">
-              전체보기
-            </button>
           </div>
 
           {categoriesLoading ? (
@@ -115,6 +112,7 @@ const HomePage: React.FC = () => {
               activeCategory={activeCategory}
               onCategorySelect={handleCategorySelect}
               showScrollIndicator={categories.length > 5}
+      
             />
           )}
         </div>
@@ -123,9 +121,11 @@ const HomePage: React.FC = () => {
       
         {/* 피드 */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900">
-            추천 피드
-          </h3>
+        <div className="flex items-start justify-between mb-2 px-2">
+            <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
+              지금 주목할 만한 도시
+            </h3>
+          </div>
           
           {feedItems.map((item) => (
             <div key={item.id} className="bg-white rounded-lg shadow-sm overflow-hidden">

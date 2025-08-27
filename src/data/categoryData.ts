@@ -161,7 +161,7 @@ export const mainCategoryData: Category[] = [
     id: 'more',
     name: '더보기',
     icon: 'more', // 특별한 아이콘 식별자
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#FFFFFF',
     description: '전체 지역 보기',
     itemCount: 0
   }

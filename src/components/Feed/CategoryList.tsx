@@ -15,7 +15,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
     <div className={`relative ${className}`}>
       {/* 스크롤 영역 */}
       <div className="overflow-x-auto scrollbar-hide">
-        <div className="flex gap-4 px-4 py-2 min-w-max">
+        <div className="flex gap-2.5 px-4 py-2 min-w-max">
           {categories.map((category) => (
             <CategoryCircle
               key={category.id}

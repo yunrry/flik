@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HeaderProps } from '../../types/header.types';
+import { useNavigate } from 'react-router-dom';
 import { RegionCode, REGION_CONFIG } from '../../types/region.types';
 import { LogoIcon, SettingIcon, BackArrowIcon } from '../Icons';
 import SearchComponent from '../search/SearchComponent';
@@ -19,7 +20,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
   className = ''
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-
+  const navigate = useNavigate();
   // 지역 정보 가져오기
   const currentRegion = REGION_CONFIG[region];
 
@@ -60,8 +61,8 @@ const HeaderBar: React.FC<HeaderProps> = ({
             {/* 상단 행 - 뒤로가기 버튼 */}
             <div className="flex items-start">
               <button
-                onClick={onBack}
-                className="p-2 pb-8 -ml-2 hover:bg-white/10 transition-colors rounded-lg"
+                onClick={() => navigate('/')}
+                className="p-2 -ml-2 transition-colors rounded-lg"
                 aria-label="뒤로가기"
               >
                 <BackArrowIcon size="lg" color="white" />
@@ -69,7 +70,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
             </div>
             
             {/* 하단 행 - 추가 컨텐츠 */}
-            <div className="flex flex-col items-start pl-0 pb-0 space-y-2">
+            <div className="flex flex-col items-start pt-8 pl-0 pb-0 space-y-2">
               <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-tight">슥삭 넘기다 보면 전국이 내 맛집 리스트! <br /> 이제, 손끝으로 전국을 플릭하세요.</div>
               <div className="justify-start text-white text-sm font-medium font-['Pretendard'] leading-relaxed">스와이프 한 번에 내 취향에 딱 맞는 맛집을 발견할 수 있어요.</div>
             </div>
@@ -80,8 +81,8 @@ const HeaderBar: React.FC<HeaderProps> = ({
         return (
           <div className="flex items-start relative z-10">
             <button
-              onClick={onBack}
-              className="p-2 pb-8 -ml-2 hover:bg-black/20 transition-colors rounded-lg backdrop-blur-sm"
+             onClick={() => navigate('/')}
+             className="p-2 -ml-2 transition-colors rounded-lg"
               aria-label="뒤로가기"
             >
               <BackArrowIcon size="lg" color="white" />

@@ -14,7 +14,7 @@ const getSizeStyles = (size: string = 'md') => {
     md: { width: '20px', height: '20px' },
     lg: { width: '24px', height: '24px' },
     xl: { width: '32px', height: '32px' },
-    xxl: { width: '60px', height: '60px' }
+    xxl: { width: '65px', height: '65px' }
   };
   return sizeStyles[size as keyof typeof sizeStyles] || sizeStyles.md;
 
