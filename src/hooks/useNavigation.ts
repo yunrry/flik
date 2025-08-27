@@ -55,7 +55,14 @@ export const useNavigation = () => {
 
   // 현재 경로가 네비게이션 페이지인지 확인
   const isNavigationPage = () => {
-    return tabs.some(tab => tab.path === location.pathname);
+    // 기본 네비게이션 탭 경로들
+    const isMainNavigationPage = tabs.some(tab => tab.path === location.pathname);
+    
+    // 홈 페이지에서 접근 가능한 서브 페이지들 (네비게이션 유지)
+    const homeSubPages = ['/nationwide'];
+    const isHomeSubPage = homeSubPages.includes(location.pathname);
+    
+    return isMainNavigationPage || isHomeSubPage;
   };
 
   return {

@@ -1,9 +1,11 @@
 // src/pages/HomePage.tsx
 
 import React, { useEffect, useState } from 'react';
-import { useAuthStore } from '../stores/authStore';
 import { HeaderBar } from '../components/Layout';
-import { useNavigate } from 'react-router-dom';
+import MainBanner from '../components/Feed/MainBanner';
+import CategoryList from '../components/Feed/CategoryList';
+import { useBanner } from '../hooks/useBanner';
+import { useCategory } from '../hooks/useCategory';
 
 interface UserLocation {
   coordinates: {
@@ -21,9 +23,13 @@ interface UserLocation {
 }
 
 const HomePage: React.FC = () => {
-  const { user } = useAuthStore();
-  const navigate = useNavigate();
+  const { banners, isLoading: bannersLoading, handleBannerClick } = useBanner();
+  const { categories, activeCategory, isLoading: categoriesLoading, handleCategorySelect } = useCategory();
+
+
   
+
+
   // 임시 피드 데이터
   const feedItems = [
     {
@@ -63,33 +69,63 @@ const HomePage: React.FC = () => {
       {/* 헤더 */}
       <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-header-extended max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* 웰컴 섹션 */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                안녕하세요, {user?.nickname}님! 👋
-              </h2>
-              <p className="text-gray-600 text-sm">
-    
-        
-              'FLIK에서 특별한 순간들을 공유해보세요'
-        
-              </p>
+      <main className="pt-header-default w-full sm:max-w-7xl sm:mx-auto px-2 sm:px-6 lg:px-8 py-6">
+
+
+     {/* 메인 배너 섹션 */}
+        <div className="mb-8">
+          {bannersLoading ? (
+            <div className="w-full h-64 bg-gray-200 rounded-lg animate-pulse flex items-center justify-center">
+              <span className="text-gray-500">배너 로딩 중...</span>
             </div>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-              📷 사진 올리기
-            </button>
-          </div>
+          ) : (
+            <MainBanner 
+              banners={banners} 
+              onBannerClick={handleBannerClick}
+              autoSlide={true}
+              slideInterval={5000}
+            />
+          )}
         </div>
+
+
+        {/* 지역별 장소 카테고리 섹션 */}
+        <div className="mb-8">
+          <div className="flex items-start justify-between mb-2 px-2">
+            <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
+              지역별 플릭 장소
+            </h3>
+          </div>
+
+          {categoriesLoading ? (
+            <div className="flex gap-4 px-4">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="flex flex-col items-center space-y-2">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full animate-pulse" />
+                  <div className="w-12 h-3 bg-gray-200 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <CategoryList
+              categories={categories}
+              activeCategory={activeCategory}
+              onCategorySelect={handleCategorySelect}
+              showScrollIndicator={categories.length > 5}
+      
+            />
+          )}
+        </div>
+
 
       
         {/* 피드 */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900">
-            추천 피드
-          </h3>
+        <div className="flex items-start justify-between mb-2 px-2">
+            <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
+              지금 주목할 만한 도시
+            </h3>
+          </div>
           
           {feedItems.map((item) => (
             <div key={item.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
