@@ -69,13 +69,13 @@ const HomePage: React.FC = () => {
       {/* 헤더 */}
       <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-header-default w-full sm:max-w-7xl sm:mx-auto px-2 sm:px-6 lg:px-8 py-6">
+      <main className="pt-header-default w-full sm:max-w-7xl sm:mx-auto px-0 sm:px-6 lg:px-8 py-6">
 
 
      {/* 메인 배너 섹션 */}
-        <div className="mb-8">
+        <div className="w-full mx-auto mb-8">
           {bannersLoading ? (
-            <div className="w-full h-64 bg-gray-200 rounded-lg animate-pulse flex items-center justify-center">
+            <div className="w-full h-52 bg-gray-200 rounded-lg animate-pulse flex items-center justify-center">
               <span className="text-gray-500">배너 로딩 중...</span>
             </div>
           ) : (
@@ -90,8 +90,8 @@ const HomePage: React.FC = () => {
 
 
         {/* 지역별 장소 카테고리 섹션 */}
-        <div className="mb-8">
-          <div className="flex items-start justify-between mb-2 px-2">
+        <div className="mb-8 px-2 sm:px-0">
+          <div className="flex items-start justify-between mb-2 px-2 sm:px-0">
             <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
               지역별 플릭 장소
             </h3>
@@ -120,8 +120,8 @@ const HomePage: React.FC = () => {
 
       
         {/* 피드 */}
-        <div className="space-y-6">
-        <div className="flex items-start justify-between mb-2 px-2">
+        <div className="space-y-6 px-2 sm:px-0">
+        <div className="flex items-start justify-between mb-2 px-2 sm:px-0">
             <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
               지금 주목할 만한 도시
             </h3>
@@ -193,7 +193,7 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* 더보기 */}
-        <div className="text-center py-8">
+        <div className="text-center py-8 px-2 sm:px-0">
           <button className="bg-gray-100 text-gray-600 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors">
             더 많은 피드 보기
           </button>

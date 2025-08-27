@@ -58,15 +58,15 @@ export const REGION_CONFIG: Record<RegionCode, RegionConfig> = {
     englishName: 'Daejeon',
     imageUrl: '/assets/sidoImgaes/Deajeon.jpeg'
   },
-  ulsan: {
-    name: '울산',
-    englishName: 'Ulsan',
-    imageUrl: '/assets/sidoImgaes/Seoul.jpg'
-  },
   sejong: {
     name: '세종',
     englishName: 'Sejong',
     imageUrl: '/assets/sidoImgaes/Sejong.jpeg'
+  },
+  ulsan: {
+    name: '울산',
+    englishName: 'Ulsan',
+    imageUrl: '/assets/sidoImgaes/Ulsan.jpeg'
   },
   gyeonggi: {
     name: '경기',

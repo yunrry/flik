@@ -3,7 +3,6 @@
 export interface BannerItem {
     id: number;
     title: string;
-    subtitle: string;
     description: string;
     imageUrl: string;
     buttonText?: string;

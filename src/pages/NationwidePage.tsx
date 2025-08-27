@@ -36,7 +36,7 @@ const NationwidePage: React.FC = () => {
   
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white">
       {/* 헤더 */}
       <div className="flex-shrink-0">
         <HeaderBar variant="back-from-nationwide" />
