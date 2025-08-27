@@ -6,6 +6,7 @@ import { LocationPermissionModal } from '../components/Location';
 import { LocationSelector } from '../components/Location';
 import { CurrentLocationButton } from '../components/Location';
 import { HeaderBar } from '../components/Layout';
+import FlikCardLayout from '../components/Layout/FlikCardLayout';
 
 interface UserLocation {
   coordinates: {
@@ -21,11 +22,67 @@ interface UserLocation {
     district?: string;
   };
 }
+
+interface Restaurant {
+  id: string;
+  name: string;
+  images: string[];
+  rating: number;
+  description: string;
+  address: string;
+  distance?: number; // 미터 단위
+  hours: string;
+}
+
 const FlikPage: React.FC = () => {
     const { user } = useAuthStore();
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<UserLocation | null>(null);
     const [selectedLocation, setSelectedLocation] = useState('성수역 1번 출구');
+    const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
+
+  // 샘플 맛집 데이터 (실제로는 API에서 가져올 데이터)
+  const sampleRestaurants: Restaurant[] = [
+    {
+      id: '1',
+      name: '마리오네',
+      images: [
+        '/api/placeholder/400/600',
+        '/api/placeholder/400/600',
+        '/api/placeholder/400/600'
+      ],
+      rating: 4.7,
+      description: '세계 챔피언 마리오가 선보이는 전통 나폴리 피자와 파스타를 맛볼 수 있는 곳',
+      address: '서울 성동구 성수동2가 299-50',
+      distance: 326,
+      hours: '12:00 ~ 18:00'
+    },
+    {
+      id: '2',
+      name: '성수동 맛집',
+      images: [
+        '/api/placeholder/400/600',
+        '/api/placeholder/400/600'
+      ],
+      rating: 4.3,
+      description: '현지인이 사랑하는 숨은 맛집, 정통 한식을 맛볼 수 있습니다',
+      address: '서울 성동구 성수동1가 685-142',
+      distance: 520,
+      hours: '11:00 ~ 21:00'
+    },
+    {
+      id: '3',
+      name: '카페 로스터리',
+      images: [
+        '/api/placeholder/400/600'
+      ],
+      rating: 4.5,
+      description: '직접 로스팅한 원두로 만드는 스페셜티 커피 전문점',
+      address: '서울 성동구 성수동2가 277-44',
+      distance: 890,
+      hours: '08:00 ~ 20:00'
+    }
+  ];
 
   const handleLocationChange = (location: string) => {
     setSelectedLocation(location);
@@ -38,10 +95,27 @@ const FlikPage: React.FC = () => {
     const handleLocationUpdate = (location: any) => {
       console.log('위치 업데이트:', location);
     };
-  
-    const handleLocationSelect = (location: string) => {
-      console.log('선택된 지역:', location);
+
+    // 저장된 맛집 핸들러
+    const handleSave = (restaurants: Restaurant[]) => {
+      setSavedRestaurants(restaurants);
+      console.log('저장된 맛집들:', restaurants);
     };
+
+    // 블로그 리뷰 버튼 핸들러
+    const handleBlogReview = (restaurant: Restaurant) => {
+      console.log('블로그 리뷰 보기:', restaurant.name);
+      // 블로그 리뷰 페이지로 이동하는 로직 추가
+    };
+
+    // 카카오맵 버튼 핸들러
+    const handleKakaoMap = (restaurant: Restaurant) => {
+      console.log('카카오맵 열기:', restaurant.name);
+      // 카카오맵 앱이나 웹으로 이동하는 로직 추가
+      const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(restaurant.name)}`;
+      window.open(kakaoMapUrl, '_blank');
+    };
+  
 
     // 첫 방문 시 위치 권한 모달 표시
     useEffect(() => {
@@ -84,84 +158,22 @@ const FlikPage: React.FC = () => {
       setShowLocationModal(true);
     };
   
-    // 임시 피드 데이터
-    const feedItems = [
-      {
-        id: 1,
-        user: { name: '사진작가', avatar: '📸' },
-        location: '한강공원',
-        time: '2시간 전',
-        image: '🌅',
-        likes: 24,
-        comments: 8,
-        description: '아름다운 한강 석양을 담았습니다'
-      },
-      {
-        id: 2,
-        user: { name: '여행러버', avatar: '✈️' },
-        location: '제주도',
-        time: '5시간 전',
-        image: '🌴',
-        likes: 156,
-        comments: 23,
-        description: '제주도의 푸른 바다와 하늘'
-      },
-      {
-        id: 3,
-        user: { name: '카페탐방', avatar: '☕' },
-        location: '홍대입구',
-        time: '1일 전',
-        image: '🏪',
-        likes: 89,
-        comments: 12,
-        description: '숨겨진 보석같은 카페 발견!'
-      }
-    ];
+    
   
     return (
       <div className="min-h-screen bg-gray-50">
         {/* 헤더 */}
         <HeaderBar variant="logo" />
 
-{/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-<main className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-        <LocationSelector
-        selectedLocation={selectedLocation}
-        onLocationSelect={handleLocationChange}
-        className="w-fit"
-      />
-          <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
-      </div>
-   
-          {/* 웰컴 섹션 */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                  안녕하세요, {user?.nickname}님! 👋
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  {currentLocation 
-                    ? '주변의 멋진 순간들을 발견해보세요'
-                    : 'FLIK에서 특별한 순간들을 공유해보세요'
-                  }
-                </p>
-              </div>
-              <div className="flex space-x-2">
-                {!currentLocation && (
-                  <button 
-                    onClick={requestLocationAgain}
-                    className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm"
-                  >
-                    📍 위치 허용
-                  </button>
-                )}
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                  📷 사진 올리기
-                </button>
-              </div>
-            </div>
+        {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
+        <main className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <LocationSelector
+              selectedLocation={selectedLocation}
+              onLocationSelect={handleLocationChange}
+              className="w-fit"
+            />
+            <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
           </div>
 
           {/* 위치 미허용 시 안내 메시지 */}
@@ -184,7 +196,7 @@ const FlikPage: React.FC = () => {
               </div>
             </div>
           )}
-  
+
           {/* 현재 위치 정보 */}
           {currentLocation && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -200,86 +212,37 @@ const FlikPage: React.FC = () => {
               </div>
             </div>
           )}
-  
-          {/* 피드 */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              추천 피드
-            </h3>
-            
-            {feedItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-                {/* 피드 헤더 */}
-                <div className="p-4 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span>{item.user.avatar}</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{item.user.name}</p>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <span className="mr-1">📍</span>
-                        <span className="mr-2">{item.location}</span>
-                        <span>•</span>
-                        <span className="ml-2">{item.time}</span>
-                      </div>
-                    </div>
+
+          {/* FlikCard 영역 */}
+          <div className="h-[600px] w-full">
+            <FlikCardLayout
+              restaurants={sampleRestaurants}
+              onSave={handleSave}
+              onBlogReview={handleBlogReview}
+              onKakaoMap={handleKakaoMap}
+            />
+          </div>
+
+          {/* 저장된 맛집 목록 (간단한 표시) */}
+          {savedRestaurants.length > 0 && (
+            <div className="mt-8 bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <span className="mr-2">❤️</span>
+                저장된 맛집 ({savedRestaurants.length}개)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {savedRestaurants.map((restaurant) => (
+                  <div key={restaurant.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <h4 className="font-semibold text-gray-800">{restaurant.name}</h4>
+                    <p className="text-sm text-gray-600 mt-1">★ {restaurant.rating}</p>
+                    <p className="text-sm text-gray-500 mt-1">{restaurant.address}</p>
                   </div>
-                  <button className="p-2 text-gray-400 hover:text-gray-600">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                    </svg>
-                  </button>
-                </div>
-  
-                {/* 피드 이미지 */}
-                <div className="h-64 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                  <span className="text-6xl">{item.image}</span>
-                </div>
-  
-                {/* 피드 액션 */}
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-4">
-                      <button className="flex items-center space-x-1 text-gray-600 hover:text-red-500">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        <span className="text-sm">{item.likes}</span>
-                      </button>
-                      <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        <span className="text-sm">{item.comments}</span>
-                      </button>
-                    </div>
-                    <button className="text-gray-600 hover:text-gray-800">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                      </svg>
-                    </button>
-                  </div>
-  
-                  <p className="text-gray-700 text-sm">
-                    {item.description}
-                  </p>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-  
-          {/* 더보기 */}
-          <div className="text-center py-8">
-            <button className="bg-gray-100 text-gray-600 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors">
-              더 많은 피드 보기
-            </button>
-          </div>
+            </div>
+          )}
         </main>
-  
+
         {/* 위치 권한 모달 */}
         <LocationPermissionModal
           isOpen={showLocationModal}
