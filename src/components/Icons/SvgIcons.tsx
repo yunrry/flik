@@ -13,8 +13,8 @@ const getSizeStyles = (size: string = 'md') => {
     sm: { width: '16px', height: '16px' },
     md: { width: '20px', height: '20px' },
     lg: { width: '24px', height: '24px' },
-    xl: { width: '32px', height: '32px' },
-    xxl: { width: '65px', height: '65px' }
+      xl: { width: '40px', height: '40px' },
+      xxl: { width: '65px', height: '65px' }
   };
   return sizeStyles[size as keyof typeof sizeStyles] || sizeStyles.md;
 

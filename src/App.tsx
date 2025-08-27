@@ -12,6 +12,7 @@ import SavePage from './pages/SavePage';
 import FlikPage from './pages/FlikPage';
 import NationwidePage from './pages/NationwidePage';
 import IconGallary from './pages/IconGallary';
+import RegionPage from './pages/RegionPage'; // Added import for RegionPage
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -96,6 +97,18 @@ function App() {
               <ProtectedRoute>
                 <NavigationPageWrapper>
                   <NationwidePage />
+                </NavigationPageWrapper>
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Region Page Route */}
+          <Route 
+            path="/region/:region" 
+            element={
+              <ProtectedRoute>
+                <NavigationPageWrapper>
+                  <RegionPage />
                 </NavigationPageWrapper>
               </ProtectedRoute>
             } 

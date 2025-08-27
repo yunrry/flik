@@ -5,10 +5,9 @@ import { BannerItem } from '../types/banner.types';
 export const mockBannerData: BannerItem[] = [
   {
     id: 1,
-    title: "속초 낭만이 보던 찬국이가 맛짱 리스트!",
-    subtitle: "이제, 즐겁으로 긴국을 플러해세요.",
-    description: "속초의 그 맛과 리뷰어 맛있는 먹거리를 우리가 찾아 온다!!",
-    imageUrl: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop",
+    title: "슥삭 넘기다 보면 전국이 내 맛집 리스트! \n이제, 손끝으로 전국을 플릭하세요.",
+    description: "스와이프 한 번에 내 취향에 딱 맞는 맛집을 발견할 수 있어요.",
+    imageUrl: "/assets/banners/banner-sample-1.png",
     buttonText: "자세히 보기",
     category: "맛집",
     location: "속초"
@@ -16,7 +15,6 @@ export const mockBannerData: BannerItem[] = [
   {
     id: 2,
     title: "제주도 숨은 맛집 탐방",
-    subtitle: "현지인만 아는 진짜 맛집",
     description: "관광지가 아닌 진짜 제주의 맛을 경험해보세요",
     imageUrl: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&h=600&fit=crop",
     buttonText: "탐방하기",
@@ -26,7 +24,6 @@ export const mockBannerData: BannerItem[] = [
   {
     id: 3,
     title: "부산 야경 명소",
-    subtitle: "낭만적인 부산의 밤",
     description: "해운대와 광안리의 아름다운 야경을 만나보세요",
     imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
     buttonText: "둘러보기",

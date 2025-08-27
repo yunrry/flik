@@ -22,7 +22,7 @@ export const NavigationIcon: React.FC<NavigationIconProps & { name: string; size
   
   return (
     <div 
-    className={`inline-block ${className}`}
+    className={`inline-block  ${className}`}
       onClick={rest.onClick}
       role="button"
       tabIndex={0}

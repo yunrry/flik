@@ -1,11 +1,10 @@
 // src/components/Feed/MainBanner.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface BannerItem {
   id: number;
   title: string;
-  subtitle: string;
   description: string;
   imageUrl: string;
   buttonText?: string;
@@ -27,116 +26,134 @@ const MainBanner: React.FC<MainBannerProps> = ({
   onBannerClick
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [preloadNextImage, setPreloadNextImage] = useState(false);
+
+  // 슬라이드 이동 함수
+  const goToSlide = (index: number) => {
+    if (isAnimating || index === currentIndex) return;
+    
+    setIsAnimating(true);
+    setCurrentIndex(index);
+    
+    // 애니메이션 완료 후 상태 리셋
+    setTimeout(() => {
+      setIsAnimating(false);
+      setPreloadNextImage(false); // 다음 이미지 프리로드 리셋
+    }, 500);
+  };
 
   // 자동 슬라이드 기능
   useEffect(() => {
-    if (!autoSlide || banners.length <= 1) return;
+    if (!autoSlide || banners.length <= 1 || isAnimating) return;
 
     const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
-        prevIndex === banners.length - 1 ? 0 : prevIndex + 1
-      );
+      // 슬라이드 1초 전에 다음 이미지 프리로드
+      const preloadTimer = setTimeout(() => {
+        setPreloadNextImage(true);
+      }, slideInterval - 1000);
+
+      setTimeout(() => {
+        setCurrentIndex((prevIndex) => {
+          const nextIndex = prevIndex === banners.length - 1 ? 0 : prevIndex + 1;
+          setIsAnimating(true);
+          setTimeout(() => setIsAnimating(false), 500);
+          return nextIndex;
+        });
+      }, slideInterval);
+
+      return () => clearTimeout(preloadTimer);
     }, slideInterval);
 
     return () => clearInterval(timer);
-  }, [autoSlide, slideInterval, banners.length]);
-
-  // 인디케이터 클릭 핸들러
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
+  }, [autoSlide, slideInterval, banners.length, isAnimating]);
 
   // 이전/다음 슬라이드
   const goToPrevious = () => {
-    setCurrentIndex(currentIndex === 0 ? banners.length - 1 : currentIndex - 1);
+    const prevIndex = currentIndex === 0 ? banners.length - 1 : currentIndex - 1;
+    setPreloadNextImage(true); // 수동 슬라이드 시 즉시 프리로드
+    goToSlide(prevIndex);
   };
 
   const goToNext = () => {
-    setCurrentIndex(currentIndex === banners.length - 1 ? 0 : currentIndex + 1);
+    const nextIndex = currentIndex === banners.length - 1 ? 0 : currentIndex + 1;
+    setPreloadNextImage(true); // 수동 슬라이드 시 즉시 프리로드
+    goToSlide(nextIndex);
   };
 
   if (!banners || banners.length === 0) {
     return null;
   }
 
-  const currentBanner = banners[currentIndex];
+  const nextIndex = currentIndex === banners.length - 1 ? 0 : currentIndex + 1;
+  const prevIndex = currentIndex === 0 ? banners.length - 1 : currentIndex - 1;
 
   return (
-    <div className={`relative w-full h-56 sm:h-52 md:h-64 overflow-hidden rounded-lg ${className}`}>
-      {/* 배너 이미지 */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center transition-all duration-500"
-        style={{ 
-          backgroundImage: `url(${currentBanner.imageUrl})` 
-        }}
-      >
-        {/* 어두운 오버레이 */}
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
-      </div>
+    <div className={`relative w-full h-52 overflow-hidden ${className}`}>
+      {/* 양옆 회색 배너들 (10%씩 보이도록) */}
+      <div className="absolute inset-0 flex items-center">
+        {/* 왼쪽 회색 배너 (10% 보임) */}
+        <div 
+          className="w-[5%] h-full bg-gray-300 cursor-pointer relative overflow-hidden rounded-lg shadow-md"
+          style={{ transform: 'translateX(-40%)' }}
+          onClick={goToPrevious}
+        >
+          {preloadNextImage && (
+            <div 
+              className="w-full h-full bg-cover bg-center opacity-60"
+              style={{ 
+                backgroundImage: `url(${banners[prevIndex].imageUrl})` 
+              }}
+            />
+          )}
+        </div>
 
-      {/* 컨텐츠 오버레이 */}
-      <div className="absolute inset-0 flex items-center justify-center p-6">
-        <div className="text-center text-white max-w-md">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">
-            {currentBanner.title}
-          </h2>
-          <p className="text-lg sm:text-xl mb-3 opacity-90">
-            {currentBanner.subtitle}
-          </p>
-          <p className="text-sm sm:text-base mb-6 opacity-80 leading-relaxed">
-            {currentBanner.description}
-          </p>
-          
-          {currentBanner.buttonText && (
-            <button 
-              onClick={() => onBannerClick?.(currentBanner)}
-              className="bg-white text-gray-900 px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors"
-            >
-              {currentBanner.buttonText}
-            </button>
+        {/* 오른쪽 회색 배너 (10% 보임) */}
+        <div 
+          className="w-[5%] h-full bg-gray-300 cursor-pointer relative overflow-hidden ml-auto rounded-lg shadow-md"
+          style={{ transform: 'translateX(40%)' }}
+          onClick={goToNext}
+        >
+          {preloadNextImage && (
+            <div 
+              className="w-full h-full bg-cover bg-center opacity-60"
+              style={{ 
+                backgroundImage: `url(${banners[nextIndex].imageUrl})` 
+              }}
+            />
           )}
         </div>
       </div>
 
-      {/* 네비게이션 화살표 */}
-      {banners.length > 1 && (
-        <>
-          <button
-            onClick={goToPrevious}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full flex items-center justify-center text-white transition-all"
+      {/* 메인 배너 (중앙 80%) */}
+      <div className="absolute inset-0 flex items-center justify-center px-6">
+        <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
+          <div
+            className="w-full h-full bg-cover bg-center relative cursor-pointer"
+            style={{ 
+              backgroundImage: `url(${banners[currentIndex].imageUrl})` 
+            }}
+            onClick={() => onBannerClick?.(banners[currentIndex])}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full flex items-center justify-center text-white transition-all"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </>
-      )}
-
-      {/* 인디케이터 */}
-      {banners.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {banners.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex 
-                  ? 'bg-white w-6' 
-                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
-              }`}
-            />
-          ))}
+            {/* 어두운 오버레이 */}
+            <div className="absolute inset-0 bg-black bg-opacity-40" />
+            
+            {/* 컨텐츠 오버레이 */}
+            <div className="absolute inset-0 flex items-end justify-start p-6">
+              <div className="text-left text-white">
+                <h2 className="text-white text-base font-semibold font-['Pretendard'] leading-tight mb-2">
+                  {banners[currentIndex].title}
+                </h2>
+                <p className="text-white text-xs font-medium font-['Pretendard'] leading-normal">
+                  {banners[currentIndex].description}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
+
+
     </div>
   );
 };

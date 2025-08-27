@@ -12,8 +12,8 @@ interface CategoryCircleProps {
   isActive?: boolean;
   onClick: (id: string) => void;
   className?: string;
-  variant?: 'default' | 'overlay';
-  size?: 'md' | 'lg'; // 새로운 size prop 추가
+  variant?: 'default' | 'overlay' | 'photo-only'; // photo-only 추가
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const CategoryCircle: React.FC<CategoryCircleProps> = ({
@@ -34,6 +34,10 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
     if (id === 'more') {
       navigate('/nationwide');
     } else {
+      // 지역 카테고리일 때 RegionPage로 이동
+      const regionCode = id.toLowerCase();
+      navigate(`/region/${regionCode}`);
+      // onClick 콜백도 실행 (기존 로직 유지)
       onClick(id);
     }
   };
@@ -44,25 +48,33 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
   const isImageUrl = !isMoreButton && (icon.startsWith('/') || icon.startsWith('http'));
   // 오버레이 모드인지 확인
   const isOverlayMode = variant === 'overlay';
+  // 사진만 모드인지 확인
+  const isPhotoOnlyMode = variant === 'photo-only';
 
   // 크기별 스타일 정의
   const sizeClasses = {
+    sm: 'w-[3rem] h-[3em]',
     md: 'w-[4.5rem] h-[4.5rem]',
     lg: 'w-20 h-20'
   };
 
   const textSizeClasses = {
+    sm: 'text-xs',
     md: 'text-xs',
     lg: 'text-sm'
   };
 
   const iconSizeClasses = {
+    sm: 'text-xl',
     md: 'text-2xl',
     lg: 'text-3xl'
   };
 
+  // photo-only 모드일 때는 라벨을 표시하지 않음
+  const shouldShowLabel = !isPhotoOnlyMode && (!isOverlayMode || !isImageUrl);
+
   return (
-    <div className={`flex flex-col items-center space-y-2 ${className}`}>
+    <div className={`flex flex-col items-center ${isPhotoOnlyMode ? '' : 'space-y-2'} ${className}`}>
       <button
         onClick={handleClick}
         className={`
@@ -122,8 +134,8 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
         )}
       </button>
       
-      {/* 라벨 표시 조건: 오버레이 모드가 아니거나, 오버레이 모드여도 이미지가 아닌 경우 */}
-      {(!isOverlayMode || !isImageUrl) && (
+      {/* 라벨 표시 조건 */}
+      {shouldShowLabel && (
         <span className={`
           ${textSizeClasses[size]} font-medium text-center leading-tight
           ${isActive ? 'text-blue-600' : 'text-gray-700'}
