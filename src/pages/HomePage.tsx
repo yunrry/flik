@@ -5,9 +5,11 @@ import { HeaderBar } from '../components/Layout';
 import MainBanner from '../components/Feed/MainBanner';
 import CategoryList from '../components/Feed/CategoryList';
 import PostFeed from '../components/Feed/PostFeed';
+import FeaturedLocationCard from '../components/Feed/FeaturedLocationCard';
 import { useBanner } from '../hooks/useBanner';
 import { useCategory } from '../hooks/useCategory';
 import { usePostFeed } from '../hooks/usePostFeed';
+import { useFeaturedLocation } from '../hooks/useFeaturedLocation';
 
 interface UserLocation {
   coordinates: {
@@ -28,43 +30,11 @@ const HomePage: React.FC = () => {
   const { banners, isLoading: bannersLoading, handleBannerClick } = useBanner();
   const { categories, activeCategory, isLoading: categoriesLoading, handleCategorySelect } = useCategory();
   const { posts, isLoading: postsLoading, hasMore, loadMorePosts } = usePostFeed();
-
+  const { featuredLocations, isLoading: featuredLocationLoading, handleExploreLocation } = useFeaturedLocation();
   
 
 
-  // 임시 피드 데이터
-  const feedItems = [
-    {
-      id: 1,
-      user: { name: '사진작가', avatar: '📸' },
-      location: '한강공원',
-      time: '2시간 전',
-      image: '🌅',
-      likes: 24,
-      comments: 8,
-      description: '아름다운 한강 석양을 담았습니다'
-    },
-    {
-      id: 2,
-      user: { name: '여행러버', avatar: '✈️' },
-      location: '제주도',
-      time: '5시간 전',
-      image: '🌴',
-      likes: 156,
-      comments: 23,
-      description: '제주도의 푸른 바다와 하늘'
-    },
-    {
-      id: 3,
-      user: { name: '카페탐방', avatar: '☕' },
-      location: '홍대입구',
-      time: '1일 전',
-      image: '🏪',
-      likes: 89,
-      comments: 12,
-      description: '숨겨진 보석같은 카페 발견!'
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -123,12 +93,39 @@ const HomePage: React.FC = () => {
       
         {/* 피드 */}
         <div className="space-y-6 px-2 sm:px-0">
-        <div className="flex items-start justify-between mb-2 px-2 sm:px-0">
+          <div className="flex-col items-start justify-between mb-2 px-2 sm:px-0">
             <h3 className="text-base font-semibold font-['Pretendard'] leading-normal text-gray-1">
               지금 주목할 만한 도시
             </h3>
+
+            {featuredLocationLoading ? (
+              <div className="space-y-3">
+                {[...Array(3)].map((_, index) => (
+                  <div key={index} className="bg-white rounded-lg p-4 ">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse" />
+                      <div className="flex-1">
+                        <div className="h-3 bg-gray-200 rounded animate-pulse mb-2" />
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : featuredLocations.length > 0 ? (
+              <div className="space-y-1">
+                {featuredLocations.map((location, index) => (
+                  <FeaturedLocationCard
+                    key={location.id}
+                    location={location}
+                    onExplore={handleExploreLocation}
+                    defaultExpanded={index === 0} // 첫 번째만 확장
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
-          
+
 
 
           <div className="flex-col items-start justify-between mb-2 px-2 sm:px-0">
