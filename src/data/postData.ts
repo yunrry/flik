@@ -50,7 +50,7 @@ export const mockPostData: Post[] = [
     isSaved: false
   },
   {
-    id: '3',
+    id: '10',
     imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
     imageCount: 5,
     location: {
@@ -64,6 +64,141 @@ export const mockPostData: Post[] = [
     isLiked: false,
     isSaved: true
   },
+  {
+    id: '11',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '12',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '13',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '14',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '15',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '16',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },{
+    id: '17',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '18',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+  {
+    id: '19',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    imageCount: 5,
+    location: {
+      name: '남산타워 야경',
+      region: '서울',
+      imageUrl: REGION_CONFIG.seoul.imageUrl
+    },
+    description: '서울의 야경을 한눈에 볼 수 있는 남산타워. 특히 저녁 시간대에 올라가면 황금빛으로 물든 도시의 모습을 감상할 수 있어요.',
+    likes: 89,
+    comments: 12,
+    isLiked: false,
+    isSaved: true
+  },
+
   {
     id: '4',
     imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop',
@@ -130,4 +265,34 @@ export const getPostsPage = async (page: number = 1, pageSize: number = 6): Prom
     likes: Math.floor(Math.random() * 500) + 10,
     comments: Math.floor(Math.random() * 100) + 1
   }));
+};
+
+interface GetFilteredPostsParams {
+  limit?: number;
+  region?: string;
+}
+
+export const getFilteredPosts = async ({ 
+  limit = 10, 
+  region 
+}: GetFilteredPostsParams = {}): Promise<Post[]> => {
+  // 실제 환경에서는 API 호출
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  let filteredPosts = [...mockPostData];
+  
+  // 지역 필터링
+  if (region) {
+    // REGION_CONFIG에서 지역명 찾기
+    const regionEntry = Object.entries(REGION_CONFIG).find(
+      ([code, config]) => code.toLowerCase() === region.toLowerCase()
+    );
+    const regionName = regionEntry ? regionEntry[1].name : region;
+    
+    filteredPosts = filteredPosts.filter(post => 
+      post.location.region === regionName
+    );
+  }
+  
+  return filteredPosts.slice(0, limit);
 };

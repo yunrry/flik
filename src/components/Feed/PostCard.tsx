@@ -1,6 +1,7 @@
 // src/components/Feed/PostCard.tsx
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CategoryCircle from '../UI/CategoryCircle';
 import { REGION_CONFIG } from '../../data/categoryData';
 
@@ -39,6 +40,7 @@ const PostCard: React.FC<PostCardProps> = ({
 }) => {
   const [liked, setLiked] = useState(isLiked);
   const [saved, setSaved] = useState(isSaved);
+  const navigate = useNavigate();
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -57,7 +59,9 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleLocationClick = (categoryId: string) => {
-    // 위치 클릭 시 해당 지역 페이지로 이동하는 로직 추가 가능
+    // 지역 페이지로 이동
+    const regionCode = categoryId.toLowerCase();
+    navigate(`/region/${regionCode}`);
     console.log('Location clicked:', categoryId);
   };
 

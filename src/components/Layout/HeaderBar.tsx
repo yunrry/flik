@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeaderProps } from '../../types/header.types';
 import { useNavigate } from 'react-router-dom';
 import { RegionCode, REGION_CONFIG } from '../../types/region.types';
 import { LogoIcon, SettingIcon, BackArrowIcon } from '../Icons';
 import SearchComponent from '../search/SearchComponent';
+import FlikExploreButton from '../Buttons/FlikExploreButton';
+
 
 const HeaderBar: React.FC<HeaderProps> = ({
   variant,
@@ -20,9 +22,23 @@ const HeaderBar: React.FC<HeaderProps> = ({
   className = ''
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   // 지역 정보 가져오기
   const currentRegion = REGION_CONFIG[region];
+
+  // back-from-sido일 때 스크롤 이벤트 감지
+  useEffect(() => {
+    if (variant !== 'back-from-sido') return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50); // 50px 이상 스크롤 시 축소
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [variant]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -79,15 +95,19 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
       case 'back-from-sido':
         return (
-          <div className="flex items-start relative z-10">
+          <div className={`flex items-center relative z-10 transition-all duration-300 ${
+            isScrolled ? 'py-0' : 'pt-8'
+          }`}>
             <button
              onClick={() => navigate('/')}
-             className="p-2 -ml-2 transition-colors rounded-lg"
+             className="p-2 pl-0 ml-2 transition-colors rounded-lg"
               aria-label="뒤로가기"
             >
-              <BackArrowIcon size="lg" color="white" />
+              <BackArrowIcon size={isScrolled ? "md" : "lg"} color="white" />
             </button>
-            <div className="text-sb3 font-semibold text-white drop-shadow-lg leading-loose pl-1">
+            <div className={`text-white font-semibold font-['Pretendard'] leading-snug pl-1 transition-all duration-300 ${
+              isScrolled ? 'text-base' : 'text-xl pt-2'
+            }`}>
               {currentRegion.name}
             </div>
           </div>
@@ -256,17 +276,24 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 ${
+      className={`fixed top-0 left-0 right-0 z-50 pb-0 transition-all duration-300 ${
         variant === 'back-from-nationwide'
           ? 'bg-main-1 border-b border-main-1' 
           : variant === 'back-from-sido'
-          ? 'border-b border-gray-200 relative overflow-hidden'
+          ? `overflow-hidden pb-0 ${
+              isScrolled ? 'backdrop-blur-md bg-black/80' : ''
+            }`
           : 'bg-white border-b border-gray-200'
       } ${className}`}
       style={{
-        height: (variant === 'back-from-nationwide' || variant === 'back-from-sido')
+        height: variant === 'back-from-sido'
+          ? isScrolled 
+            ? '4rem' // 스크롤 시 축소 높이 (64px)
+            : 'var(--header-height-extended)' // 기본 확장 높이
+          : (variant === 'back-from-nationwide')
           ? 'var(--header-height-extended)' 
-          : 'var(--header-height-default)'
+          : 'var(--header-height-default)',
+        minHeight: variant === 'back-from-sido' ? '4rem' : 'auto' // 최소 높이 보장
       }}
     >
       {/* back-from-sido variant일 때 배경 이미지와 오버레이 */}
@@ -274,7 +301,9 @@ const HeaderBar: React.FC<HeaderProps> = ({
         <>
           {/* 배경 이미지 */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            className={`absolute bg-cover bg-center bg-no-repeat transition-all duration-300 ${
+              isScrolled ? 'inset-0 opacity-30' : 'inset-0'
+            }`}
             style={{
               backgroundImage: `url(${currentRegion.imageUrl})`,
               backgroundSize: 'cover',
@@ -283,24 +312,40 @@ const HeaderBar: React.FC<HeaderProps> = ({
           />
           
           {/* 그라데이션 오버레이 */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/50" />
+          <div className={`absolute inset-0 transition-all duration-300 ${
+            isScrolled 
+              ? 'bg-gradient-to-b from-black/50 to-black/70' 
+              : 'bg-gradient-to-b from-black/20 via-black/30 to-black/50'
+          }`} />
         </>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full relative z-10">
-        <div className="flex items-center justify-between h-full pt-4">
-          {/* 왼쪽 영역 */}
-          <div className="flex items-center">
-            {renderLeftContent()}
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 h-full relative z-10">
+        <div className={`flex h-full transition-all duration-300 ${
+          isScrolled ? 'flex-row items-center pt-2' : 'flex-col justify-between pt-4'
+        }`}>
+          {/* 상단 영역 - 기존 헤더 컨텐츠 */}
+          <div className="flex items-center justify-between px-4 w-full">
+            {/* 왼쪽 영역 */}
+            <div className="flex items-center">
+              {renderLeftContent()}
+            </div>
+
+            {/* 중앙 영역 */}
+            {renderCenterContent()}
+
+            {/* 오른쪽 영역 */}
+            <div className="flex items-center">
+              {renderRightContent()}
+            </div>
           </div>
 
-          {/* 중앙 영역 */}
-          {renderCenterContent()}
-
-          {/* 오른쪽 영역 */}
-          <div className="flex items-center">
-            {renderRightContent()}
-          </div>
+          {/* 하단 영역 - FlikExploreButton (back-from-sido일 때만, 스크롤되지 않았을 때만) */}
+          {variant === 'back-from-sido' && !isScrolled && (
+            <div className="px-0 w-full pb-0">
+              <FlikExploreButton />
+            </div>
+          )}
         </div>
       </div>
     </header>

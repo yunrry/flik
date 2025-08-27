@@ -34,6 +34,10 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
     if (id === 'more') {
       navigate('/nationwide');
     } else {
+      // 지역 카테고리일 때 RegionPage로 이동
+      const regionCode = id.toLowerCase();
+      navigate(`/region/${regionCode}`);
+      // onClick 콜백도 실행 (기존 로직 유지)
       onClick(id);
     }
   };

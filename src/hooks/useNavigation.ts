@@ -62,7 +62,10 @@ export const useNavigation = () => {
     const homeSubPages = ['/nationwide'];
     const isHomeSubPage = homeSubPages.includes(location.pathname);
     
-    return isMainNavigationPage || isHomeSubPage;
+    // 지역 페이지들 (네비게이션 유지)
+    const isRegionPage = location.pathname.startsWith('/region/');
+    
+    return isMainNavigationPage || isHomeSubPage || isRegionPage;
   };
 
   return {

@@ -1,8 +1,9 @@
 // src/components/Feed/FeaturedLocationCard.tsx
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CategoryCircle from '../UI/CategoryCircle';
-import FlickExploreButton from '../Buttons/FlickExploreButton';
+import FlikExploreButton from '../Buttons/FlikExploreButton';
 import { REGION_CONFIG } from '../../data/categoryData';
 import { FeaturedLocation } from '../../data/featuredLocationData'; // 타입 import 추가
 
@@ -20,21 +21,13 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
   className = '',
   defaultExpanded = false
 }) => {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const handleExplore = () => {
-    onExplore?.(location.id);
-  };
-
-  const handleLocationClick = (categoryId: string) => {
-    // 지역 페이지로 이동하는 로직 (예: 지역별 상세 페이지)
-    console.log('Location clicked:', categoryId);
-    // 실제 구현 시: navigate(`/region/${categoryId}`) 또는 적절한 라우팅
-  };
 
   // region 코드를 기반으로 REGION_CONFIG에서 이미지 URL 찾기
   const getRegionImageUrl = (regionName: string) => {
@@ -42,6 +35,21 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
       ([_, config]) => config.name === regionName
     );
     return regionEntry ? regionEntry[1].imageUrl : location.imageUrl;
+  };
+
+  // 한국어 지역명을 영어 키로 변환하는 함수 추가
+  const getRegionCode = (regionName: string): string => {
+    const regionEntry = Object.entries(REGION_CONFIG).find(
+      ([_, config]) => config.name === regionName
+    );
+    return regionEntry ? regionEntry[0] : regionName.toLowerCase();
+  };
+
+  const handleLocationClick = () => {
+    // 한국어 지역명을 영어 키로 변환
+    const regionCode = getRegionCode(location.region);
+    navigate(`/region/${regionCode}`);
+    console.log('Location clicked:', location.region, '-> regionCode:', regionCode);
   };
 
   return (
@@ -55,13 +63,15 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
           <div 
             onClick={(e) => {
               e.stopPropagation(); // 부모 버튼의 클릭 이벤트 방지
+              handleLocationClick(); // 파라미터 제거
             }}
+            className="cursor-pointer" // 클릭 가능함을 시각적으로 표시
           >
             <CategoryCircle
-              id={location.region.toLowerCase()}
+              id={getRegionCode(location.region)} // 영어 키 사용
               name={location.region}
               icon={getRegionImageUrl(location.region)}
-              onClick={handleLocationClick}
+              onClick={() => {}} // 빈 함수로 설정 (실제 클릭은 상위 div에서 처리)
               className="flex-shrink-0"
               size="sm"
               variant="photo-only"
@@ -138,9 +148,7 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
           </div> */}
 
           {/* 플릭하러 가기 버튼 */}
-          <FlickExploreButton
-            onClick={handleExplore}
-          />
+          <FlikExploreButton/>
         </div>
       )}
     </div>

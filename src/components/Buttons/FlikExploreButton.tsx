@@ -1,25 +1,30 @@
-// src/components/Buttons/FlickExploreButton.tsx
+// src/components/Buttons/FlikExploreButton.tsx
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-interface FlickExploreButtonProps {
-  onClick?: () => void;
+interface FlikExploreButtonProps {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
   children?: React.ReactNode;
 }
 
-const FlickExploreButton: React.FC<FlickExploreButtonProps> = ({
-  onClick,
+const FlikExploreButton: React.FC<FlikExploreButtonProps> = ({
   disabled = false,
   loading = false,
   className = '',
   children = '플릭하러 가기'
 }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/flik');
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled || loading}
       className={`
         w-full bg-main-1 text-white font-medium py-3
@@ -61,4 +66,4 @@ const FlickExploreButton: React.FC<FlickExploreButtonProps> = ({
   );
 };
 
-export default FlickExploreButton;
+export default FlikExploreButton;

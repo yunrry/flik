@@ -1,92 +1,102 @@
 // src/hooks/usePostFeed.ts
 
 import { useState, useEffect, useCallback } from 'react';
-import { Post, getPostsPage } from '../data/postData';
+import { Post, getFilteredPosts } from '../data/postData';
 
-export const usePostFeed = () => {
+interface UsePostFeedProps {
+  region?: string; // 지역 필터 추가
+  initialLimit?: number;
+}
+
+export const usePostFeed = ({ region, initialLimit = 6 }: UsePostFeedProps = {}) => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [currentLimit, setCurrentLimit] = useState(initialLimit);
 
-  // 첫 페이지 로드
+  console.log('usePostFeed - region 파라미터:', region);
+
+  // 초기 로드 및 지역 변경 시 재로드
   useEffect(() => {
-    loadInitialPosts();
-  }, []);
-
-  const loadInitialPosts = async () => {
-    try {
+    console.log('usePostFeed - useEffect 실행됨, region:', region);
+    
+    const loadPosts = async () => {
+      console.log('usePostFeed - loadPosts 호출됨, region:', region, 'limit:', initialLimit);
       setIsLoading(true);
-      setError(null);
-      const initialPosts = await getPostsPage(1);
-      setPosts(initialPosts);
-      setCurrentPage(1);
-      setHasMore(initialPosts.length > 0);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '포스트 로딩 실패');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 추가 포스트 로드
-  const loadMorePosts = useCallback(async () => {
-    if (isLoading || !hasMore) return;
-
-    try {
-      setIsLoading(true);
-      const nextPage = currentPage + 1;
-      const newPosts = await getPostsPage(nextPage);
+      setPosts([]);
+      setCurrentLimit(initialLimit);
+      setHasMore(true);
       
-      if (newPosts.length === 0) {
-        setHasMore(false);
-      } else {
-        setPosts(prevPosts => [...prevPosts, ...newPosts]);
-        setCurrentPage(nextPage);
+      try {
+        // 지역 필터와 함께 포스트 로드
+        const newPosts = await getFilteredPosts({ 
+          limit: initialLimit, 
+          region: region || undefined 
+        });
         
-        // 5페이지까지만 로드하도록 제한 (데모용)
-        if (nextPage >= 5) {
-          setHasMore(false);
-        }
+        console.log('usePostFeed - getFilteredPosts 결과:', newPosts);
+        
+        setPosts(newPosts);
+        setHasMore(newPosts.length >= initialLimit);
+      } catch (error) {
+        console.error('Failed to load posts:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '추가 포스트 로딩 실패');
-    } finally {
-      setIsLoading(false);
+    };
+
+    loadPosts();
+  }, [region, initialLimit]);
+
+  const loadMorePosts = useCallback(async () => {
+    if (!isLoading && hasMore) {
+      console.log('usePostFeed - loadMorePosts 호출됨');
+      setIsLoading(true);
+      
+      try {
+        const newLimit = currentLimit + 6;
+        const allPosts = await getFilteredPosts({ 
+          limit: newLimit, 
+          region: region || undefined 
+        });
+        
+        setPosts(allPosts);
+        setCurrentLimit(newLimit);
+        setHasMore(allPosts.length >= newLimit);
+      } catch (error) {
+        console.error('Failed to load more posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }, [currentPage, isLoading, hasMore]);
+  }, [currentLimit, isLoading, hasMore, region]);
 
-  // 포스트 새로고침
-  const refreshPosts = useCallback(async () => {
-    setPosts([]);
-    setCurrentPage(1);
-    setHasMore(true);
-    await loadInitialPosts();
-  }, []);
-
-  // 특정 포스트 업데이트
-  const updatePost = useCallback((postId: string, updates: Partial<Post>) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId ? { ...post, ...updates } : post
+  const handleLike = (postId: string) => {
+    setPosts(prev => 
+      prev.map(post => 
+        post.id === postId 
+          ? { ...post, isLiked: !post.isLiked, likes: post.likes + (post.isLiked ? -1 : 1) }
+          : post
       )
     );
-  }, []);
+  };
 
-  // 포스트 제거
-  const removePost = useCallback((postId: string) => {
-    setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-  }, []);
+  const handleSave = (postId: string) => {
+    setPosts(prev => 
+      prev.map(post => 
+        post.id === postId 
+          ? { ...post, isSaved: !post.isSaved }
+          : post
+      )
+    );
+  };
 
   return {
     posts,
     isLoading,
     hasMore,
-    error,
     loadMorePosts,
-    refreshPosts,
-    updatePost,
-    removePost
+    handleLike,
+    handleSave
   };
 };
