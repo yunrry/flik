@@ -61,10 +61,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <HeaderBar 
-  variant="backWithSearch" 
-  onBack={() => navigate('/nationwide')}
-/>
+      <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
       <main className="pt-header-extended max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* 웰컴 섹션 */}
