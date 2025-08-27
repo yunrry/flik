@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { HeaderBar } from '../components/Layout';
 import { useNavigate } from 'react-router-dom';
+import MainBanner from '../components/Feed/MainBanner';
+import { useBanner } from '../hooks/useBanner';
 
 interface UserLocation {
   coordinates: {
@@ -21,9 +23,12 @@ interface UserLocation {
 }
 
 const HomePage: React.FC = () => {
+  const { banners, isLoading: bannersLoading, handleBannerClick } = useBanner();
   const { user } = useAuthStore();
   const navigate = useNavigate();
   
+
+
   // 임시 피드 데이터
   const feedItems = [
     {
@@ -63,26 +68,25 @@ const HomePage: React.FC = () => {
       {/* 헤더 */}
       <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-header-extended max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="pt-header-default max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* 웰컴 섹션 */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                안녕하세요, {user?.nickname}님! 👋
-              </h2>
-              <p className="text-gray-600 text-sm">
-    
-        
-              'FLIK에서 특별한 순간들을 공유해보세요'
-        
-              </p>
+
+
+        <div className="mb-8">
+          {bannersLoading ? (
+            <div className="w-full h-64 bg-gray-200 rounded-lg animate-pulse flex items-center justify-center">
+              <span className="text-gray-500">배너 로딩 중...</span>
             </div>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-              📷 사진 올리기
-            </button>
-          </div>
+          ) : (
+            <MainBanner 
+              banners={banners} 
+              onBannerClick={handleBannerClick}
+              autoSlide={true}
+              slideInterval={5000}
+            />
+          )}
         </div>
+
 
       
         {/* 피드 */}
