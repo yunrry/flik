@@ -1,11 +1,11 @@
 // src/pages/HomePage.tsx
 
 import React, { useEffect, useState } from 'react';
-import { useAuthStore } from '../stores/authStore';
 import { HeaderBar } from '../components/Layout';
-import { useNavigate } from 'react-router-dom';
 import MainBanner from '../components/Feed/MainBanner';
+import CategoryList from '../components/Feed/CategoryList';
 import { useBanner } from '../hooks/useBanner';
+import { useCategory } from '../hooks/useCategory';
 
 interface UserLocation {
   coordinates: {
@@ -24,8 +24,9 @@ interface UserLocation {
 
 const HomePage: React.FC = () => {
   const { banners, isLoading: bannersLoading, handleBannerClick } = useBanner();
-  const { user } = useAuthStore();
-  const navigate = useNavigate();
+  const { categories, activeCategory, isLoading: categoriesLoading, handleCategorySelect } = useCategory();
+
+
   
 
 
@@ -69,9 +70,9 @@ const HomePage: React.FC = () => {
       <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
       <main className="pt-header-default max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* 웰컴 섹션 */}
 
 
+     {/* 메인 배너 섹션 */}
         <div className="mb-8">
           {bannersLoading ? (
             <div className="w-full h-64 bg-gray-200 rounded-lg animate-pulse flex items-center justify-center">
@@ -83,6 +84,37 @@ const HomePage: React.FC = () => {
               onBannerClick={handleBannerClick}
               autoSlide={true}
               slideInterval={5000}
+            />
+          )}
+        </div>
+
+
+        {/* 지역별 장소 카테고리 섹션 */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4 px-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              지역별 장소 찾기
+            </h3>
+            <button className="text-sm text-blue-600 hover:text-blue-700">
+              전체보기
+            </button>
+          </div>
+
+          {categoriesLoading ? (
+            <div className="flex gap-4 px-4">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="flex flex-col items-center space-y-2">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full animate-pulse" />
+                  <div className="w-12 h-3 bg-gray-200 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <CategoryList
+              categories={categories}
+              activeCategory={activeCategory}
+              onCategorySelect={handleCategorySelect}
+              showScrollIndicator={categories.length > 5}
             />
           )}
         </div>
