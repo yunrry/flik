@@ -12,7 +12,7 @@ import SavePage from './pages/SavePage';
 import FlikPage from './pages/FlikPage';
 import NationwidePage from './pages/NationwidePage';
 import IconGallary from './pages/IconGallary';
-import RegionPage from './pages/RegionPage'; // Added import for RegionPage
+import RegionPage from './pages/RegionPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -46,18 +46,36 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/icons" element={<IconGallary />} />
           
-          {/* Protected Routes with Navigation */}
+          {/* Home Route - No login required */}
           <Route 
             path="/" 
             element={
-              <ProtectedRoute>
-                <NavigationPageWrapper>
-                  <HomePage />
-                </NavigationPageWrapper>
-              </ProtectedRoute>
+              <NavigationPageWrapper>
+                <HomePage />
+              </NavigationPageWrapper>
+            } 
+          />
+
+          {/* Region and Nationwide Routes - No login required */}
+          <Route 
+            path="/nationwide" 
+            element={
+              <NavigationPageWrapper>
+                <NationwidePage />
+              </NavigationPageWrapper>
+            } 
+          />
+
+          <Route 
+            path="/region/:region" 
+            element={
+              <NavigationPageWrapper>
+                <RegionPage />
+              </NavigationPageWrapper>
             } 
           />
           
+          {/* Protected Routes - Login required */}
           <Route 
             path="/my" 
             element={
@@ -86,29 +104,6 @@ function App() {
               <ProtectedRoute>
                 <NavigationPageWrapper>
                   <FlikPage />
-                </NavigationPageWrapper>
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/nationwide" 
-            element={
-              <ProtectedRoute>
-                <NavigationPageWrapper>
-                  <NationwidePage />
-                </NavigationPageWrapper>
-              </ProtectedRoute>
-            } 
-          />
-
-          {/* Region Page Route */}
-          <Route 
-            path="/region/:region" 
-            element={
-              <ProtectedRoute>
-                <NavigationPageWrapper>
-                  <RegionPage />
                 </NavigationPageWrapper>
               </ProtectedRoute>
             } 

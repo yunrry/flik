@@ -55,29 +55,24 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
   return (
     <div className={`bg-white w-full rounded-md overflow-hidden shadow-sm ${className}`}>
       {/* 헤더 영역 */}
-      <button
-        onClick={toggleExpanded}
-        className="w-full flex items-center justify-between p-4 pl-0 hover:bg-gray-50 transition-colors"
-      >
-        <div className="flex items-center space-x-3">
-          <div 
-            onClick={(e) => {
-              e.stopPropagation(); // 부모 버튼의 클릭 이벤트 방지
-              handleLocationClick(); // 파라미터 제거
-            }}
-            className="cursor-pointer" // 클릭 가능함을 시각적으로 표시
-          >
-            <CategoryCircle
-              id={getRegionCode(location.region)} // 영어 키 사용
-              name={location.region}
-              icon={getRegionImageUrl(location.region)}
-              onClick={() => {}} // 빈 함수로 설정 (실제 클릭은 상위 div에서 처리)
-              className="flex-shrink-0"
-              size="sm"
-              variant="photo-only"
-            />
-          </div>
-          <div className="text-left">
+      <div className="w-full flex items-center justify-center gap-3 p-3 pl-0">
+
+          <CategoryCircle
+            id={getRegionCode(location.region)}
+            name={location.region}
+            icon={getRegionImageUrl(location.region)}
+            onClick={(id) => {}} // 빈 함수 (상위 button에서 처리)
+            className="flex-shrink-0"
+            size="sm"
+            variant="photo-only"
+          />
+
+        <button
+           onClick={toggleExpanded}
+           className="w-4/5 transition-colors p-0 flex-shrink-0 flex justify-between"
+         >
+          <div className="text-left w-full flex-grow">
+
             <p className="text-xs text-gray-6 font-normal font-['Pretendard'] leading-tight">
               {location.description}
             </p>
@@ -85,19 +80,27 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
               {location.city}
             </h3>
           </div>
-        </div>
-        
-        <svg 
-          className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-            isExpanded ? 'transform rotate-180' : ''
-          }`}
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+  
+
+        {/* 오른쪽 영역 - 토글 버튼 */}
+        <div className="pt-3">
+
+           <svg 
+             className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+               isExpanded ? 'transform rotate-180' : ''
+             }`}
+             fill="none" 
+             stroke="currentColor" 
+             viewBox="0 0 24 24"
+           >
+
+            
+             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+           </svg>
+           </div>
+         </button>
+         
+</div>
 
       {/* 확장된 콘텐츠 영역 */}
       {isExpanded && (
