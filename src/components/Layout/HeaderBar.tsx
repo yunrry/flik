@@ -320,7 +320,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
         </>
       )}
 
-      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 h-full relative z-10">
+      <div className="max-w-7xl mx-auto px-0 lg:px-8 h-full relative z-10">
         <div className={`flex h-full transition-all duration-300 ${
           isScrolled ? 'flex-row items-center pt-2' : 'flex-col justify-between pt-4'
         }`}>

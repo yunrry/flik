@@ -189,7 +189,7 @@ const FlikPage: React.FC = () => {
             maxHeight: 'calc(100vh - 14.5rem)' // 최대 높이 제한
           }}
         >
-          <div className="w-[96%] h-full">
+          <div className="sm:w-[96%] xs:w-[90%] h-full">
             <FlikCardLayout
               restaurants={sampleRestaurants}
               onSave={handleSave}
