@@ -139,14 +139,14 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
       {/* 위치 선택 버튼 */}
       <button
         onClick={handleLocationClick}
-        className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        className="flex items-center gap-1 px-1 py-1 bg-white rounded-lg hover:shadow-sm "
       >
         <LocationIcon 
           size="md" 
           color="#333333" 
           variant="pin"
         />
-        <span className="text-md font-medium text-gray-900">
+        <span className="text-gray-1 text-base font-medium font-['Pretendard'] leading-normal mt-1">
           {selectedLocation}
         </span>
         <svg 
