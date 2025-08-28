@@ -128,7 +128,9 @@ const FlikCard: React.FC<FlikCardProps> = ({
 
   // 이미지 터치로 넘기기
   const handleImageTouch = (e: React.MouseEvent<HTMLImageElement> | React.TouchEvent<HTMLImageElement>): void => {
-    e.stopPropagation();
+    // 드래그 중이면 처리하지 않음
+    if (isDragging) return;
+    
     const rect = e.currentTarget.getBoundingClientRect();
     
     let clientX: number;
@@ -143,12 +145,10 @@ const FlikCard: React.FC<FlikCardProps> = ({
     const centerX = rect.left + rect.width / 2;
     
     if (clientX > centerX) {
-      // 오른쪽 터치 - 다음 이미지
       setCurrentImageIndex((prev) => 
         prev < images.length - 1 ? prev + 1 : 0
       );
     } else {
-      // 왼쪽 터치 - 이전 이미지
       setCurrentImageIndex((prev) => 
         prev > 0 ? prev - 1 : images.length - 1
       );
@@ -211,7 +211,6 @@ const FlikCard: React.FC<FlikCardProps> = ({
           alt={restaurant.name}
           className="w-full h-full object-cover"
           onClick={handleImageTouch}
-          onTouchEnd={handleImageTouch}
         />
         
         {/* 이미지 인디케이터 */}
