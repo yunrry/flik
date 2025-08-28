@@ -69,7 +69,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
     if (!isDragging) return;
     
     const { x, y } = dragOffset;
-    const threshold = 40;
+    const threshold = 130;
     
     // 왼쪽 스와이프 (저장)
     if (x < -threshold) {
