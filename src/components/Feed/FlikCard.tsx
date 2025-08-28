@@ -214,15 +214,15 @@ const FlikCard: React.FC<FlikCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className="relative w-full h-full bg-white rounded-xl border border-gray-8 shadow-xl overflow-hidden cursor-grab active:cursor-grabbing"
+      className="relative w-full h-full bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden cursor-grab active:cursor-grabbing"
       style={cardStyle}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 이미지 섹션 */}
-      <div className="relative h-[53%]">
+      {/* 이미지 섹션 - 소형 디바이스 최적화 */}
+      <div className="relative h-[55%] sm:h-[53%]">
         <img
           src={images[currentImageIndex]}
           alt={restaurant.name}
@@ -232,11 +232,11 @@ const FlikCard: React.FC<FlikCardProps> = ({
         
         {/* 이미지 인디케이터 */}
         {images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1 sm:space-x-2">
             {images.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full ${
+                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
                   index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                 }`}
               />
@@ -244,69 +244,78 @@ const FlikCard: React.FC<FlikCardProps> = ({
           </div>
         )}
 
-        {/* 스와이프 힌트 */}
-        <div className="absolute top-4 left-4 bg-black/20 rounded-full px-3 py-1">
+        {/* 스와이프 힌트 - 소형 디바이스 최적화 */}
+        <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black/20 rounded-full px-2 sm:px-3 py-1">
           <span className="text-white text-xs">← 저장 | ↑ 다음</span>
         </div>
       </div>
 
-      {/* 정보 섹션 */}
-      <div className="h-[47%] p-4 flex flex-col justify-between">
+      {/* 정보 섹션 - 소형 디바이스 최적화 */}
+      <div className="h-[45%] xs:h-[47%] p-3 xs:p-4 flex flex-col justify-between">
         <div className="space-y-1">
-          {/* 가게 이름과 별점 */}
+          {/* 카테고리 */}
           <p className="text-neutral-400 text-xs font-normal font-['Pretendard'] leading-normal">
-              이탈리아 음식
-            </p>
-           <p className="text-gray-3 text-xl font-semibold font-['Pretendard']leading-normal">
-              {restaurant.name}
+            이탈리아 음식
           </p>
-           
-          {renderStars(restaurant.rating)}
+          
+          {/* 가게 이름과 별점 - 반응형 레이아웃 */}
+          <div className="flex flex-col sm:flex-col xs:flex-row items-start xs:items-start justify-start xs:justify-between space-y-1 xs:space-y-0 xs:space-x-2">
+            {/* 가게 이름 */}
+            <h3 className="text-gray-800 text-lg xs:text-xl font-semibold font-['Pretendard'] leading-tight flex-none xs:flex-1">
+              {restaurant.name}
+            </h3>
+            
+            {/* 별점 */}
+            <div className="flex-shrink xs:flex-shrink-0">
+              {renderStars(restaurant.rating)}
+            </div>
+          </div>
 
-          {/* 소개 */}
-          <p className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-tight">
+          {/* 소개 - 소형 디바이스에서 줄 수 제한 */}
+          <p className="text-gray-600 text-xs sm:text-sm font-normal font-['Pretendard'] leading-tight line-clamp-2 sm:line-clamp-3">
             {restaurant.description}
           </p>
 
           {/* 구분선 */}
-          <div className="h-2 border-b border-gray-200 my-2"></div>
-
+          <div className="h-1 sm:h-2 border-b border-gray-200 my-1 sm:my-2"></div>
 
           {/* 주소와 거리 */}
-          <div className="flex items-center justify-between text-sm pt-1">
-            <span className="text-gray-5 font-normal font-['Pretendard'] leading-normal">
+          <div className="flex items-center justify-between text-xs sm:text-sm pt-1">
+            <span className="text-gray-600 font-normal font-['Pretendard'] leading-normal truncate pr-2">
               {restaurant.address || restaurant.location}
             </span>
             {renderDistance()}
           </div>
 
           {/* 영업시간 */}
-          <div className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-normal">
+          <div className="text-gray-600 text-xs sm:text-sm font-normal font-['Pretendard'] leading-normal">
             <span className="font-medium">영업시간:</span> {restaurant.hours}
           </div>
         </div>
 
-        {/* 버튼들 */}
-        <div className="flex space-x-3 mt-1 mb-2">
+        {/* 버튼들 - 소형 디바이스 최적화 */}
+        <div className="flex space-x-2 sm:space-x-3 mt-1 mb-1 sm:mb-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onBlogClick && onBlogClick(restaurant);
             }}
-            className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg font-medium text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-green-500 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
           >
             <span>📝</span>
-            <span>블로그리뷰</span>
+            <span className="hidden xs:inline sm:inline">블로그리뷰</span>
+            <span className="xs:hidden sm:hidden">리뷰</span>
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onMapClick && onMapClick(restaurant);
             }}
-            className="flex-1 bg-yellow-400 text-gray-800 py-2 px-4 rounded-lg font-medium text-sm hover:bg-yellow-500 transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-yellow-400 text-gray-800 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm hover:bg-yellow-500 transition-colors flex items-center justify-center space-x-1"
           >
             <span>📍</span>
-            <span>카카오맵</span>
+            <span className="hidden xs:inline sm:inline">카카오맵</span>
+            <span className="xs:hidden sm:hidden">지도</span>
           </button>
         </div>
       </div>
