@@ -222,7 +222,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
       onTouchEnd={handleTouchEnd}
     >
       {/* 이미지 섹션 - 소형 디바이스 최적화 */}
-      <div className="relative h-[55%] sm:h-[53%]">
+      <div className="relative h-[55%] sm:h-[53%] xs:h-[50%]">
         <img
           src={images[currentImageIndex]}
           alt={restaurant.name}
@@ -232,7 +232,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
         
         {/* 이미지 인디케이터 */}
         {images.length > 1 && (
-          <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1 sm:space-x-2">
+          <div className="absolute xs: bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex xs:space-x-1 sm:space-x-2">
             {images.map((_, index) => (
               <div
                 key={index}
@@ -245,13 +245,13 @@ const FlikCard: React.FC<FlikCardProps> = ({
         )}
 
         {/* 스와이프 힌트 - 소형 디바이스 최적화 */}
-        <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black/20 rounded-full px-2 sm:px-3 py-1">
+        <div className="absolute xs:top-2 sm:top-4 xs:left-2 sm:left-4 bg-black/20 rounded-full xs:px-2 sm:px-3 xs:py-1 sm:py-2">
           <span className="text-white text-xs">← 저장 | ↑ 다음</span>
         </div>
       </div>
 
       {/* 정보 섹션 - 소형 디바이스 최적화 */}
-      <div className="h-[45%] xs:h-[47%] p-3 xs:p-4 flex flex-col justify-between">
+      <div className="h-[45%] sm:h-[47%] xs:h-[50%] xs:p-4 sm:p-3 flex flex-col justify-between">
         <div className="space-y-1">
           {/* 카테고리 */}
           <p className="text-neutral-400 text-xs font-normal font-['Pretendard'] leading-normal">
@@ -259,7 +259,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
           </p>
           
           {/* 가게 이름과 별점 - 반응형 레이아웃 */}
-          <div className="flex flex-col sm:flex-col xs:flex-row items-start xs:items-start justify-start xs:justify-between space-y-1 xs:space-y-0 xs:space-x-2">
+          <div className="flex sm:flex-col xs:flex-row items-start sm:items-start justify-start sm:justify-between space-y-1 xs:space-y-0 sm:space-x-2">
             {/* 가게 이름 */}
             <h3 className="text-gray-800 text-lg xs:text-xl font-semibold font-['Pretendard'] leading-tight flex-none xs:flex-1">
               {restaurant.name}
@@ -294,13 +294,13 @@ const FlikCard: React.FC<FlikCardProps> = ({
         </div>
 
         {/* 버튼들 - 소형 디바이스 최적화 */}
-        <div className="flex space-x-2 sm:space-x-3 mt-1 mb-1 sm:mb-2">
+        <div className="flex sm:space-x-2 xs:space-x-3 mt-1 sm:mb-1 xs:mb-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onBlogClick && onBlogClick(restaurant);
             }}
-            className="flex-1 bg-green-500 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-green-500 text-white sm:py-1.5 xs:py-2 sm:px-2 xs:px-4 rounded-lg font-medium xs:text-xs sm:text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
           >
             <span>📝</span>
             <span className="hidden xs:inline sm:inline">블로그리뷰</span>
