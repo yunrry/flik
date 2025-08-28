@@ -35,4 +35,5 @@ export interface BottomNavigationProps {
 export interface NavigationLayoutProps {
   children: React.ReactNode;
   showNavigation?: boolean;
+  disableScroll?: boolean; // 새로운 prop 추가
 }

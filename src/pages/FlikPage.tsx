@@ -163,13 +163,13 @@ const FlikPage: React.FC = () => {
     
   
     return (
-      <div className="h-full bg-gray-50 overflow-hidden">
+      <div className="h-full bg-gray-50 ">
         {/* 헤더 */}
         <HeaderBar variant="logo" />
 
         {/* 메인 콘텐츠 */}
-        <main className="pt-header-default bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col overflow-hidden h-full">
-          <div className="flex items-center justify-between mb-2 flex-shrink-0">
+        <main className="pt-header-default bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col  h-screen">
+          <div className="flex items-center justify-between h-[5%] mb-4 pt-3">
             <LocationSelector
               selectedLocation={selectedLocation}
               onLocationSelect={handleLocationChange}
@@ -180,7 +180,7 @@ const FlikPage: React.FC = () => {
 
           {/* 현재 위치 정보 */}
           {currentLocation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex-shrink-0">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
               <div className="flex items-center space-x-2">
                 <span className="text-blue-600">📍</span>
                 <div>
@@ -195,7 +195,7 @@ const FlikPage: React.FC = () => {
           )}
 
           {/* FlikCard 영역 - 나머지 공간 모두 사용 */}
-          <div className="flex-1 w-full overflow-hidden">
+          <div className="h-[80%] w-full overflow-hidden">
             <FlikCardLayout
               restaurants={sampleRestaurants}
               onSave={handleSave}

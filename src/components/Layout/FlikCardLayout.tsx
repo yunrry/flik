@@ -136,9 +136,9 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   const hasMoreCards = currentIndex < restaurants.length;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="relative w-full h-full rounded-2xl flex items-center justify-center">
       {/* 배경 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100" />
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 rounded-2xl" />
       
       {/* 카드 스택 */}
       <div className="relative w-full max-w-sm h-full max-h-[600px] mx-auto">
@@ -146,9 +146,11 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
           visibleCards.map((restaurant: Restaurant, index: number) => {
             const isTop = index === 0;
             const zIndex = 10 - index;
-            const scale = 1 - (index * 0.05);
-            const translateY = index * 10;
-            const opacity = 1 - (index * 0.3);
+            
+            // 첫 번째와 두 번째 카드는 동일한 크기, 세 번째부터 작아짐
+            const scale = isTop ? 1 : index === 1 ? 1 : 1 - (index * 0.03);
+            const translateY = isTop ? 0 : index === 1 ? 0 : index * 8; // 두 번째 카드도 위치 동일
+            const opacity = isTop ? 1 : index === 1 ? 1 : 0.8;
             
             return (
               <div
@@ -161,17 +163,19 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
                   pointerEvents: isTop ? 'auto' : 'none',
                 }}
               >
-                {isTop && (
+                {/* 첫 번째와 두 번째 카드는 실제 FlikCard 렌더링 */}
+                {(index === 0 || index === 1) && (
                   <FlikCard
                     restaurant={restaurant}
-                    onSwipeLeft={handleSwipeLeft}
-                    onSwipeUp={handleSwipeUp}
-                    onBlogClick={handleBlogClick}
-                    onMapClick={handleMapClick}
+                    onSwipeLeft={index === 0 ? handleSwipeLeft : undefined}
+                    onSwipeUp={index === 0 ? handleSwipeUp : undefined}
+                    onBlogClick={index === 0 ? handleBlogClick : undefined}
+                    onMapClick={index === 0 ? handleMapClick : undefined}
                   />
                 )}
-                {!isTop && (
-                  <div className="w-full h-full bg-white rounded-2xl shadow-lg" />
+                {/* 세 번째 카드 이후는 플레이스홀더 */}
+                {index >= 2 && (
+                  <div className="w-full h-full bg-white rounded-xl shadow-lg border border-gray-8" />
                 )}
               </div>
             );
@@ -217,7 +221,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
 
       {/* 상단 진행률 표시 */}
       {hasMoreCards && (
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-64">
+        <div className="absolute top-8  left-1/2 transform -translate-x-1/2 w-64">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>{currentIndex + 1}</span>
             <span>{restaurants.length}</span>
