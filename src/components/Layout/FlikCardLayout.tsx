@@ -136,9 +136,9 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   const hasMoreCards = currentIndex < restaurants.length;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="relative w-full h-full rounded-2xl flex items-center justify-center">
       {/* 배경 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100" />
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 rounded-2xl" />
       
       {/* 카드 스택 */}
       <div className="relative w-full max-w-sm h-full max-h-[600px] mx-auto">
@@ -221,7 +221,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
 
       {/* 상단 진행률 표시 */}
       {hasMoreCards && (
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-64">
+        <div className="absolute top-8  left-1/2 transform -translate-x-1/2 w-64">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>{currentIndex + 1}</span>
             <span>{restaurants.length}</span>
