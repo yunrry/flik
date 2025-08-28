@@ -20,23 +20,25 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
           
       {/* 메인 콘텐츠 영역 - 네비게이션이 있으면 그만큼 공간 제외 */}
       <div 
-        className="flex-1 w-full overflow-auto"
-        style={{
-          height: shouldShowNavigation ? 'calc(100vh - 5rem)' : '100vh'
-        }}
+        className={`
+          min-h-screen w-full
+          ${shouldShowNavigation ? 'main-content-with-nav' : ''}
+        `}
       >
         {children}
       </div>
 
       {/* 하단 네비게이션 */}
       {shouldShowNavigation && (
-        <div className="h-20 flex-shrink-0 bg-white border-t border-gray-200">
+            <div className="fixed bottom-0 left-0 right-0 z-50">
           <BottomNavigation />
         </div>
       )}
     </div>
   );
 };
+
+
 
 
 export default NavigationLayout;
