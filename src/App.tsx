@@ -29,9 +29,12 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 // Layout wrapper for navigation pages
-const NavigationPageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const NavigationPageWrapper: React.FC<{ children: React.ReactNode; disableScroll?: boolean }> = ({ 
+  children, 
+  disableScroll = false 
+}) => {
   return (
-    <NavigationLayout>
+    <NavigationLayout disableScroll={disableScroll}>
       {children}
     </NavigationLayout>
   );
@@ -98,11 +101,12 @@ function App() {
             } 
           />
           
+          {/* FlikPage만 disableScroll=true */}
           <Route 
             path="/flik" 
             element={
               <ProtectedRoute>
-                <NavigationPageWrapper>
+                <NavigationPageWrapper disableScroll={true}>
                   <FlikPage />
                 </NavigationPageWrapper>
               </ProtectedRoute>

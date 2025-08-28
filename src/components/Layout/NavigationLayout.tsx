@@ -7,7 +7,8 @@ import { useNavigation } from '../../hooks/useNavigation';
 
 const NavigationLayout: React.FC<NavigationLayoutProps> = ({
   children,
-  showNavigation = true
+  showNavigation = true,
+  disableScroll = false // 새로운 prop 추가
 }) => {
   const { isNavigationPage } = useNavigation();
 
@@ -15,7 +16,7 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
   const shouldShowNavigation = showNavigation && isNavigationPage;
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+    <div className={`h-screen bg-gray-50 flex flex-col ${disableScroll ? 'overflow-hidden' : ''}`}>
       {/* 메인 콘텐츠 영역 - 네비게이션이 있으면 그만큼 공간 제외 */}
       <div 
         className="flex-1 w-full overflow-auto"

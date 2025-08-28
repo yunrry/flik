@@ -146,9 +146,11 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
           visibleCards.map((restaurant: Restaurant, index: number) => {
             const isTop = index === 0;
             const zIndex = 10 - index;
-            const scale = 1 - (index * 0.05);
-            const translateY = index * 10;
-            const opacity = 1 - (index * 0.3);
+            
+            // 첫 번째와 두 번째 카드는 동일한 크기, 세 번째부터 작아짐
+            const scale = isTop ? 1 : index === 1 ? 1 : 1 - (index * 0.03);
+            const translateY = isTop ? 0 : index === 1 ? 0 : index * 8; // 두 번째 카드도 위치 동일
+            const opacity = isTop ? 1 : index === 1 ? 1 : 0.8;
             
             return (
               <div
@@ -161,17 +163,19 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
                   pointerEvents: isTop ? 'auto' : 'none',
                 }}
               >
-                {isTop && (
+                {/* 첫 번째와 두 번째 카드는 실제 FlikCard 렌더링 */}
+                {(index === 0 || index === 1) && (
                   <FlikCard
                     restaurant={restaurant}
-                    onSwipeLeft={handleSwipeLeft}
-                    onSwipeUp={handleSwipeUp}
-                    onBlogClick={handleBlogClick}
-                    onMapClick={handleMapClick}
+                    onSwipeLeft={index === 0 ? handleSwipeLeft : undefined}
+                    onSwipeUp={index === 0 ? handleSwipeUp : undefined}
+                    onBlogClick={index === 0 ? handleBlogClick : undefined}
+                    onMapClick={index === 0 ? handleMapClick : undefined}
                   />
                 )}
-                {!isTop && (
-                  <div className="w-full h-full bg-white rounded-2xl shadow-lg" />
+                {/* 세 번째 카드 이후는 플레이스홀더 */}
+                {index >= 2 && (
+                  <div className="w-full h-full bg-white rounded-xl shadow-lg border border-gray-8" />
                 )}
               </div>
             );

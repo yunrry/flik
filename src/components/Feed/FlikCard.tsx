@@ -47,6 +47,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isExiting, setIsExiting] = useState<boolean>(false); // 카드 사라지는 애니메이션 상태
   const [dragStart, setDragStart] = useState<DragStart>({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState<DragOffset>({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
@@ -73,16 +74,25 @@ const FlikCard: React.FC<FlikCardProps> = ({
     
     // 왼쪽 스와이프 (저장)
     if (x < -threshold) {
-      onSwipeLeft && onSwipeLeft(restaurant);
+      setIsExiting(true);
+      // 카드가 완전히 사라진 후 콜백 호출
+      setTimeout(() => {
+        onSwipeLeft && onSwipeLeft(restaurant);
+      }, 300);
     }
     // 위로 스와이프 (다음 카드)
     else if (y < -threshold) {
-      onSwipeUp && onSwipeUp(restaurant);
+      setIsExiting(true);
+      // 카드가 완전히 사라진 후 콜백 호출
+      setTimeout(() => {
+        onSwipeUp && onSwipeUp(restaurant);
+      }, 300);
     }
-    
-    // 리셋
-    setIsDragging(false);
-    setDragOffset({ x: 0, y: 0 });
+    else {
+      // 임계값에 도달하지 않으면 원래 위치로 복귀
+      setIsDragging(false);
+      setDragOffset({ x: 0, y: 0 });
+    }
   };
 
   // 마우스 이벤트
@@ -190,8 +200,15 @@ const FlikCard: React.FC<FlikCardProps> = ({
   }, [isDragging, dragStart]);
 
   const cardStyle: React.CSSProperties = {
-    transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
-    transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+    transform: isExiting 
+      ? dragOffset.x < 0 
+        ? 'translateX(-100vw) rotate(-30deg)' // 왼쪽으로 완전히 사라짐
+        : dragOffset.y < 0 
+        ? 'translateY(-100vh) rotate(0deg)' // 위로 완전히 사라짐
+        : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`
+      : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
+    transition: isExiting ? 'transform 0.3s ease-out' : isDragging ? 'none' : 'transform 0.3s ease-out',
+    opacity: isExiting ? 0 : 1,
   };
 
   return (
