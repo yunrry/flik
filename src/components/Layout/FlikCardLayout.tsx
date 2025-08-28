@@ -140,17 +140,17 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
       {/* 배경 */}
       <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 rounded-2xl" />
       
-      {/* 카드 스택 */}
-      <div className="relative w-full max-w-sm h-full max-h-[600px] mx-auto">
+      {/* 카드 스택 - 소형 디바이스 최적화 */}
+      <div className="relative w-full h-full mx-auto px-2 xs:px-4">
         {hasMoreCards ? (
           visibleCards.map((restaurant: Restaurant, index: number) => {
             const isTop = index === 0;
             const zIndex = 10 - index;
             
-            // 첫 번째와 두 번째 카드는 동일한 크기, 세 번째부터 작아짐
-            const scale = isTop ? 1 : index === 1 ? 1 : 1 - (index * 0.03);
-            const translateY = isTop ? 0 : index === 1 ? 0 : index * 8; // 두 번째 카드도 위치 동일
-            const opacity = isTop ? 1 : index === 1 ? 1 : 0.8;
+            // 모든 카드를 같은 크기로 유지 (스케일 1로 고정)
+            const scale = 1; // 항상 동일한 크기
+            const translateY = isTop ? 0 : index === 1 ? 4 : index * 8;
+            const opacity = isTop ? 1 : index === 1 ? 0.9 : 0.8;
             
             return (
               <div
@@ -175,24 +175,24 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
                 )}
                 {/* 세 번째 카드 이후는 플레이스홀더 */}
                 {index >= 2 && (
-                  <div className="w-full h-full bg-white rounded-xl shadow-lg border border-gray-8" />
+                  <div className="w-full h-full bg-white rounded-xl shadow-lg border border-gray-200" />
                 )}
               </div>
             );
           })
         ) : (
-          // 모든 카드를 다 봤을 때
-          <div className="w-full h-full flex flex-col items-center justify-center bg-white rounded-2xl shadow-xl p-8">
-            <div className="text-6xl mb-4">🎉</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          // 모든 카드를 다 봤을 때 - 소형 디바이스 최적화
+          <div className="w-full h-full flex flex-col items-center justify-center bg-white rounded-2xl shadow-xl xs:p-4 sm:p-8">
+            <div className="sm:text-4xl xs:text-6xl sm:mb-2 xs:mb-4">🎉</div>
+            <h3 className="sm:text-lg xs:text-2xl font-bold text-gray-800 sm:mb-1 xs:mb-2 text-center">
               모든 맛집을 확인했어요!
             </h3>
-            <p className="text-gray-600 text-center mb-6">
+            <p className="sm:text-sm xs:text-base text-gray-600 text-center sm:mb-6 xs:mb-4">
               저장된 맛집 {savedRestaurants.length}개를 확인해보세요
             </p>
             <button
               onClick={resetCards}
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white sm:px-4 xs:px-6 sm:py-2 xs:py-3 rounded-lg font-medium xs:text-sm sm:text-base hover:bg-blue-600 transition-colors"
             >
               다시 보기
             </button>
@@ -200,35 +200,35 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
         )}
       </div>
 
-      {/* 하단 액션 힌트 */}
+      {/* 하단 액션 힌트 - 소형 디바이스 최적화 */}
       {hasMoreCards && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-8">
+        <div className="absolute bottom-4 xs:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-6 xs:space-x-8">
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center mb-2 shadow-lg">
-              <span className="text-white text-xl">❤️</span>
+            <div className="w-10 h-10 xs:w-12 xs:h-12 bg-pink-500 rounded-full flex items-center justify-center mb-1 xs:mb-2 shadow-lg">
+              <span className="text-white text-lg xs:text-xl">❤️</span>
             </div>
-            <span className="text-sm text-gray-600">← 저장</span>
+            <span className="text-xs xs:text-sm text-gray-600">← 저장</span>
           </div>
           
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center mb-2 shadow-lg">
-              <span className="text-white text-xl">👋</span>
+            <div className="w-10 h-10 xs:w-12 xs:h-12 bg-gray-500 rounded-full flex items-center justify-center mb-1 xs:mb-2 shadow-lg">
+              <span className="text-white text-lg xs:text-xl">👋</span>
             </div>
-            <span className="text-sm text-gray-600">↑ 패스</span>
+            <span className="text-xs xs:text-sm text-gray-600">↑ 패스</span>
           </div>
         </div>
       )}
 
-      {/* 상단 진행률 표시 */}
+      {/* 상단 진행률 표시 - 소형 디바이스 최적화 */}
       {hasMoreCards && (
-        <div className="absolute top-8  left-1/2 transform -translate-x-1/2 w-64">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
+        <div className="absolute top-4 xs:top-8 left-1/2 transform -translate-x-1/2 w-48 xs:w-64">
+          <div className="flex justify-between text-xs xs:text-sm text-gray-600 mb-1 xs:mb-2">
             <span>{currentIndex + 1}</span>
             <span>{restaurants.length}</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-1.5 xs:h-2">
             <div
-              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+              className="bg-blue-500 h-1.5 xs:h-2 rounded-full transition-all duration-300"
               style={{
                 width: `${((currentIndex + 1) / restaurants.length) * 100}%`
               }}
@@ -237,9 +237,9 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
         </div>
       )}
 
-      {/* 저장된 맛집 수 표시 */}
+      {/* 저장된 맛집 수 표시 - 소형 디바이스 최적화 */}
       {savedRestaurants.length > 0 && (
-        <div className="absolute top-8 right-8 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+        <div className="absolute top-4 xs:top-8 right-4 xs:right-8 bg-pink-500 text-white px-2 xs:px-3 py-1 rounded-full text-xs xs:text-sm font-medium shadow-lg">
           ❤️ {savedRestaurants.length}
         </div>
       )}

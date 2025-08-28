@@ -191,7 +191,7 @@ export const CurrentLocationButton: React.FC<CurrentLocationButtonProps> = ({
           variant={isPermissionGranted ? "filled" : "outline"}
           isActive={isPermissionGranted}
         />
-        <span className="text-gray-5 text-sm font-medium font-['Pretendard'] leading-normal">
+        <span className="text-gray-5 sm:text-sm xs:text-xs pt-1 font-medium font-['Pretendard'] leading-normal">
           {getButtonText()}
         </span>
         {isLoading && (

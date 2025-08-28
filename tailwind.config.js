@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       screens: {
-        'xs': '320px',  // 64.2mm ≈ 320px
-        'xxs': '280px', // 더 작은 화면 대응
+        'xs': '375px', // iPhone mini 크기 추가
+        'sm': '390px'
       },
       animation: {
         'spin': 'spin 1s linear infinite',

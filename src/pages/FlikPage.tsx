@@ -163,39 +163,33 @@ const FlikPage: React.FC = () => {
     
   
     return (
-      <div className="h-full bg-gray-50 ">
-        {/* 헤더 */}
-        <HeaderBar variant="logo" />
+      <div className="h-screen bg-gray-50 flex flex-col">
+      {/* 헤더 */}
+      <HeaderBar variant="logo" />
 
-        {/* 메인 콘텐츠 */}
-        <main className="pt-header-default bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col  h-screen">
-          <div className="flex items-center justify-between h-[5%] mb-4 pt-3">
-            <LocationSelector
-              selectedLocation={selectedLocation}
-              onLocationSelect={handleLocationChange}
-              className="w-fit"
-            />
-            <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
-          </div>
+      {/* 메인 콘텐츠 - BottomNavigation 제외 */}
+      <main className="pt-header-default bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
+        {/* 위치 선택 영역 - 높이 축소 */}
+        <div className="flex items-center justify-between h-12 sm:mb-2 xs:mb-0 xs:pt-0 sm:pt-[3%] flex-shrink-0">
+          <LocationSelector
+            selectedLocation={selectedLocation}
+            onLocationSelect={handleLocationChange}
+            className="w-fit text-sm"
+          />
+          <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
+        </div>
 
-          {/* 현재 위치 정보 */}
-          {currentLocation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-blue-600">📍</span>
-                <div>
-                  <p className="text-blue-800 font-medium">현재 위치</p>
-                  <p className="text-blue-600 text-sm">
-                    위도: {currentLocation.coordinates.latitude.toFixed(4)}, 
-                    경도: {currentLocation.coordinates.longitude.toFixed(4)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FlikCard 영역 - 나머지 공간 모두 사용 */}
-          <div className="h-[80%] w-full overflow-hidden">
+        {/* FlikCard 영역 - 남은 공간 모두 사용 */}
+        <div 
+          className="w-full overflow-hidden flex-1 pb-[5%] flex items-center justify-center"
+          style={{
+            // BottomNavigation(6rem) 높이를 고려하여 계산
+            height: 'calc(100vh - 5rem - 3.5rem - 6rem)', // 헤더(5rem) + 위치선택(3.5rem) + 네비게이션(6rem) 제외
+            minHeight: '400px', // 최소 높이 보장
+            maxHeight: 'calc(100vh - 14.5rem)' // 최대 높이 제한
+          }}
+        >
+          <div className="w-[96%] h-full">
             <FlikCardLayout
               restaurants={sampleRestaurants}
               onSave={handleSave}
@@ -203,16 +197,17 @@ const FlikPage: React.FC = () => {
               onKakaoMap={handleKakaoMap}
             />
           </div>
-        </main>
+        </div>
+      </main>
 
-        {/* 위치 권한 모달 */}
-        <LocationPermissionModal
-          isOpen={showLocationModal}
-          onClose={() => setShowLocationModal(false)}
-          onSuccess={handleLocationSuccess}
-          onSkip={handleLocationSkip}
-        />
-      </div>
+      {/* 위치 권한 모달 */}
+      <LocationPermissionModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSuccess={handleLocationSuccess}
+        onSkip={handleLocationSkip}
+      />
+    </div>
     );
   };
 
