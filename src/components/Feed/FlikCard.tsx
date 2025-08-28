@@ -121,7 +121,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
     if (restaurant.image) {
       return [restaurant.image];
     }
-    return ['/placeholder-image.jpg']; // 기본 이미지
+    return ['/cardImages/marione.png']; // 기본 이미지
   };
 
   const images = getImages();
@@ -172,8 +172,8 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const renderStars = (rating: number): React.ReactElement => {
     return (
       <div className="flex items-center space-x-1">
-        <span className="text-yellow-400 text-lg">★</span>
-        <span className="text-gray-800 font-semibold">{rating}</span>
+        <span className="text-yellow-400 text-base font-semibold font-['Pretendard'] leading-normal ">★</span>
+        <span className="text-gray-3 text-base font-semibold font-['Pretendard'] leading-normal ">{rating}</span>
       </div>
     );
   };
@@ -197,7 +197,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className="relative w-full h-full bg-white rounded-2xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing"
+      className="relative w-full h-full bg-white rounded-xl border border-gray-8 shadow-xl overflow-hidden cursor-grab active:cursor-grabbing"
       style={cardStyle}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
@@ -205,7 +205,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
       onTouchEnd={handleTouchEnd}
     >
       {/* 이미지 섹션 */}
-      <div className="relative h-2/3">
+      <div className="relative h-[53%]">
         <img
           src={images[currentImageIndex]}
           alt={restaurant.name}
@@ -235,37 +235,43 @@ const FlikCard: React.FC<FlikCardProps> = ({
       </div>
 
       {/* 정보 섹션 */}
-      <div className="h-1/3 p-6 flex flex-col justify-between">
-        <div className="space-y-2">
+      <div className="h-[47%] p-4 flex flex-col justify-between">
+        <div className="space-y-1">
           {/* 가게 이름과 별점 */}
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-gray-800 truncate">
+          <p className="text-neutral-400 text-xs font-normal font-['Pretendard'] leading-normal">
+              이탈리아 음식
+            </p>
+           <p className="text-gray-3 text-xl font-semibold font-['Pretendard']leading-normal">
               {restaurant.name}
-            </h3>
-            {renderStars(restaurant.rating)}
-          </div>
+          </p>
+           
+          {renderStars(restaurant.rating)}
 
           {/* 소개 */}
-          <p className="text-gray-600 text-sm line-clamp-2">
+          <p className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-tight">
             {restaurant.description}
           </p>
 
+          {/* 구분선 */}
+          <div className="h-2 border-b border-gray-200 my-2"></div>
+
+
           {/* 주소와 거리 */}
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500 truncate flex-1 mr-2">
+          <div className="flex items-center justify-between text-sm pt-1">
+            <span className="text-gray-5 font-normal font-['Pretendard'] leading-normal">
               {restaurant.address || restaurant.location}
             </span>
             {renderDistance()}
           </div>
 
           {/* 영업시간 */}
-          <div className="text-sm text-gray-600">
+          <div className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-normal">
             <span className="font-medium">영업시간:</span> {restaurant.hours}
           </div>
         </div>
 
         {/* 버튼들 */}
-        <div className="flex space-x-3 mt-4">
+        <div className="flex space-x-3 mt-1 mb-2">
           <button
             onClick={(e) => {
               e.stopPropagation();

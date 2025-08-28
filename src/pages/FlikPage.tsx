@@ -47,7 +47,7 @@ const FlikPage: React.FC = () => {
       id: '1',
       name: '마리오네',
       images: [
-        '/api/placeholder/400/600',
+        '/cardImages/marione.png',
         '/api/placeholder/400/600',
         '/api/placeholder/400/600'
       ],
@@ -61,6 +61,7 @@ const FlikPage: React.FC = () => {
       id: '2',
       name: '성수동 맛집',
       images: [
+        '/cardImages/marione.png',
         '/api/placeholder/400/600',
         '/api/placeholder/400/600'
       ],
@@ -74,6 +75,7 @@ const FlikPage: React.FC = () => {
       id: '3',
       name: '카페 로스터리',
       images: [
+        '/cardImages/marione.png',
         '/api/placeholder/400/600'
       ],
       rating: 4.5,
@@ -161,13 +163,13 @@ const FlikPage: React.FC = () => {
     
   
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="h-full bg-gray-50 overflow-hidden">
         {/* 헤더 */}
         <HeaderBar variant="logo" />
 
-        {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-        <main className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
+        {/* 메인 콘텐츠 */}
+        <main className="pt-header-default bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col overflow-hidden h-full">
+          <div className="flex items-center justify-between mb-2 flex-shrink-0">
             <LocationSelector
               selectedLocation={selectedLocation}
               onLocationSelect={handleLocationChange}
@@ -176,30 +178,9 @@ const FlikPage: React.FC = () => {
             <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
           </div>
 
-          {/* 위치 미허용 시 안내 메시지 */}
-          {!currentLocation && !showLocationModal && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center space-x-2">
-                <span className="text-yellow-600">⚠️</span>
-                <div className="flex-1">
-                  <p className="text-yellow-800 font-medium">위치 서비스가 비활성화되어 있습니다</p>
-                  <p className="text-yellow-600 text-sm">
-                    주변 맛집과 명소를 추천받으려면 위치를 허용해주세요.
-                  </p>
-                </div>
-                <button 
-                  onClick={requestLocationAgain}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors"
-                >
-                  허용하기
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* 현재 위치 정보 */}
           {currentLocation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex-shrink-0">
               <div className="flex items-center space-x-2">
                 <span className="text-blue-600">📍</span>
                 <div>
@@ -213,8 +194,8 @@ const FlikPage: React.FC = () => {
             </div>
           )}
 
-          {/* FlikCard 영역 */}
-          <div className="h-[600px] w-full">
+          {/* FlikCard 영역 - 나머지 공간 모두 사용 */}
+          <div className="flex-1 w-full overflow-hidden">
             <FlikCardLayout
               restaurants={sampleRestaurants}
               onSave={handleSave}
@@ -222,25 +203,6 @@ const FlikPage: React.FC = () => {
               onKakaoMap={handleKakaoMap}
             />
           </div>
-
-          {/* 저장된 맛집 목록 (간단한 표시) */}
-          {savedRestaurants.length > 0 && (
-            <div className="mt-8 bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">❤️</span>
-                저장된 맛집 ({savedRestaurants.length}개)
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {savedRestaurants.map((restaurant) => (
-                  <div key={restaurant.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <h4 className="font-semibold text-gray-800">{restaurant.name}</h4>
-                    <p className="text-sm text-gray-600 mt-1">★ {restaurant.rating}</p>
-                    <p className="text-sm text-gray-500 mt-1">{restaurant.address}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </main>
 
         {/* 위치 권한 모달 */}
