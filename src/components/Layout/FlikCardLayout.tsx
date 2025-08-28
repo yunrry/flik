@@ -136,7 +136,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   const hasMoreCards = currentIndex < restaurants.length;
 
   return (
-    <div className="relative w-full h-full rounded-2xl flex items-center justify-center pb-4 ">
+    <div className="relative w-full h-full rounded-2xl flex items-center justify-center pb-[10%] ">
       {/* 배경 */}
       <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 rounded-2xl" />
       
