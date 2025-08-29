@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FlikCard from '../Feed/FlikCard';
+import { saveRestaurant } from '../../api/restaurantApi';
+import { useAuthStore } from '../../stores/authStore';
 
 // FlikCard와 동일한 Restaurant 타입 사용
 interface Restaurant {
@@ -36,6 +38,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   onBlogReview, 
   onKakaoMap 
 }) => {
+  const { user } = useAuthStore();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
@@ -51,22 +54,35 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   const visibleCards = restaurants.slice(currentIndex, currentIndex + 3);
 
   // 왼쪽 스와이프 (저장) 핸들러 - onSave 호출 제거
-  const handleSwipeLeft = (restaurant: Restaurant) => {
+  const handleSwipeLeft = async (restaurant: Restaurant) => {
     if (isAnimating) return;
     
     setIsAnimating(true);
     
-    // 저장 목록에 추가
-    setSavedRestaurants(prev => {
-      const isAlreadySaved = prev.some(r => r.id === restaurant.id);
-      if (!isAlreadySaved) {
-        return [...prev, restaurant]; // useEffect에서 onSave 호출됨
-      }
-      return prev;
-    });
+    try {
+      // API 호출로 서버에 저장
+      await saveRestaurant(restaurant.id, user?.id);
+      
+      // 성공하면 로컬 state 업데이트
+      setSavedRestaurants(prev => {
+        const isAlreadySaved = prev.some(r => r.id === restaurant.id);
+        if (!isAlreadySaved) {
+          return [...prev, restaurant];
+        }
+        return prev;
+      });
 
-    // 저장 애니메이션 표시
-    showSaveAnimation();
+      // 저장 성공 애니메이션 표시
+      showSaveAnimation();
+      
+    } catch (error) {
+      // API 호출 실패 시 에러 처리
+      console.error('저장 실패:', error);
+      showErrorAnimation('저장에 실패했습니다');
+      
+      // 실패해도 다음 카드로 넘어가도록 처리 (선택사항)
+      // return; // 이 줄을 주석 해제하면 실패시 카드가 넘어가지 않음
+    }
     
     // 다음 카드로 이동
     setTimeout(() => {
@@ -89,6 +105,21 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
       setCurrentIndex(prev => prev + 1);
       setIsAnimating(false);
     }, 300);
+  };
+
+
+  // 에러 애니메이션 함수 추가
+  const showErrorAnimation = (message: string) => {
+    const errorIndicator = document.createElement('div');
+    errorIndicator.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white px-6 py-3 rounded-full font-bold text-lg z-50 animate-bounce';
+    errorIndicator.textContent = `❌ ${message}`;
+    document.body.appendChild(errorIndicator);
+    
+    setTimeout(() => {
+      if (document.body.contains(errorIndicator)) {
+        document.body.removeChild(errorIndicator);
+      }
+    }, 2000);
   };
 
   // 저장 애니메이션
