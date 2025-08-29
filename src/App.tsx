@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
 
+
 // Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -13,6 +14,7 @@ import FlikPage from './pages/FlikPage';
 import NationwidePage from './pages/NationwidePage';
 import IconGallary from './pages/IconGallary';
 import RegionPage from './pages/RegionPage';
+import RestaurantMapPage from './pages/RestaurantMapPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -112,9 +114,18 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+        <Route 
+            path="/restaurant-map" 
+            element={
+              <ProtectedRoute>
+                <RestaurantMapPage />
+                </ProtectedRoute>
+            } 
+          />
           
           {/* 404 Redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Routes>
       </div>
     </Router>
