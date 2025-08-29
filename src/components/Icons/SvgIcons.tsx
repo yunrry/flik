@@ -6,6 +6,7 @@ import saveMarkSvg from '/assets/icons/save-mark.svg';
 import submitSvg from '/assets/icons/submit.svg';
 import xSvg from '/assets/icons/x.svg';
 import searchSvg from '/assets/icons/search.svg';
+import imageSvg from '/assets/icons/image.svg';
 
 interface IconProps {
   className?: string;
@@ -400,6 +401,23 @@ export const SearchIcon: React.FC<IconProps> = ({
     <img 
       src={searchSvg}
       alt="검색"
+      style={sizeStyles}
+      className={`svg-${size}`}
+    />
+  );
+};
+
+
+export const ImageIcon: React.FC<IconProps> = ({ 
+  isActive, 
+  size = 'sm', 
+}) => {
+  const sizeStyles = getSizeStyles(size);
+  
+  return (
+    <img 
+      src={imageSvg}
+      alt="이미지"
       style={sizeStyles}
       className={`svg-${size}`}
     />
