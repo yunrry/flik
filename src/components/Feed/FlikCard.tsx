@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
 
 interface Restaurant {
@@ -56,21 +56,21 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const hintTimerRef = useRef<NodeJS.Timeout | null>(null); // 타이머 ref 추가
 
   // 터치/마우스 이벤트 핸들러
-  const handleDragStart = (clientX: number, clientY: number): void => {
+  const handleDragStart = useCallback((clientX: number, clientY: number): void => {
     setIsDragging(true);
     setDragStart({ x: clientX, y: clientY });
     resetHintTimer(); // 드래그 시작시 힌트 숨기기
-  };
+  }, []);
 
-  const handleDragMove = (clientX: number, clientY: number): void => {
+  const handleDragMove = useCallback((clientX: number, clientY: number): void => {
     if (!isDragging) return;
     
     const deltaX = clientX - dragStart.x;
     const deltaY = clientY - dragStart.y;
     setDragOffset({ x: deltaX, y: deltaY });
-  };
+  }, [isDragging, dragStart]);
 
-  const handleDragEnd = (): void => {
+  const handleDragEnd = useCallback((): void => {
     if (!isDragging) return;
     
     const { x, y } = dragOffset;
@@ -98,37 +98,37 @@ const FlikCard: React.FC<FlikCardProps> = ({
       setDragOffset({ x: 0, y: 0 });
       startHintTimer(); // 드래그가 끝나고 원위치로 돌아갔을 때 힌트 타이머 시작
     }
-  };
+  }, [isDragging, dragOffset, onSwipeLeft, onSwipeUp, restaurant]);
 
-  // 마우스 이벤트 핸들러 수정
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
-    e.preventDefault(); // 기본 동작 방지
+  // 마우스 이벤트 핸들러들을 useCallback으로 메모이제이션
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
+    e.preventDefault();
     handleDragStart(e.clientX, e.clientY);
-  };
+  }, [handleDragStart]);
 
-  const handleMouseMove = (e: MouseEvent): void => {
-    e.preventDefault(); // 기본 동작 방지
+  const handleMouseMove = useCallback((e: MouseEvent): void => {
+    e.preventDefault();
     handleDragMove(e.clientX, e.clientY);
-  };
+  }, [handleDragMove]);
 
-  const handleMouseUp = (): void => {
+  const handleMouseUp = useCallback((): void => {
     handleDragEnd();
-  };
+  }, [handleDragEnd]);
 
   // 터치 이벤트
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>): void => {
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>): void => {
     const touch = e.touches[0];
     handleDragStart(touch.clientX, touch.clientY);
-  };
+  }, [handleDragStart]);
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>): void => {
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>): void => {
     const touch = e.touches[0];
     handleDragMove(touch.clientX, touch.clientY);
-  };
+  }, [handleDragMove]);
 
-  const handleTouchEnd = (): void => {
+  const handleTouchEnd = useCallback((): void => {
     handleDragEnd();
-  };
+  }, [handleDragEnd]);
 
   // 이미지 배열 처리 (단일 이미지일 경우 배열로 변환)
   const getImages = (): string[] => {
@@ -147,6 +147,8 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const handleImageTouch = (e: React.MouseEvent<HTMLImageElement> | React.TouchEvent<HTMLImageElement>): void => {
     // 드래그 중이면 처리하지 않음
     if (isDragging) return;
+    
+    e.stopPropagation(); // 이벤트 전파 방지 추가
     
     const rect = e.currentTarget.getBoundingClientRect();
     
@@ -196,7 +198,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
   };
 
   // 카드가 움직이지 않을 때 힌트 표시 타이머 시작
-  const startHintTimer = () => {
+  const startHintTimer = useCallback(() => {
     if (hintTimerRef.current) {
       clearTimeout(hintTimerRef.current);
     }
@@ -204,16 +206,43 @@ const FlikCard: React.FC<FlikCardProps> = ({
     hintTimerRef.current = setTimeout(() => {
       setShowHint(true);
     }, 3000);
-  };
+  }, []);
 
   // 카드가 움직일 때 힌트 숨기고 타이머 리셋
-  const resetHintTimer = () => {
+  const resetHintTimer = useCallback(() => {
     setShowHint(false);
     if (hintTimerRef.current) {
       clearTimeout(hintTimerRef.current);
       hintTimerRef.current = null;
     }
-  };
+  }, []);
+
+  // 마우스 이벤트 리스너를 document에 추가/제거하는 useEffect
+  useEffect(() => {
+    if (isDragging) {
+      const handleMouseMoveGlobal = (e: MouseEvent) => {
+        e.preventDefault();
+        handleDragMove(e.clientX, e.clientY);
+      };
+      
+      const handleMouseUpGlobal = (e: MouseEvent) => {
+        e.preventDefault();
+        handleDragEnd();
+      };
+      
+      document.addEventListener('mousemove', handleMouseMoveGlobal, { passive: false });
+      document.addEventListener('mouseup', handleMouseUpGlobal, { passive: false });
+      
+      // 마우스가 화면 밖으로 나가는 경우도 처리
+      document.addEventListener('mouseleave', handleMouseUpGlobal);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMoveGlobal);
+        document.removeEventListener('mouseup', handleMouseUpGlobal);
+        document.removeEventListener('mouseleave', handleMouseUpGlobal);
+      };
+    }
+  }, [isDragging, handleDragMove, handleDragEnd]);
 
   useEffect(() => {
     startHintTimer();
@@ -223,7 +252,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
         clearTimeout(hintTimerRef.current);
       }
     };
-  }, []);
+  }, [startHintTimer]);
 
   const cardStyle: React.CSSProperties = {
     transform: isExiting 
@@ -253,8 +282,9 @@ const FlikCard: React.FC<FlikCardProps> = ({
         <img
           src={images[currentImageIndex]}
           alt={restaurant.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover pointer-events-none" // pointer-events-none 추가로 이미지 드래그 방지
           onClick={handleImageTouch}
+          onDragStart={(e) => e.preventDefault()} // 이미지 드래그 방지
         />
         
         {/* 이미지 인디케이터 */}
@@ -277,7 +307,6 @@ const FlikCard: React.FC<FlikCardProps> = ({
             <span className="text-white text-xs">← 저장 | ↑ 다음</span>
           </div>
         )}
-
 
         {/* 이미지 개수 - 소형 디바이스 최적화 */}
         <div className="absolute xs:bottom-2 sm:bottom-[3%] xs:right-2 sm:right-[4%] bg-black/35 rounded-full xs:px-2 sm:px-[5%] xs:py-1 sm:py-[1.5%] flex items-center justify-center">
@@ -349,7 +378,6 @@ const FlikCard: React.FC<FlikCardProps> = ({
           >
             <KakaoMapIcon />
             <span className="hidden text-sm font-medium font-['Pretendard'] leading-normal xs:inline sm:inline">카카오맵</span>
-            
           </button>
         </div>
       </div>
