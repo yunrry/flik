@@ -15,6 +15,7 @@ import NationwidePage from './pages/NationwidePage';
 import IconGallary from './pages/IconGallary';
 import RegionPage from './pages/RegionPage';
 import RestaurantMapPage from './pages/RestaurantMapPage';
+import RestaurantCardPage from './pages/RestaurantCardPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -100,6 +101,15 @@ function App() {
                   <SavePage />
                 </NavigationPageWrapper>
               </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/save/:restaurantId" 
+            element={
+              <NavigationPageWrapper disableScroll={true}>
+                <RestaurantCardPage />
+              </NavigationPageWrapper>
             } 
           />
           
