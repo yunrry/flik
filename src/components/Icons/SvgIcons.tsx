@@ -1,4 +1,6 @@
 import React from 'react';
+import naverblogSvg from '/assets/icons/naverblog.svg';
+import kakaomapSvg from '/assets/icons/kakaomap.svg';
 
 interface IconProps {
   className?: string;
@@ -277,5 +279,42 @@ export const BackArrowIcon: React.FC<IconProps> = ({
       />
     </svg>
   );
+
 };
   
+
+
+export const NaverBlogIcon: React.FC<IconProps> = ({ 
+  isActive, 
+  size = 'sm', 
+}) => {
+  const sizeStyles = getSizeStyles(size);
+  
+  return (
+    <img 
+      src={naverblogSvg}
+      alt="네이버 블로그"
+      style={sizeStyles}
+      className={`svg-${size}`}
+    />
+  );
+};
+
+
+export const KakaoMapIcon: React.FC<IconProps> = ({ 
+  isActive, 
+  size = 'sm', 
+}) => {
+  const sizeStyles = getSizeStyles(size);
+  
+  return (
+    <img 
+      src={kakaomapSvg}
+      alt="카카오맵"
+      style={sizeStyles}
+      className={`svg-${size}`}
+    />
+  );
+};
+
+
