@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { HeaderBar } from '../components/Layout';
 import SavedFlikCard from '../components/Feed/SavedFlikCard';
-import { getSavedRestaurants } from '../api/restaurantApi';
+import { useThridParty } from '../hooks/useThridParty';
 import { useAuthStore } from '../stores/authStore';
 import { MapIcon } from '../components/Icons/SvgIcons';
+import { useNavigate } from 'react-router-dom';
 
 interface Restaurant {
   id: string;
@@ -31,6 +32,8 @@ const SavePage: React.FC = () => {
   const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { handleMapClick } = useThridParty();
+  const navigate = useNavigate();
 
   // 저장된 맛집 데이터 불러오기
   useEffect(() => {
@@ -46,20 +49,24 @@ const SavePage: React.FC = () => {
             rating: 4.7,
             description: '세계 챔피언 마리오가 선보이는 전통 나폴리 피자와 파스타를 맛볼 수 있는 곳',
             address: '서울 성동구',
+            distance: 1200,
             category: '이탈리아 음식',
             location: '서울 성동구',
             hours: '12:00 ~ 18:00'
           },
           {
             id: '2',
-            name: '마리오네',
-            images: ['/cardImages/marione.png'],
-            rating: 4.7,
-            description: '세계 챔피언 마리오가 선보이는 전통 나폴리 피자와 파스타를 맛볼 수 있는 곳',
-            address: '서울 성동구',
-            category: '이탈리아 음식',
+            name: '성수동 맛집',
+            images: [
+              '/cardImages/marione.png',
+              
+            ],
+            rating: 4.3,
+            description: '현지인이 사랑하는 숨은 맛집, 정통 한식을 맛볼 수 있습니다',
+            address: '서울 성동구 성수동1가 685-142',
+            distance: 520,
             location: '서울 성동구',
-            hours: '12:00 ~ 18:00'
+            hours: '11:00 ~ 21:00'
           },
           {
             id: '3',
@@ -68,6 +75,7 @@ const SavePage: React.FC = () => {
             rating: 4.7,
             description: '세계 챔피언 마리오가 선보이는 전통 나폴리 피자와 파스타를 맛볼 수 있는 곳',
             address: '서울 성동구',
+            distance: 160,
             category: '이탈리아 음식',
             location: '서울 성동구',
             hours: '12:00 ~ 18:00'
@@ -79,6 +87,7 @@ const SavePage: React.FC = () => {
             rating: 4.7,
             description: '세계 챔피언 마리오가 선보이는 전통 나폴리 피자와 파스타를 맛볼 수 있는 곳',
             address: '서울 성동구',
+            distance: 450,
             category: '이탈리아 음식',
             location: '서울 성동구',
             hours: '12:00 ~ 18:00'
@@ -106,7 +115,9 @@ const SavePage: React.FC = () => {
       <main className="pt-header-default w-full px-0 lg:px-8 py-6">
         {/* 페이지 제목 */}
         <div className="px-[5%] py-[3%]">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between"
+          onClick={() => handleMapClick(savedRestaurants[0])}
+          >
             <MapIcon size="md"/>
 
             <span className="text-sm text-gray-500">총 {savedRestaurants.length}개의 매장</span>
@@ -114,7 +125,7 @@ const SavePage: React.FC = () => {
         </div>
 
         {/* 저장된 맛집 목록 */}
-        <div className="flex flex-col gap-0 justify-start items-center">
+        <div className="flex flex-col gap-0 justify-start">
           {isLoading ? (
             // 로딩 상태
             <div className="flex justify-center items-center py-20">

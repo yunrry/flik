@@ -1,25 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
-
-interface Restaurant {
-  id: string;
-  name: string;
-  images: string[];
-  rating: number;
-  description: string;
-  address: string;
-  distance?: number; // 미터 단위
-  hours: string;
-  // FlikCardLayout과 호환성을 위해 추가
-  category?: string;
-  location?: string;
-  priceRange?: string;
-  image?: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
-}
+import { Restaurant } from '../../types/restaurant';
 
 interface FlikCardProps {
   restaurant: Restaurant;
@@ -294,11 +275,11 @@ const FlikCard: React.FC<FlikCardProps> = ({
         )}
 
         {/* 스와이프 힌트 - 조건부 렌더링으로 수정 */}
-        {showHint && !isDragging && (
+        {/* {showHint && !isDragging && (
           <div className="absolute xs:top-2 sm:top-4 xs:left-2 sm:left-4 bg-black/20 rounded-full xs:px-2 sm:px-3 xs:py-1 sm:py-2 transition-opacity duration-300">
             <span className="text-white text-xs">← 저장 | ↑ 다음</span>
           </div>
-        )}
+        )} */}
 
         {/* 이미지 개수 - 소형 디바이스 최적화 */}
         <div className="absolute xs:bottom-2 sm:bottom-[3%] xs:right-2 sm:right-[4%] bg-black/35 rounded-full xs:px-2 sm:px-[5%] xs:py-1 sm:py-[1.5%] flex items-center justify-center">

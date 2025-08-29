@@ -61,11 +61,13 @@ export const useNavigation = () => {
     // 홈 페이지에서 접근 가능한 서브 페이지들 (네비게이션 유지)
     const homeSubPages = ['/nationwide'];
     const isHomeSubPage = homeSubPages.includes(location.pathname);
+
+    const isSaveSubPage = location.pathname.startsWith('/save/');
     
     // 지역 페이지들 (네비게이션 유지)
     const isRegionPage = location.pathname.startsWith('/region/');
     
-    return isMainNavigationPage || isHomeSubPage || isRegionPage;
+    return isMainNavigationPage || isHomeSubPage || isRegionPage || isSaveSubPage;
   };
 
   return {
