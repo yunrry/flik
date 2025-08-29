@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HeaderProps } from '../../types/header.types';
 import { useNavigate } from 'react-router-dom';
 import { RegionCode, REGION_CONFIG } from '../../types/region.types';
-import { LogoIcon, SettingIcon, BackArrowIcon } from '../Icons';
+import { LogoIcon, SettingIcon, BackArrowIcon, XIcon } from '../Icons/SvgIcons';
 import SearchComponent from '../search/SearchComponent';
 import FlikExploreButton from '../Buttons/FlikExploreButton';
 
@@ -19,6 +19,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
   searchPlaceholder = '매장명을 입력해주세요',
   showRegister = false,
   registerText = '등록',
+  isAvailable = false,
   className = ''
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,7 +81,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
               className="p-2 -ml-2 text-gray-700 hover:text-gray-900 transition-colors"
               aria-label="뒤로가기"
             >
-              <h1>X</h1>
+              <XIcon size="lg" />
             </button>
           </div>
         );
@@ -252,14 +253,18 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
         case 'posting':
           return (
-            <div className="flex items-center pt-[20%]">
+            <div className="flex items-center pt-[40%] pr-2">
+              {isAvailable ? (
               <button
                 onClick={onRegister}
-                className="p-2 -ml-2 text-gray-700 hover:text-gray-900 transition-colors"
-                aria-label="뒤로가기"
+                className=""
+                aria-label="등록"
               >
-                <h1>등록</h1>
+              <text className="text-main-1 text-lg font-medium font-['Pretendard'] leading-normal">등록</text>
               </button>
+              ) : (
+                <text className="text-gray-9 text-lg font-medium font-['Pretendard'] leading-normal">등록</text>
+              )}
             </div>
           );
       

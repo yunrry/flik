@@ -20,6 +20,7 @@ import PostingPage from './pages/PostingPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
+import LocationSelectPage from './pages/LocationSelectPage';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -93,6 +94,14 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          <Route path="/location-select" element={
+            <ProtectedRoute>
+            
+                <LocationSelectPage />
+            
+            </ProtectedRoute>
+          } />
           
           <Route 
             path="/save" 
