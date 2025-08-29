@@ -106,14 +106,6 @@ const FlikCard: React.FC<FlikCardProps> = ({
     handleDragStart(e.clientX, e.clientY);
   }, [handleDragStart]);
 
-  const handleMouseMove = useCallback((e: MouseEvent): void => {
-    e.preventDefault();
-    handleDragMove(e.clientX, e.clientY);
-  }, [handleDragMove]);
-
-  const handleMouseUp = useCallback((): void => {
-    handleDragEnd();
-  }, [handleDragEnd]);
 
   // 터치 이벤트
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>): void => {

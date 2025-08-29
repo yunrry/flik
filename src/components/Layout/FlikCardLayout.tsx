@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import FlikCard from '../Feed/FlikCard';
+import { saveRestaurant } from '../../api/restaurantApi';
+import { useAuthStore } from '../../stores/authStore';
+import { useNavigate } from 'react-router-dom';
+import { loadKakaoMapSDK, getCoordinatesFromAddress } from '../../api/kakaoMapApi';
+import { searchNaverBlog, cleanBlogTitle, cleanBlogDescription, formatBlogDate } from '../../api/naverBlogApi';
 
 // FlikCard와 동일한 Restaurant 타입 사용
 interface Restaurant {
@@ -36,9 +41,11 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   onBlogReview, 
   onKakaoMap 
 }) => {
+  const { user } = useAuthStore();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   // 저장된 맛집이 변경될 때마다 부모에게 알림
   useEffect(() => {
@@ -51,22 +58,35 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   const visibleCards = restaurants.slice(currentIndex, currentIndex + 3);
 
   // 왼쪽 스와이프 (저장) 핸들러 - onSave 호출 제거
-  const handleSwipeLeft = (restaurant: Restaurant) => {
+  const handleSwipeLeft = async (restaurant: Restaurant) => {
     if (isAnimating) return;
     
     setIsAnimating(true);
     
-    // 저장 목록에 추가
-    setSavedRestaurants(prev => {
-      const isAlreadySaved = prev.some(r => r.id === restaurant.id);
-      if (!isAlreadySaved) {
-        return [...prev, restaurant]; // useEffect에서 onSave 호출됨
-      }
-      return prev;
-    });
+    try {
+      // API 호출로 서버에 저장
+      // await saveRestaurant(restaurant.id, user?.id);
+      
+      // // 성공하면 로컬 state 업데이트
+      // setSavedRestaurants(prev => {
+      //   const isAlreadySaved = prev.some(r => r.id === restaurant.id);
+      //   if (!isAlreadySaved) {
+      //     return [...prev, restaurant];
+      //   }
+      //   return prev;
+      // });
 
-    // 저장 애니메이션 표시
-    showSaveAnimation();
+      // 저장 성공 애니메이션 표시
+      showSaveAnimation();
+      
+    } catch (error) {
+      // API 호출 실패 시 에러 처리
+      console.error('저장 실패:', error);
+      showErrorAnimation('저장에 실패했습니다');
+      
+      // 실패해도 다음 카드로 넘어가도록 처리 (선택사항)
+      // return; // 이 줄을 주석 해제하면 실패시 카드가 넘어가지 않음
+    }
     
     // 다음 카드로 이동
     setTimeout(() => {
@@ -89,6 +109,21 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
       setCurrentIndex(prev => prev + 1);
       setIsAnimating(false);
     }, 300);
+  };
+
+
+  // 에러 애니메이션 함수 추가
+  const showErrorAnimation = (message: string) => {
+    const errorIndicator = document.createElement('div');
+    errorIndicator.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white px-6 py-3 rounded-full font-bold text-lg z-50 animate-bounce';
+    errorIndicator.textContent = `❌ ${message}`;
+    document.body.appendChild(errorIndicator);
+    
+    setTimeout(() => {
+      if (document.body.contains(errorIndicator)) {
+        document.body.removeChild(errorIndicator);
+      }
+    }, 2000);
   };
 
   // 저장 애니메이션
@@ -116,15 +151,106 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
     }, 1500);
   };
 
-  // 블로그 리뷰 버튼 핸들러
-  const handleBlogClick = (restaurant: Restaurant) => {
-    onBlogReview && onBlogReview(restaurant);
-  };
+// 블로그 리뷰 버튼 핸들러 - 네이버 블로그 검색 후 페이지 이동
+const handleBlogClick = async (restaurant: Restaurant) => {
+  try {
+    console.log('블로그 검색 시작:', restaurant.name);
+    
+    const blogData = JSON.parse(localStorage.getItem('blogData') || '{}');
 
-  // 카카오맵 버튼 핸들러
-  const handleMapClick = (restaurant: Restaurant) => {
-    onKakaoMap && onKakaoMap(restaurant);
-  };
+    // // 네이버 블로그 검색 API 호출
+    // const blogData = await searchNaverBlog({
+    //   restaurantName: restaurant.name,
+    //   address: restaurant.address,
+    //   location: restaurant.location,
+    //   display: 20,
+    //   sort: 'date' // 최신순으로 정렬
+    // });
+
+    // 블로그 데이터 전처리
+    const cleanedBlogData = {
+      ...blogData,
+      items: blogData.items.map((item: any) => ({
+        ...item,
+        title: cleanBlogTitle(item.title),
+        description: cleanBlogDescription(item.description),
+        postdate: formatBlogDate(item.postdate)
+      }))
+    };
+
+    // 블로그 리뷰 페이지로 이동하면서 데이터 전달
+    navigate('/blog-reviews', {
+      state: {
+        restaurant: restaurant,
+        blogData: cleanedBlogData,
+        searchQuery: `${restaurant.name} 맛집 리뷰`
+      }
+    });
+
+    // 부모 컴포넌트에 알림 (선택적)
+    onBlogReview && onBlogReview(restaurant);
+
+  } catch (error) {
+    console.error('블로그 검색 실패:', error);
+    
+    // 에러 발생 시 기본 검색어로 페이지 이동
+    navigate('/blog-reviews', {
+      state: {
+        restaurant: restaurant,
+        blogData: null,
+        error: '블로그 검색에 실패했습니다. 다시 시도해주세요.',
+        searchQuery: `${restaurant.name} 맛집 리뷰`
+      }
+    });
+  }
+};
+
+// 카카오맵 버튼 핸들러 - 지도 페이지로 이동
+const handleMapClick = async (restaurant: Restaurant) => {
+  try {
+    console.log('지도 검색 시작:', restaurant.name);
+    
+    let coordinates = restaurant.coordinates;
+    
+    // 좌표가 없으면 주소로 검색
+    if (!coordinates && restaurant.address) {
+      try {
+        await loadKakaoMapSDK(); // SDK 로드
+        const coords = await getCoordinatesFromAddress(restaurant.address);
+        coordinates = { lat: coords.lat, lng: coords.lng };
+      } catch (error) {
+        console.log('주소 좌표 변환 실패, 기본 검색으로 진행');
+      }
+    }
+
+    // 지도 페이지로 이동하면서 데이터 전달
+    navigate('/restaurant-map', {
+      state: {
+        restaurant: restaurant,
+        coordinates: coordinates,
+        searchQuery: restaurant.name,
+        address: restaurant.address || restaurant.location
+      }
+    });
+
+    // 부모 컴포넌트에 알림 (선택적)
+    // onKakaoMap && onKakaoMap(restaurant);
+
+  } catch (error) {
+    console.error('지도 처리 실패:', error);
+    
+    // 에러 발생 시에도 페이지 이동 (검색 기능으로 처리)
+    navigate('/restaurant-map', {
+      state: {
+        restaurant: restaurant,
+        coordinates: null,
+        error: '위치 정보를 불러오는데 실패했습니다.',
+        searchQuery: restaurant.name,
+        address: restaurant.address || restaurant.location
+      }
+    });
+  }
+};
 
   // 리셋 함수
   const resetCards = () => {
