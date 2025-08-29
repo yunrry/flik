@@ -12,6 +12,7 @@ export interface HeaderProps {
   searchPlaceholder?: string;
   showRegister?: boolean;
   registerText?: string;
+  isAvailable?: boolean;
   className?: string;
 }
 

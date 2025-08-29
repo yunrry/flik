@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderBar } from '../components/Layout';
+import LocationIcon from '../components/Icons/LocationIcon';
 
 const PostingPage: React.FC = () => {
   const navigate = useNavigate();
   const [content, setContent] = useState('');
   const [images, setImages] = useState<File[]>([]);
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [title, setTitle] = useState('');
+
+
+  const handleLocationClick = () => {
+    // 장소 선택 모달 또는 페이지로 이동
+    console.log('장소 추가 클릭');
+  };
 
   const handleBackClick = () => {
     navigate(-1);
@@ -24,31 +33,42 @@ const PostingPage: React.FC = () => {
         variant="posting" 
         onBack={handleBackClick}
         onRegister={handleSubmit}
+        isAvailable={isAvailable}
       />
       
       {/* 메인 콘텐츠 */}
       <main className="pt-header-default px-4 py-6">
-        {/* 텍스트 입력 */}
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="맛집에 대한 이야기를 작성해보세요..."
-          className="w-full h-32 p-4 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-main-1"
-        />
+        {/* 제목 입력 */}
+        <div className="mb-6">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="제목"
+            className="w-full text-lg font-medium text-gray-800 placeholder-gray-400 border-none outline-none focus:ring-0"
+          />
+          <div className="h-px bg-gray-200 mt-2"></div>
+        </div>
         
-        {/* 이미지 업로드 */}
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            이미지 추가
-          </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <p className="mt-1 text-sm text-gray-600">
-              이미지를 클릭하여 업로드하세요
-            </p>
-          </div>
+        {/* 장소 추가 */}
+        <div className="mb-6">
+          <button
+            onClick={handleLocationClick}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <LocationIcon size="sm" variant="blurred" />
+            <span className="text-gray-6 text-sm font-medium font-['Pretendard'] leading-tight pt-1">장소 추가</span>
+          </button>
+        </div>
+        
+        {/* 내용 입력 */}
+        <div className="flex-1">
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="내용을 입력해주세요."
+            className="w-full h-64 text-gray-6 text-sm font-normal font-['Pretendard'] leading-normal placeholder-gray-400 border-none outline-none focus:ring-0 resize-none"
+          />
         </div>
       </main>
     </div>

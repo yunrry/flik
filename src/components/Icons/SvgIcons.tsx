@@ -3,6 +3,8 @@ import naverblogSvg from '/assets/icons/naverblog.svg';
 import kakaomapSvg from '/assets/icons/kakaomap.svg';
 import mapSvg from '/assets/icons/map.svg'; 
 import saveMarkSvg from '/assets/icons/save-mark.svg';
+import submitSvg from '/assets/icons/submit.svg';
+import xSvg from '/assets/icons/x.svg';
 
 interface IconProps {
   className?: string;
@@ -346,6 +348,40 @@ export const SaveMarkIcon: React.FC<IconProps> = ({
     <img 
       src={saveMarkSvg}
       alt="저장됨"
+      style={sizeStyles}
+      className={`svg-${size}`}
+    />
+  );
+};
+
+
+export const SubmitIcon: React.FC<IconProps> = ({ 
+  isActive, 
+  size = 'sm', 
+}) => {
+  const sizeStyles = getSizeStyles(size);
+  
+  return (
+    <img 
+      src={submitSvg}
+      alt="등록"
+      style={sizeStyles}
+      className={`svg-${size}`}
+    />
+  );
+};
+
+
+export const XIcon: React.FC<IconProps> = ({ 
+  isActive, 
+  size = 'sm', 
+}) => {
+  const sizeStyles = getSizeStyles(size);
+  
+  return (
+    <img 
+      src={xSvg}
+      alt="X"
       style={sizeStyles}
       className={`svg-${size}`}
     />
