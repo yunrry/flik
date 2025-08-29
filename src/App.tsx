@@ -16,6 +16,7 @@ import IconGallary from './pages/IconGallary';
 import RegionPage from './pages/RegionPage';
 import RestaurantMapPage from './pages/RestaurantMapPage';
 import RestaurantCardPage from './pages/RestaurantCardPage';
+import PostingPage from './pages/PostingPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -133,6 +134,8 @@ function App() {
                 </ProtectedRoute>
             } 
           />
+
+          <Route path="/posting" element={<PostingPage />} />
           
           {/* 404 Redirect */}
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}

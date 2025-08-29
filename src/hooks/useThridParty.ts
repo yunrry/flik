@@ -1,4 +1,4 @@
-import { Restaurant } from "../types/restaurant";
+import { Restaurant } from "../types/restaurant.types";
 import { useNavigate } from "react-router-dom";
 import { loadKakaoMapSDK, getCoordinatesFromAddress } from '../api/kakaoMapApi';
 import { searchNaverBlog, cleanBlogTitle, cleanBlogDescription, formatBlogDate } from '../api/naverBlogApi';

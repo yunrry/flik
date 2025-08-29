@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore, type SocialProvider } from '../stores/authStore';
+import { LogoIcon } from '../components/Icons';
 
 const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,15 +58,12 @@ const LoginPage: React.FC = () => {
         <div className="flex items-center justify-center min-h-screen">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
             
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-white">F</span>
-              </div>
+            <div className="text-center items-center mb-8">
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                FLIK
+                <LogoIcon size="xxl" className="mx-auto" />
               </h1>
               <p className="text-gray-600 text-sm sm:text-base">
-                당신의 순간을 특별하게 만드세요
+              관광지 맛집 고르는 고민, 스와이프로 끝
               </p>
             </div>
 

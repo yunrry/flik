@@ -2,19 +2,9 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { User } from '../types/user.types';
 
-export type SocialProvider = 'google' | 'kakao' | 'naver' | 'apple';
-
-export interface User {
-  id: string;
-  nickname: string;
-  provider: SocialProvider;
-  providerName: string;
-  email?: string;
-  avatar?: string;
-  createdAt: Date;
-  lastLoginAt: Date;
-}
+export type SocialProvider = 'google' | 'kakao' | 'naver' | 'apple' | 'email';
 
 export interface AuthState {
   user: User | null;
@@ -36,48 +26,83 @@ export interface AuthActions {
 
 interface AuthStore extends AuthState, AuthActions {}
 
-// Mock 사용자 데이터
+// Mock 사용자 데이터 (user.types.ts 형식에 맞춰 조정)
 const MOCK_USERS: Record<SocialProvider, User> = {
   google: {
     id: 'mock-google-user',
-    nickname: '구글유저',
-    provider: 'google',
-    providerName: 'Hong Gil Dong',
     email: 'hong@gmail.com',
-    avatar: 'https://via.placeholder.com/100',
-    createdAt: new Date('2024-01-01'),
-    lastLoginAt: new Date(),
+    nickname: '삐이야악123',
+    profileImage: 'https://res.cloudinary.com/deggvyhsw/image/upload/v1743397376/sbmakf34rszypdbhhhlk.jpg',
+    provider: 'google',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+    name: 'Hong Gil Dong',
+    preferences: {
+      notifications: true,
+      marketing: false,
+      locationTracking: true
+    }
   },
   kakao: {
     id: 'mock-kakao-user',
-    nickname: '카카오친구',
-    provider: 'kakao',
-    providerName: '홍길동',
     email: 'hong@kakao.com',
-    avatar: 'https://via.placeholder.com/100',
-    createdAt: new Date('2024-01-01'),
-    lastLoginAt: new Date(),
+    nickname: '카카오친구',
+    profileImage: 'https://res.cloudinary.com/deggvyhsw/image/upload/v1743397376/sbmakf34rszypdbhhhlk.jpg',
+    provider: 'kakao',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+    name: '홍길동',
+    preferences: {
+      notifications: true,
+      marketing: false,
+      locationTracking: true
+    }
   },
   naver: {
     id: 'mock-naver-user',
-    nickname: '네이버유저',
-    provider: 'naver',
-    providerName: '홍길동',
     email: 'hong@naver.com',
-    avatar: 'https://via.placeholder.com/100',
-    createdAt: new Date('2024-01-01'),
-    lastLoginAt: new Date(),
+    nickname: '네이버유저',
+    profileImage: 'https://via.placeholder.com/100',
+    provider: 'naver',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+    name: '홍길동',
+    preferences: {
+      notifications: true,
+      marketing: false,
+      locationTracking: true
+    }
   },
   apple: {
     id: 'mock-apple-user',
-    nickname: '애플유저',
-    provider: 'apple',
-    providerName: 'Hong Gil Dong',
     email: 'hong@icloud.com',
-    avatar: 'https://via.placeholder.com/100',
-    createdAt: new Date('2024-01-01'),
-    lastLoginAt: new Date(),
+    nickname: '애플유저',
+    profileImage: 'https://via.placeholder.com/100',
+    provider: 'apple',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+    name: 'Hong Gil Dong',
+    preferences: {
+      notifications: true,
+      marketing: false,
+      locationTracking: true
+    }
   },
+  email: {
+    id: 'mock-email-user',
+    email: 'hong@example.com',
+    nickname: '이메일유저',
+    profileImage: 'https://via.placeholder.com/100',
+    provider: 'email',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+    name: '홍길동',
+    preferences: {
+      notifications: true,
+      marketing: false,
+      locationTracking: true
+    }
+  }
 };
 
 // Mock 로그인 함수
@@ -93,7 +118,7 @@ const mockLogin = async (provider: SocialProvider): Promise<User> => {
   const user = MOCK_USERS[provider];
   return {
     ...user,
-    lastLoginAt: new Date(),
+    updatedAt: new Date().toISOString(),
   };
 };
 
@@ -112,6 +137,9 @@ export const useAuthStore = create<AuthStore>()(
         
         try {
           const mockUser = await mockLogin(credentials.provider);
+          // 토큰을 localStorage에 저장 (API 호출용)
+          localStorage.setItem('auth_token', `mock_token_${mockUser.id}`);
+          
           set({ 
             user: mockUser, 
             isAuthenticated: true, 
@@ -128,6 +156,9 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
+        // localStorage에서 토큰 제거
+        localStorage.removeItem('auth_token');
+        
         set({ 
           user: null, 
           isAuthenticated: false, 
@@ -138,8 +169,14 @@ export const useAuthStore = create<AuthStore>()(
       updateUser: (userData) => {
         const currentUser = get().user;
         if (currentUser) {
+          const updatedUser = {
+            ...currentUser,
+            ...userData,
+            updatedAt: new Date().toISOString()
+          };
+          
           set({ 
-            user: { ...currentUser, ...userData } 
+            user: updatedUser
           });
         }
       },
@@ -154,6 +191,32 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user, 
         isAuthenticated: state.isAuthenticated 
       }),
+      // 스토리지에서 복원 시 토큰도 복원
+      onRehydrateStorage: () => (state) => {
+        if (state && state.user) {
+          const token = localStorage.getItem('auth_token');
+          if (token) {
+            // 토큰이 있으면 인증된 상태로 유지
+            state.isAuthenticated = true;
+          } else {
+            // 토큰이 없으면 로그아웃 상태로 설정
+            state.user = null;
+            state.isAuthenticated = false;
+          }
+        }
+      }
     }
   )
 );
+
+// 인증 상태 확인 헬퍼
+export const useIsAuthenticated = () => {
+  const { isAuthenticated, user } = useAuthStore();
+  return isAuthenticated && user !== null;
+};
+
+// 현재 사용자 정보 헬퍼  
+export const useCurrentUser = () => {
+  const { user } = useAuthStore();
+  return user;
+};

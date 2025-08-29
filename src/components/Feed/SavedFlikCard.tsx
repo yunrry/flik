@@ -1,5 +1,5 @@
 // 개별 맛집 카드 컴포넌트
-import { Restaurant } from '../../types/restaurant';
+import { Restaurant } from '../../types/restaurant.types';
 import { SaveMarkIcon } from '../Icons/SvgIcons';
 import { useNavigate } from 'react-router-dom';
 
