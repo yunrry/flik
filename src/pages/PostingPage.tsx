@@ -1,19 +1,30 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { HeaderBar } from '../components/Layout';
 import LocationIcon from '../components/Icons/LocationIcon';
+import { Restaurant } from '../types/restaurant.types';
 
 const PostingPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [content, setContent] = useState('');
   const [images, setImages] = useState<File[]>([]);
-  const [isAvailable, setIsAvailable] = useState(false);
+  const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [title, setTitle] = useState('');
-
+    
+  // location-select에서 전달받은 장소 정보
+  const [selectedLocation, setSelectedLocation] = useState<Restaurant | null>(
+    location.state?.selectedLocation || null
+  );
 
   const handleLocationClick = () => {
-    // 장소 선택 모달 또는 페이지로 이동
-    console.log('장소 추가 클릭');
+    // 장소 선택 페이지로 이동하면서 현재 선택된 장소 정보 전달
+    navigate('/location-select', {
+      state: { 
+        currentLocation: selectedLocation, images, content, title,
+        returnPath: '/posting'
+      }
+    });
   };
 
   const handleBackClick = () => {
@@ -22,9 +33,18 @@ const PostingPage: React.FC = () => {
 
   const handleSubmit = () => {
     // 게시글 작성 로직
-    console.log('게시글 작성:', { content, images });
-    navigate(-1);
+    console.log('게시글 작성:', { title, content, selectedLocation, images });
+    navigate('/my');
   };
+
+
+  useEffect(() => {
+    if (selectedLocation && title.trim() && content.trim()) {
+      setIsSubmitEnabled(true);
+    } 
+  }, [selectedLocation, title, content]);
+
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -33,11 +53,11 @@ const PostingPage: React.FC = () => {
         variant="posting" 
         onBack={handleBackClick}
         onRegister={handleSubmit}
-        isAvailable={isAvailable}
+        isAvailable={isSubmitEnabled}
       />
       
       {/* 메인 콘텐츠 */}
-      <main className="pt-header-default px-4 py-6">
+      <main className="pt-header-default px-4 py-6 mt-[5%]">
         {/* 제목 입력 */}
         <div className="mb-6">
           <input
@@ -52,13 +72,39 @@ const PostingPage: React.FC = () => {
         
         {/* 장소 추가 */}
         <div className="mb-6">
-          <button
-            onClick={handleLocationClick}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            <LocationIcon size="sm" variant="blurred" />
-            <span className="text-gray-6 text-sm font-medium font-['Pretendard'] leading-tight pt-1">장소 추가</span>
-          </button>
+          {selectedLocation ? (
+            // 선택된 장소가 있을 때: 이미지와 같은 레이아웃
+            <div className="bg-gray-900 text-white p-4 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <LocationIcon size="sm" variant="filled" className="text-white" />
+                <div className="flex-1">
+                  <p className="text-sm text-gray-300 font-medium">
+                    {selectedLocation.category || '음식점'} · {selectedLocation.location || selectedLocation.address}
+                  </p>
+                  <p className="text-lg font-semibold text-white mt-1">
+                    {selectedLocation.name}
+                  </p>
+                </div>
+                <button
+                  onClick={handleLocationClick}
+                  className="text-gray-400 hover:text-white text-sm"
+                >
+                  변경
+                </button>
+              </div>
+            </div>
+          ) : (
+            // 선택된 장소가 없을 때: 기존 장소 추가 버튼
+            <button
+              onClick={handleLocationClick}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <LocationIcon size="sm" variant="blurred" />
+              <span className="text-gray-6 text-sm font-medium font-['Pretendard'] leading-tight pt-1">
+                장소 추가
+              </span>
+            </button>
+          )}
         </div>
         
         {/* 내용 입력 */}

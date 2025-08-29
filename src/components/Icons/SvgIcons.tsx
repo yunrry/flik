@@ -5,6 +5,7 @@ import mapSvg from '/assets/icons/map.svg';
 import saveMarkSvg from '/assets/icons/save-mark.svg';
 import submitSvg from '/assets/icons/submit.svg';
 import xSvg from '/assets/icons/x.svg';
+import searchSvg from '/assets/icons/search.svg';
 
 interface IconProps {
   className?: string;
@@ -382,6 +383,23 @@ export const XIcon: React.FC<IconProps> = ({
     <img 
       src={xSvg}
       alt="X"
+      style={sizeStyles}
+      className={`svg-${size}`}
+    />
+  );
+};
+
+
+export const SearchIcon: React.FC<IconProps> = ({ 
+  isActive, 
+  size = 'sm', 
+}) => {
+  const sizeStyles = getSizeStyles(size);
+  
+  return (
+    <img 
+      src={searchSvg}
+      alt="검색"
       style={sizeStyles}
       className={`svg-${size}`}
     />
