@@ -66,11 +66,27 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
       case 'my':
         return (
-          <div className="flex items-center">
-            <h1 className="text-sb3 font-semibold text-gray-900">마이페이지</h1>
+          <div className="flex items-center pt-[20%]">
+            <h1 className="text-gray-1 text-xl font-semibold font-['Pretendard']leading-normal">마이페이지</h1>
           </div>
         );
       
+
+      case 'posting':
+        return (
+          <div className="flex items-center pt-[20%]">
+            <button
+              onClick={onBack}
+              className="p-2 -ml-2 text-gray-700 hover:text-gray-900 transition-colors"
+              aria-label="뒤로가기"
+            >
+              <h1>X</h1>
+            </button>
+          </div>
+        );
+
+
+
       case 'back-from-nationwide':
         return (
           <div className="flex flex-col justify-start h-full py-1 pb-0">
@@ -229,10 +245,23 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
       case 'my':
         return (
-          <div className="flex items-center pr-1 space-x-2">
+          <div className="flex items-center pr-1 space-x-2 pt-[30%]">
             <SettingIcon size='lg' />
           </div>
         );
+
+        case 'posting':
+          return (
+            <div className="flex items-center pt-[20%]">
+              <button
+                onClick={onRegister}
+                className="p-2 -ml-2 text-gray-700 hover:text-gray-900 transition-colors"
+                aria-label="뒤로가기"
+              >
+                <h1>등록</h1>
+              </button>
+            </div>
+          );
       
       case 'close':
         return showRegister ? (
@@ -276,7 +305,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 pb-0 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-red-500 ${
         variant === 'back-from-nationwide'
           ? 'bg-main-1 border-b border-main-1' 
           : variant === 'back-from-sido'

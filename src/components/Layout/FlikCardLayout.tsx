@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 import { loadKakaoMapSDK, getCoordinatesFromAddress } from '../../api/kakaoMapApi';
 import { searchNaverBlog, cleanBlogTitle, cleanBlogDescription, formatBlogDate } from '../../api/naverBlogApi';
-import { Restaurant } from '../../types/restaurant';
+import { Restaurant } from '../../types/restaurant.types';
 import { useThridParty } from '../../hooks/useThridParty';
 
 // Props 타입 정의

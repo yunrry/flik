@@ -1,14 +1,134 @@
 // src/pages/MyPage.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { HeaderBar } from '../components/Layout';
+import ProfileSection from '../components/Profile/ProfileSection';
+import { User, UserActivity } from '../types/user.types';
+import { updateUserProfile, getUserReviews } from '../api/userApi';
+import ActivityItem from '../components/Profile/ActivityItem';
+import FloatingUploadButton from '../components/UI/FloatingUploadButton';
+
 
 const MyPage: React.FC = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [reviewActivities, setReviewActivities] = useState<UserActivity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const MOCK_REVIEW_ACTIVITIES: UserActivity[] = [
+    {
+      id: 'review-1',
+      userId: 'mock-user-id',
+      type: 'review',
+      title: '여름에 먹으러 가면 정말 좋은 강원도 마곡수',
+      description: '분위기도 좋고 음식도 맛있었어요. 특히 피자가 정말 맛있었습니다.',
+      imageUrl: '/cardImages/marione.png',
+      relatedId: 'restaurant-1',
+      createdAt: '2025.07.26',
+      metadata: {
+        restaurantName: '마리오네',
+        location: '서울 성동구',
+        rating: 4.7
+      }
+    },
+    {
+      id: 'review-2', 
+      userId: 'mock-user-id',
+      type: 'review',
+      title: '도강원도강원도강원도강원',
+      description: '재방문 의사 100%! 친구들과 함께 가기 좋은 곳이에요.',
+      imageUrl: '/cardImages/marione.png', 
+      relatedId: 'restaurant-2',
+      createdAt: '2025.07.20',
+      metadata: {
+        restaurantName: '성수 브런치',
+        location: '서울 성동구',
+        rating: 4.3
+      }
+    },
+    {
+      id: 'review-3',
+      userId: 'mock-user-id', 
+      type: 'review',
+      title: '홍대 맛집 발견! 가성비 최고의 이탈리안 레스토랑',
+      description: '가격 대비 정말 만족스러웠어요. 파스타와 리조또 모두 맛있었습니다.',
+      imageUrl: '/cardImages/marione.png',
+      relatedId: 'restaurant-3',
+      createdAt: '2025.07.15',
+      metadata: {
+        restaurantName: '홍대 파스타',
+        location: '서울 마포구',
+        rating: 4.5
+      }
+    },
+    {
+      id: 'review-4',
+      userId: 'mock-user-id',
+      type: 'review', 
+      title: '강남 숨은 맛집, 현지인만 아는 그 곳',
+      description: '관광객은 잘 모르는 로컬 맛집이에요. 사장님도 친절하시고 음식도 정말 맛있어요.',
+      relatedId: 'restaurant-4',
+      createdAt: '2025.07.10',
+      metadata: {
+        restaurantName: '강남 한식당',
+        location: '서울 강남구', 
+        rating: 4.8
+      }
+    },
+    {
+      id: 'review-5',
+      userId: 'mock-user-id',
+      type: 'review',
+      title: '데이트 코스로 완벽한 분위기 좋은 레스토랑',
+      description: '연인과 함께 가기 좋은 로맨틱한 분위기의 레스토랑입니다.',
+      imageUrl: '/cardImages/marione.png',
+      relatedId: 'restaurant-5', 
+      createdAt: '2025.07.05',
+      metadata: {
+        restaurantName: '청담 레스토랑',
+        location: '서울 강남구',
+        rating: 4.6
+      }
+    }
+  ];
+
+
+  const handleUserUpdate = (updatedUser: User) => {
+    updateUserProfile(updatedUser);
+  };
+
+  // 리뷰 활동 데이터 불러오기
+  useEffect(() => {
+    const fetchReviewActivities = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // 리뷰 타입 활동만 조회
+        // const response = await getUserReviews(1, 20);
+        // setReviewActivities(response.data);
+        setReviewActivities(MOCK_REVIEW_ACTIVITIES);
+      } catch (err) {
+        console.error('리뷰 활동 조회 실패:', err);
+        setError('리뷰 내역을 불러올 수 없습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviewActivities();
+  }, []);
+
+
+  // 활동 아이템 클릭 핸들러
+  const handleActivityClick = (activity: UserActivity) => {
+    console.log('활동 클릭:', activity);
+    // 상세 페이지로 이동 등의 로직
+  };
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -22,6 +142,8 @@ const MyPage: React.FC = () => {
 
   const handleCancelLogout = () => {
     setShowLogoutModal(false);
+
+    
   };
 
   return (
@@ -30,85 +152,43 @@ const MyPage: React.FC = () => {
       <HeaderBar variant="my" />
 
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="pt-header-default w-full px-0 lg:px-8 py-6">
 
-        {/* 프로필 섹션 */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center space-x-4">
-            {/* 프로필 이미지 */}
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-              {user?.avatar ? (
-                <img 
-                  src={user.avatar} 
-                  alt="프로필" 
-                  className="w-16 h-16 rounded-full object-cover"
-                />
-              ) : (
-                <span className="text-2xl text-blue-600">
-                  {user?.nickname?.charAt(0) || '👤'}
-                </span>
-              )}
+      <ProfileSection user={user!} onUserUpdate={handleUserUpdate} />
+
+ {/* 리뷰 활동 목록 */}
+      <div className="space-y-1">
+          {isLoading ? (
+            // 로딩 상태
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             </div>
-
-            {/* 사용자 정보 */}
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {user?.nickname || '사용자'}
-              </h2>
-              <p className="text-sm text-gray-500 capitalize">
-                {user?.provider} 계정
-              </p>
-              {user?.providerName && (
-                <p className="text-xs text-gray-400">
-                  {user.providerName}
-                </p>
-              )}
+          ) : error ? (
+            // 에러 상태
+            <div className="text-center py-20">
+              <p className="text-gray-500">{error}</p>
             </div>
-
-            {/* 설정 버튼 */}
-            <button className="p-2 text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-          </div>
+          ) : reviewActivities.length === 0 ? (
+            // 빈 상태
+            <div className="text-center py-20">
+              <p className="text-gray-500">작성한 리뷰가 없습니다.</p>
+              <p className="text-sm text-gray-400 mt-2">맛집을 방문하고 리뷰를 남겨보세요!</p>
+            </div>
+          ) : (
+            // 리뷰 활동 목록
+            reviewActivities.map((activity) => (
+              <ActivityItem 
+                key={activity.id} 
+                activity={activity}
+                onClick={handleActivityClick}
+              />
+            ))
+          )}
         </div>
 
-        {/* 메뉴 섹션 */}
-        <div className="bg-white rounded-lg shadow-sm mb-6">
-          <div className="divide-y divide-gray-200">
-            {[
-              { title: '내 활동', icon: '📊', badge: null },
-              { title: '즐겨찾기', icon: '❤️', badge: null },
-              { title: '설정', icon: '⚙️', badge: null },
-              { title: '고객지원', icon: '💬', badge: null },
-              { title: '약관 및 정책', icon: '📄', badge: null },
-            ].map((item, index) => (
-              <button
-                key={index}
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg">{item.icon}</span>
-                  <span className="text-gray-900">{item.title}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {item.badge && (
-                    <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
-                      {item.badge}
-                    </span>
-                  )}
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+       
+
+
 
         {/* 로그아웃 버튼 */}
         <div className="bg-white rounded-lg shadow-sm">
@@ -155,6 +235,9 @@ const MyPage: React.FC = () => {
           </p>
         </div>
       </main>
+
+      {/* FloatingUploadButton */}
+      <FloatingUploadButton />
     </div>
   );
 };

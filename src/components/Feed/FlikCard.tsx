@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
-import { Restaurant } from '../../types/restaurant';
+import { Restaurant } from '../../types/restaurant.types';
 
 interface FlikCardProps {
   restaurant: Restaurant;

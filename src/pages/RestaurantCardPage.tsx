@@ -6,7 +6,7 @@ import { HeaderBar } from '../components/Layout';
 import FlikCard from '../components/Feed/FlikCard';
 import { useAuthStore } from '../stores/authStore';
 import { BackArrowIcon } from '../components/Icons/SvgIcons';
-import { Restaurant } from '../types/restaurant';
+import { Restaurant } from '../types/restaurant.types';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 
