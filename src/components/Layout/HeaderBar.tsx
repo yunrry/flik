@@ -283,7 +283,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
           ? `overflow-hidden pb-0 ${
               isScrolled ? 'backdrop-blur-md bg-black/80' : ''
             }`
-          : 'bg-white border-b border-gray-200'
+          : 'bg-white'
       } ${className}`}
       style={{
         height: variant === 'back-from-sido'

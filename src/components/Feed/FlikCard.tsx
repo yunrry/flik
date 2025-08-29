@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
 
 interface Restaurant {
   id: string;
@@ -50,12 +51,15 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const [isExiting, setIsExiting] = useState<boolean>(false); // 카드 사라지는 애니메이션 상태
   const [dragStart, setDragStart] = useState<DragStart>({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState<DragOffset>({ x: 0, y: 0 });
+  const [showHint, setShowHint] = useState<boolean>(false); // 힌트 표시 상태 추가
   const cardRef = useRef<HTMLDivElement>(null);
+  const hintTimerRef = useRef<NodeJS.Timeout | null>(null); // 타이머 ref 추가
 
   // 터치/마우스 이벤트 핸들러
   const handleDragStart = (clientX: number, clientY: number): void => {
     setIsDragging(true);
     setDragStart({ x: clientX, y: clientY });
+    resetHintTimer(); // 드래그 시작시 힌트 숨기기
   };
 
   const handleDragMove = (clientX: number, clientY: number): void => {
@@ -92,15 +96,18 @@ const FlikCard: React.FC<FlikCardProps> = ({
       // 임계값에 도달하지 않으면 원래 위치로 복귀
       setIsDragging(false);
       setDragOffset({ x: 0, y: 0 });
+      startHintTimer(); // 드래그가 끝나고 원위치로 돌아갔을 때 힌트 타이머 시작
     }
   };
 
-  // 마우스 이벤트
+  // 마우스 이벤트 핸들러 수정
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
+    e.preventDefault(); // 기본 동작 방지
     handleDragStart(e.clientX, e.clientY);
   };
 
   const handleMouseMove = (e: MouseEvent): void => {
+    e.preventDefault(); // 기본 동작 방지
     handleDragMove(e.clientX, e.clientY);
   };
 
@@ -168,10 +175,10 @@ const FlikCard: React.FC<FlikCardProps> = ({
   // 거리 표시 (1km 이하일 때만) - JSX.Element 대신 React.ReactElement 사용
   const renderDistance = (): React.ReactElement | null => {
     if (restaurant.distance && restaurant.distance <= 1000) {
-      const distanceKm = (restaurant.distance / 1000).toFixed(1);
+      const distanceKm = (restaurant.distance);
       return (
-        <span className="text-blue-500 text-sm font-medium">
-          {distanceKm}km
+        <span>
+          {distanceKm}m
         </span>
       );
     }
@@ -181,23 +188,42 @@ const FlikCard: React.FC<FlikCardProps> = ({
   // 별점 렌더링 - JSX.Element 대신 React.ReactElement 사용
   const renderStars = (rating: number): React.ReactElement => {
     return (
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-1 ">
         <span className="text-yellow-400 text-base font-semibold font-['Pretendard'] leading-normal ">★</span>
         <span className="text-gray-3 text-base font-semibold font-['Pretendard'] leading-normal ">{rating}</span>
       </div>
     );
   };
 
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
+  // 카드가 움직이지 않을 때 힌트 표시 타이머 시작
+  const startHintTimer = () => {
+    if (hintTimerRef.current) {
+      clearTimeout(hintTimerRef.current);
     }
-  }, [isDragging, dragStart]);
+    
+    hintTimerRef.current = setTimeout(() => {
+      setShowHint(true);
+    }, 3000);
+  };
+
+  // 카드가 움직일 때 힌트 숨기고 타이머 리셋
+  const resetHintTimer = () => {
+    setShowHint(false);
+    if (hintTimerRef.current) {
+      clearTimeout(hintTimerRef.current);
+      hintTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startHintTimer();
+    
+    return () => {
+      if (hintTimerRef.current) {
+        clearTimeout(hintTimerRef.current);
+      }
+    };
+  }, []);
 
   const cardStyle: React.CSSProperties = {
     transform: isExiting 
@@ -214,12 +240,13 @@ const FlikCard: React.FC<FlikCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className="relative w-full h-full bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden cursor-grab active:cursor-grabbing"
+      className="relative w-full h-full bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden cursor-grab active:cursor-grabbing select-none" // select-none 추가
       style={cardStyle}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onDragStart={(e) => e.preventDefault()} // 드래그 방지
     >
       {/* 이미지 섹션 - 소형 디바이스 최적화 */}
       <div className="relative h-[55%] sm:h-[53%] xs:h-[50%]">
@@ -244,78 +271,85 @@ const FlikCard: React.FC<FlikCardProps> = ({
           </div>
         )}
 
-        {/* 스와이프 힌트 - 소형 디바이스 최적화 */}
-        <div className="absolute xs:top-2 sm:top-4 xs:left-2 sm:left-4 bg-black/20 rounded-full xs:px-2 sm:px-3 xs:py-1 sm:py-2">
-          <span className="text-white text-xs">← 저장 | ↑ 다음</span>
+        {/* 스와이프 힌트 - 조건부 렌더링으로 수정 */}
+        {showHint && !isDragging && (
+          <div className="absolute xs:top-2 sm:top-4 xs:left-2 sm:left-4 bg-black/20 rounded-full xs:px-2 sm:px-3 xs:py-1 sm:py-2 transition-opacity duration-300">
+            <span className="text-white text-xs">← 저장 | ↑ 다음</span>
+          </div>
+        )}
+
+
+        {/* 이미지 개수 - 소형 디바이스 최적화 */}
+        <div className="absolute xs:bottom-2 sm:bottom-[3%] xs:right-2 sm:right-[4%] bg-black/35 rounded-full xs:px-2 sm:px-[5%] xs:py-1 sm:py-[1.5%] flex items-center justify-center">
+          <span className="text-white text-xs font-normal font-['Pretendard'] leading-normal">{currentImageIndex + 1} / {images.length}</span>
         </div>
       </div>
 
       {/* 정보 섹션 - 소형 디바이스 최적화 */}
-      <div className="h-[45%] sm:h-[47%] xs:h-[50%] xs:p-4 sm:p-3 flex flex-col justify-between">
-        <div className="space-y-1">
+      <div className="h-[45%] sm:h-[47%] xs:h-[50%] p-[3%] sm:pt-[3.5%] xs:pt-1 flex flex-col justify-between">
+        <div className="space-y-1 xs:py-0 xs:pt-1">
           {/* 카테고리 */}
-          <p className="text-neutral-400 text-xs font-normal font-['Pretendard'] leading-normal">
+          <p className="text-neutral-400 text-xs font-normal font-['Pretendard'] leading-tight">
             이탈리아 음식
           </p>
           
           {/* 가게 이름과 별점 - 반응형 레이아웃 */}
-          <div className="flex sm:flex-col xs:flex-row items-start sm:items-start justify-start sm:justify-between space-y-1 xs:space-y-0 sm:space-x-2">
+          <div className="flex sm:flex-col xs:flex-row items-start xs:justify-start sm:justify-between sm:space-y-1 xs:space-y-0 sm:space-x-0 xs:space-x-1 xs:pt-0">
             {/* 가게 이름 */}
             <h3 className="text-gray-800 text-lg xs:text-xl font-semibold font-['Pretendard'] leading-tight flex-none xs:flex-1">
               {restaurant.name}
             </h3>
             
             {/* 별점 */}
-            <div className="flex-shrink xs:flex-shrink-0">
+            <div className="sm:flex-shrink xs:flex-shrink-0">
               {renderStars(restaurant.rating)}
             </div>
           </div>
 
           {/* 소개 - 소형 디바이스에서 줄 수 제한 */}
-          <p className="text-gray-600 text-xs sm:text-sm font-normal font-['Pretendard'] leading-tight line-clamp-2 sm:line-clamp-3">
+          <p className="text-gray-5 xs:text-xs sm:text-sm font-normal font-['Pretendard'] leading-tight xs:line-clamp-2 sm:line-clamp-3">
             {restaurant.description}
           </p>
 
           {/* 구분선 */}
-          <div className="h-1 sm:h-2 border-b border-gray-200 my-1 sm:my-2"></div>
+          <div className="xs:h-1 sm:h-2 border-b border-gray-200 xs:my-1 sm:my-2"></div>
 
           {/* 주소와 거리 */}
-          <div className="flex items-center justify-between text-xs sm:text-sm pt-1">
-            <span className="text-gray-600 font-normal font-['Pretendard'] leading-normal truncate pr-2">
-              {restaurant.address || restaurant.location}
+          <div className="flex items-center justify-start xs:text-xs sm:text-sm pt-1 text-gray-5 font-normal font-['Pretendard'] leading-normal">
+            <span className="truncate pr-2">
+              {restaurant.address || restaurant.location} 
             </span>
             {renderDistance()}
           </div>
 
           {/* 영업시간 */}
-          <div className="text-gray-600 text-xs sm:text-sm font-normal font-['Pretendard'] leading-normal">
-            <span className="font-medium">영업시간:</span> {restaurant.hours}
+          <div className="text-gray-5 xs:text-xs sm:text-sm font-normal font-['Pretendard'] leading-normal">
+            <span>영업시간:</span> {restaurant.hours}
           </div>
         </div>
 
         {/* 버튼들 - 소형 디바이스 최적화 */}
-        <div className="flex sm:space-x-2 xs:space-x-3 mt-1 sm:mb-1 xs:mb-2">
+        <div className="flex sm:space-x-2 xs:space-x-3 sm:px-2 xs:px-1 mt-1 sm:mb-[1%] xs:mb-1">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onBlogClick && onBlogClick(restaurant);
             }}
-            className="flex-1 bg-green-500 text-white sm:py-1.5 xs:py-2 sm:px-2 xs:px-4 rounded-lg font-medium xs:text-xs sm:text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-white text-gray-6 border border-gray-8 sm:py-1.5 xs:py-2 sm:px-4 xs:px-3 rounded-lg font-medium xs:text-xs sm:text-sm  transition-colors flex items-center justify-center space-x-1"
           >
-            <span>📝</span>
-            <span className="hidden xs:inline sm:inline">블로그리뷰</span>
-            <span className="xs:hidden sm:hidden">리뷰</span>
+            <NaverBlogIcon />
+            <span className="hidden text-sm font-medium font-['Pretendard'] leading-normal xs:inline sm:inline">블로그 리뷰</span>
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onMapClick && onMapClick(restaurant);
             }}
-            className="flex-1 bg-yellow-400 text-gray-800 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm hover:bg-yellow-500 transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-white text-gray-6 border border-gray-8 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm  transition-colors flex items-center justify-center space-x-1"
           >
-            <span>📍</span>
-            <span className="hidden xs:inline sm:inline">카카오맵</span>
-            <span className="xs:hidden sm:hidden">지도</span>
+            <KakaoMapIcon />
+            <span className="hidden text-sm font-medium font-['Pretendard'] leading-normal xs:inline sm:inline">카카오맵</span>
+            
           </button>
         </div>
       </div>
