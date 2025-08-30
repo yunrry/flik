@@ -11,6 +11,23 @@
   --header-height-extended: 16rem; /* 128px */
 }
 
+.bottom-navigation-dynamic {
+  /* Safari 탭바가 보일 때 (safe-area가 클 때) 높이 축소 */
+  height: calc(4rem + env(safe-area-inset-bottom));
+  /* 하지만 최대 높이 제한 */
+  max-height: 7rem;
+  /* 최소 높이 보장 */
+  min-height: 5rem;
+  
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 네비게이션 내부 콘텐츠 영역 */
+.nav-content-area {
+  height: calc(100% - env(safe-area-inset-bottom));
+  min-height: 3.5rem; /* 56px - 최소 터치 영역 */
+}
+
 
 .bottom-nav-safe {
   padding-bottom: max(env(safe-area-inset-bottom), 1.25rem);
