@@ -45,7 +45,6 @@
 /* 네비게이션 콘텐츠 영역 */
 .nav-content-dynamic {
   height: 5rem; /* 고정 콘텐츠 높이 */
-  padding: 0.5rem 0;
 }
 
 /* 안전 영역 */
