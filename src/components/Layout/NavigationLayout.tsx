@@ -21,7 +21,7 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
       <div 
         className={`
           w-full flex-1
-          ${shouldShowNavigation && !disableScroll ? 'pb-24' : ''}
+          ${shouldShowNavigation && !disableScroll ? 'pb-nav-safe' : ''}
           ${disableScroll ? 'overflow-hidden' : ''}
         `}
       >
@@ -30,7 +30,7 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
 
       {/* 하단 네비게이션 */}
       {shouldShowNavigation && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 h-nav-safe bg-white">
+        <div className="fixed bottom-0 left-0 right-0 z-50 h-24 bg-white">
           <BottomNavigation />
         </div>
       )}
