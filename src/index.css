@@ -38,15 +38,14 @@
   
   /* 동적 높이 */
   height: calc(4rem + env(safe-area-inset-bottom));
-  max-height: 5rem;
+  max-height: 7rem;
   min-height: 4rem;
 }
 
 /* 네비게이션 콘텐츠 영역 */
 .nav-content-dynamic {
-  height: 4rem; /* 고정 콘텐츠 높이 */
+  height: 5rem; /* 고정 콘텐츠 높이 */
   padding: 0.5rem 0;
-  margin: 0.5rem 0; /* 상하 패딩 보장 */
 }
 
 /* 안전 영역 */
