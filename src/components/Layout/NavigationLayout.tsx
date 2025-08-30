@@ -5,7 +5,6 @@ import { BottomNavigation } from '../Navigation';
 import { NavigationLayoutProps } from '../../types/navigation.types';
 import { useNavigation } from '../../hooks/useNavigation';
 
-// NavigationLayout.tsx
 const NavigationLayout: React.FC<NavigationLayoutProps> = ({
   children,
   showNavigation = true,
@@ -24,17 +23,22 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
       <div 
         className={`
           w-full flex-1
-          ${shouldShowNavigation && !disableScroll ? 'pb-nav-dynamic' : ''} /* 동적 패딩 */
+          ${shouldShowNavigation && !disableScroll ? 'pb-nav-dynamic' : ''}
           ${disableScroll ? 'overflow-hidden' : ''}
         `}
       >
         {children}
       </div>
 
-      {/* 하단 네비게이션 - 동적 높이 */}
+      {/* 하단 네비게이션 */}
       {shouldShowNavigation && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white h-nav-dynamic max-h-nav-max min-h-nav-min">
-          <BottomNavigation />
+        <div className="bottom-navigation-dynamic bg-green-500">
+          {/* 실제 네비게이션 콘텐츠 */}
+          <div className="nav-content-dynamic bg-blue-500 ">
+            <BottomNavigation />
+          </div>
+          {/* 안전 영역 */}
+          <div className="nav-safe-area"></div>
         </div>
       )}
     </div>

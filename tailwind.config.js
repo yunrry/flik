@@ -7,31 +7,27 @@ export default {
   theme: {
     extend: {
       height: {
-        'screen-mobile': ['100vh', '100dvh'], // 폴백 + 최신
-        'nav': '6rem', // 96px
-        'nav-dynamic': 'calc(5rem + env(safe-area-inset-bottom))',
-        'nav-content': 'calc(100% - env(safe-area-inset-bottom))',
+        'screen-mobile': ['100vh', '100dvh'],
+        'nav-dynamic': 'calc(4rem + env(safe-area-inset-bottom))',
+        'flik-card': 'calc(100vh - 8rem - env(safe-area-inset-bottom))', // 헤더+위치선택+네비 제외
+        'flik-card-full': 'calc(100vh - 5rem - 3rem - 4rem - env(safe-area-inset-bottom))',
       },
       minHeight: {
         'screen-mobile': ['100vh', '100dvh'],
-        'nav-min': '3rem',
-        'nav-content-min': '2.5rem',
+        'nav-min': '5rem',
+        'flik-card': '400px',
       },
       maxHeight: {
-        'nav-max': '4rem',
+        'nav-max': '7rem',
+          'flik-card': 'calc(100vh - 12rem - env(safe-area-inset-bottom))',
+      },
+      padding: {
+        'safe-bottom': 'max(env(safe-area-inset-bottom), 1.25rem)',
+        'nav-dynamic': 'calc(4rem + max(env(safe-area-inset-bottom), 1.25rem))',
       },
       screens: {
         'xs': '375px', // iPhone mini 크기 추가
         'sm': '390px'
-      },
-      animation: {
-        'spin': 'spin 1s linear infinite',
-        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'bounce': 'bounce 1s infinite',
-      },
-      padding: {
-        'safe-bottom': 'max(env(safe-area-inset-bottom), 1.25rem)',
-        'nav-safe': 'calc(6rem + max(env(safe-area-inset-bottom), 1.25rem))',
       },
       colors: {
         // Main 컬러 팔레트
