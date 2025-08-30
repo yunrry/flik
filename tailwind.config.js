@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      height: {
+        'screen-mobile': ['100vh', '100dvh'], // 폴백 + 최신
+      },
+      minHeight: {
+        'screen-mobile': ['100vh', '100dvh'],
+      },
       screens: {
         'xs': '375px', // iPhone mini 크기 추가
         'sm': '390px'

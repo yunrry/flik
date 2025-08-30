@@ -163,7 +163,7 @@ const FlikPage: React.FC = () => {
     
   
     return (
-      <div className="h-screen bg-gray-50 flex flex-col">
+      <div className="h-screen-mobile overflow-hidden bg-gray-50 flex flex-col">
       {/* 헤더 */}
       <HeaderBar variant="logo" />
 
