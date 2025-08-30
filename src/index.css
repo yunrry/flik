@@ -11,6 +11,11 @@
   --header-height-extended: 16rem; /* 128px */
 }
 
+
+.bottom-nav-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 1.25rem);
+}
+
 /* 헤더 높이별 유틸리티 클래스 */
 .pt-header-default {
   padding-top: var(--header-height-default);
