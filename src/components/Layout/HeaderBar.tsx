@@ -60,7 +60,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
     switch (variant) {
       case 'logo':
         return (
-          <div className="flex items-center">
+          <div className="flex items-center ">
             <LogoIcon size='xxl' />
           </div>
         );
@@ -310,7 +310,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-red-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         variant === 'back-from-nationwide'
           ? 'bg-main-1 border-b border-main-1' 
           : variant === 'back-from-sido'
@@ -359,7 +359,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
           isScrolled ? 'flex-row items-center pt-2' : 'flex-col justify-between pt-4'
         }`}>
           {/* 상단 영역 - 기존 헤더 컨텐츠 */}
-          <div className="flex items-center justify-between px-4 w-full">
+          <div className="flex items-center justify-between px-4 w-full h-full">
             {/* 왼쪽 영역 */}
             <div className="flex items-center">
               {renderLeftContent()}

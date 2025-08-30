@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 :root {
-  --header-height-default: 5rem;
+  --header-height-default: 4rem;
   --header-height-extended: 16rem;
 }
 
@@ -37,7 +37,7 @@
   box-shadow: 0 -1px 12px 0 rgba(85, 85, 85, 0.08);
   
   /* 동적 높이 */
-  height: calc(4rem + env(safe-area-inset-bottom));
+  height: calc(8rem - env(safe-area-inset-bottom));
   max-height: 7rem;
   min-height: 4rem;
 }
