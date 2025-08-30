@@ -180,15 +180,7 @@ const FlikPage: React.FC = () => {
         </div>
 
         {/* FlikCard 영역 - 남은 공간 모두 사용 */}
-        <div 
-          className="w-full overflow-hidden flex-1 pb-[5%] flex items-center justify-center"
-          style={{
-            // BottomNavigation(6rem) 높이를 고려하여 계산
-            height: 'calc(100vh - 5rem - 3.5rem - 6rem)', // 헤더(5rem) + 위치선택(3.5rem) + 네비게이션(6rem) 제외
-            minHeight: '400px', // 최소 높이 보장
-            maxHeight: 'calc(100vh - 14.5rem)' // 최대 높이 제한
-          }}
-        >
+        <div className=" w-full flik-card-adaptive overflow-hidden flex-1 pb-[5%] flex items-center justify-center">
           <div className="sm:w-[98%] xs:w-[90%] h-full">
             <FlikCardLayout
               restaurants={sampleRestaurants}

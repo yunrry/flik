@@ -5,33 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
-  --header-height-default: 5rem; /* 80px */
-  --header-height-extended: 16rem; /* 128px */
+  --header-height-default: 5rem;
+  --header-height-extended: 16rem;
 }
 
-.bottom-navigation-dynamic {
-  /* Safari 탭바가 보일 때 (safe-area가 클 때) 높이 축소 */
-  height: calc(4rem + env(safe-area-inset-bottom));
-  /* 하지만 최대 높이 제한 */
-  max-height: 7rem;
-  /* 최소 높이 보장 */
-  min-height: 5rem;
-  
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* 네비게이션 내부 콘텐츠 영역 */
-.nav-content-area {
-  height: calc(100% - env(safe-area-inset-bottom));
-  min-height: 3.5rem; /* 56px - 최소 터치 영역 */
-}
-
-
-.bottom-nav-safe {
-  padding-bottom: max(env(safe-area-inset-bottom), 1.25rem);
-}
 
 /* 헤더 높이별 유틸리티 클래스 */
 .pt-header-default {
@@ -45,6 +23,35 @@
 /* 스크롤된 헤더를 위한 패딩 */
 .pt-header-scrolled {
   padding-top: 4rem; /* 64px */
+}
+
+/* 동적 네비게이션 - 기본 스타일 */
+.bottom-navigation-dynamic {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -1px 12px 0 rgba(85, 85, 85, 0.08);
+  
+  /* 동적 높이 */
+  height: calc(4rem + env(safe-area-inset-bottom));
+  max-height: 6rem;
+  min-height: 5rem;
+}
+
+/* 네비게이션 콘텐츠 영역 */
+.nav-content-dynamic {
+  height: 5rem; /* 고정 콘텐츠 높이 */
+  padding: 0.5rem 0; /* 상하 패딩 보장 */
+}
+
+/* 안전 영역 */
+.nav-safe-area {
+  height: env(safe-area-inset-bottom);
+  background-color: white;
 }
 
 /* BottomNavigation 완전 고정 */
@@ -82,6 +89,21 @@
   color: #2563eb;
 }
 
+
+/* src/index.css에 추가 */
+.flik-card-adaptive {
+  /* 화면 전체에서 헤더(5rem) + 위치선택(3rem) + 동적네비게이션 높이를 뺀 영역 */
+  height: calc(100vh - 5rem - 5ㅋrem - 4rem - env(safe-area-inset-bottom));
+  min-height: 400px;
+  max-height: calc(100vh - 12rem - env(safe-area-inset-bottom));
+}
+
+/* 또는 더 간단하게 */
+/* .flik-card-adaptive {
+  height: calc(100vh - 8rem - env(safe-area-inset-bottom));
+  min-height: 400px;
+} */
+
 @media (min-width: 640px) {
   .nav-tab {
     width: 5rem;
@@ -115,32 +137,6 @@
   }
 }
 
-/* NavigationIcon 반응형 크기
-.navigation-icon {
-  width: 16px;
-  height: 16px;
-}
-
-@media (min-width: 320px) {
-  .navigation-icon {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-@media (min-width: 640px) {
-  .navigation-icon {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-@media (min-width: 768px) {
-  .navigation-icon {
-    width: 32px;
-    height: 32px;
-  }
-} */
 
 /* 카드 드래그 시 텍스트 선택 방지 */
 .flik-card {
