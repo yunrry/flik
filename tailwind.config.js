@@ -8,6 +8,8 @@ export default {
     extend: {
       height: {
         'screen-mobile': ['100vh', '100dvh'], // 폴백 + 최신
+        'nav': '6rem', // 96px
+        'nav-safe': 'calc(6rem + max(env(safe-area-inset-bottom), 1.25rem))',
       },
       minHeight: {
         'screen-mobile': ['100vh', '100dvh'],
@@ -20,6 +22,9 @@ export default {
         'spin': 'spin 1s linear infinite',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce': 'bounce 1s infinite',
+      },
+      padding: {
+        'safe-bottom': 'max(env(safe-area-inset-bottom), 1.25rem)',
       },
       colors: {
         // Main 컬러 팔레트
