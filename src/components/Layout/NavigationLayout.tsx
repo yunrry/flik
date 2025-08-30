@@ -32,9 +32,9 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
 
       {/* 하단 네비게이션 */}
       {shouldShowNavigation && (
-        <div className="bottom-navigation-dynamic bg-green-500">
+        <div className="bottom-navigation-dynamic">
           {/* 실제 네비게이션 콘텐츠 */}
-          <div className="nav-content-dynamic bg-blue-500 ">
+          <div className="nav-content-dynamic ">
             <BottomNavigation />
           </div>
           {/* 안전 영역 */}
