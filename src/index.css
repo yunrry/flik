@@ -37,9 +37,9 @@
   box-shadow: 0 -1px 12px 0 rgba(85, 85, 85, 0.08);
   
   /* 동적 높이 */
-  height: calc(2rem + env(safe-area-inset-bottom));
+  height: calc(5rem + env(safe-area-inset-bottom));
   max-height: 8rem;
-  min-height: 4rem;
+  min-height: 2rem;
 }
 
 /* 네비게이션 콘텐츠 영역 */
