@@ -16,7 +16,7 @@ const NavigationLayout: React.FC<NavigationLayoutProps> = ({
   const shouldShowNavigation = showNavigation && isNavigationPage;
 
   return (
-    <div className={`${disableScroll ? 'h-screen bg-gray-50 flex flex-col overflow-hidden' : 'min-h-screen bg-gray-50'}`}>
+    <div className={`${disableScroll ? 'h-screen-mobile bg-gray-50 flex flex-col overflow-hidden' : 'min-h-screen bg-gray-50'}`}>
       {/* 메인 콘텐츠 영역 */}
       <div 
         className={`
