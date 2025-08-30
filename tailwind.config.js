@@ -9,16 +9,16 @@ export default {
       height: {
         'screen-mobile': ['100vh', '100dvh'], // 폴백 + 최신
         'nav': '6rem', // 96px
-        'nav-dynamic': 'calc(4rem + env(safe-area-inset-bottom))',
+        'nav-dynamic': 'calc(5rem + env(safe-area-inset-bottom))',
         'nav-content': 'calc(100% - env(safe-area-inset-bottom))',
       },
       minHeight: {
         'screen-mobile': ['100vh', '100dvh'],
-        'nav-min': '5rem',
-        'nav-content-min': '3.5rem',
+        'nav-min': '3rem',
+        'nav-content-min': '2.5rem',
       },
       maxHeight: {
-        'nav-max': '7rem',
+        'nav-max': '4rem',
       },
       screens: {
         'xs': '375px', // iPhone mini 크기 추가
