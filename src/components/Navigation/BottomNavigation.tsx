@@ -6,6 +6,7 @@ import TabIndicator from './TabIndicator';
 import { useNavigation } from '../../hooks/useNavigation';
 import { BottomNavigationProps } from '../../types/navigation.types';
 
+// BottomNavigation.tsx
 const BottomNavigation: React.FC<BottomNavigationProps> = ({
   className = ''
 }) => {
@@ -13,7 +14,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
   return (
     <nav
-      className={`h-24 ${className}`} // 높이만 지정
+      className={`h-nav-content min-h-nav-content-min ${className}`} /* 콘텐츠 영역 높이 */
       role="tablist"
       aria-label="메인 네비게이션"
     >
