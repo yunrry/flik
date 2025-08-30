@@ -37,7 +37,7 @@
   box-shadow: 0 -1px 12px 0 rgba(85, 85, 85, 0.08);
   
   /* 동적 높이 */
-  height: calc(5rem + env(safe-area-inset-bottom));
+  height: calc(3rem + env(safe-area-inset-bottom));
   max-height: 8rem;
   min-height: 4rem;
 }
