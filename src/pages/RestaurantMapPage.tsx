@@ -203,17 +203,17 @@ const RestaurantMapPage: React.FC = () => {
               <button
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
-                className="px-4 py-2 bg-gray-100 rounded disabled:opacity-50"
+                className="px-4 py-2 rounded disabled:opacity-50  absolute left-[1%] top-[40%]"
               >
-                ← 이전
+                ←
               </button>
               
               <button
                 onClick={handleNext}
                 disabled={currentIndex === restaurants.length - 1}
-                className="px-4 py-2 bg-gray-100 rounded disabled:opacity-50"
+                className="px-4 py-2 rounded disabled:opacity-50 absolute right-[1%] top-[40%]"
               >
-                다음 →
+                →
               </button>
             </div>
           )}
