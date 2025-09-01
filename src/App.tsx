@@ -3,7 +3,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
-
+import { KakaoMapProvider } from './contexts/KakaoMapProvider';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -17,6 +17,7 @@ import RegionPage from './pages/RegionPage';
 import RestaurantMapPage from './pages/RestaurantMapPage';
 import RestaurantCardPage from './pages/RestaurantCardPage';
 import PostingPage from './pages/PostingPage';
+import MapViewPage from './pages/MapViewPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -48,6 +49,7 @@ const NavigationPageWrapper: React.FC<{ children: React.ReactNode; disableScroll
 function App() {
   return (
     <Router>
+      <KakaoMapProvider>
       <div className="App">
         <Routes>
           {/* Public Routes */}
@@ -145,11 +147,13 @@ function App() {
           />
 
           <Route path="/posting" element={<PostingPage />} />
+      
           
           {/* 404 Redirect */}
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Routes>
       </div>
+      </KakaoMapProvider>
     </Router>
   );
 }
