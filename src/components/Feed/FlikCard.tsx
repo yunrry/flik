@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
 import { Restaurant } from '../../types/restaurant.types';
-
+import { useThridParty } from '../../hooks/useThridParty';
 interface FlikCardProps {
   restaurant: Restaurant;
   onSwipeLeft?: (restaurant: Restaurant) => void; // 저장 액션
@@ -24,8 +24,6 @@ const FlikCard: React.FC<FlikCardProps> = ({
   restaurant,
   onSwipeLeft,
   onSwipeUp,
-  onBlogClick,
-  onMapClick 
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -35,7 +33,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const [showHint, setShowHint] = useState<boolean>(false); // 힌트 표시 상태 추가
   const cardRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<NodeJS.Timeout | null>(null); // 타이머 ref 추가
-
+  const { handleMapClick } = useThridParty();
   // 터치/마우스 이벤트 핸들러
   const handleDragStart = useCallback((clientX: number, clientY: number): void => {
     setIsDragging(true);
@@ -335,7 +333,6 @@ const FlikCard: React.FC<FlikCardProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onBlogClick && onBlogClick(restaurant);
             }}
             className="flex-1 bg-white text-gray-6 border border-gray-8 sm:py-1.5 xs:py-2 sm:px-4 xs:px-3 rounded-lg font-medium xs:text-xs sm:text-sm  transition-colors flex items-center justify-center space-x-1"
           >
@@ -345,7 +342,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onMapClick && onMapClick(restaurant);
+              handleMapClick([restaurant], '/flik');
             }}
             className="flex-1 bg-white text-gray-6 border border-gray-8 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm  transition-colors flex items-center justify-center space-x-1"
           >

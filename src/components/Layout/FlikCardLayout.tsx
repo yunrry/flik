@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import FlikCard from '../Feed/FlikCard';
-import { saveRestaurant } from '../../api/restaurantApi';
 import { useAuthStore } from '../../stores/authStore';
-import { useNavigate } from 'react-router-dom';
-import { loadKakaoMapSDK, getCoordinatesFromAddress } from '../../api/kakaoMapApi';
-import { searchNaverBlog, cleanBlogTitle, cleanBlogDescription, formatBlogDate } from '../../api/naverBlogApi';
 import { Restaurant } from '../../types/restaurant.types';
-import { useThridParty } from '../../hooks/useThridParty';
+
 
 // Props 타입 정의
 interface FlikCardLayoutProps {
@@ -19,15 +15,12 @@ interface FlikCardLayoutProps {
 const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({ 
   restaurants, 
   onSave, 
-  onBlogReview, 
-  onKakaoMap 
 }) => {
   const { user } = useAuthStore();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const { handleMapClick, handleBlogClick } = useThridParty();
+
 
   // 저장된 맛집이 변경될 때마다 부모에게 알림
   useEffect(() => {
@@ -176,8 +169,6 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
                     restaurant={restaurant}
                     onSwipeLeft={index === 0 ? handleSwipeLeft : undefined}
                     onSwipeUp={index === 0 ? handleSwipeUp : undefined}
-                    onBlogClick={index === 0 ? handleBlogClick : undefined}
-                    onMapClick={index === 0 ? handleMapClick : undefined}
                   />
                 )}
                 {/* 세 번째 카드 이후는 플레이스홀더 */}

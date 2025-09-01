@@ -7,30 +7,17 @@ export const useThridParty = () => {
 
   const navigate = useNavigate();
 
-  const handleMapClick = async (restaurant: Restaurant) => {
+  const handleMapClick = async (restaurants: Restaurant[], returnPath: string) => {
     try {
-      console.log('지도 검색 시작:', restaurant.name);
+      console.log('지도 검색 시작:', restaurants[0].name);
       
-      let coordinates = restaurant.coordinates;
-      
-      // 좌표가 없으면 주소로 검색
-      if (!coordinates && restaurant.address) {
-        try {
-          await loadKakaoMapSDK(); // SDK 로드
-          const coords = await getCoordinatesFromAddress(restaurant.address);
-          coordinates = { lat: coords.lat, lng: coords.lng };
-        } catch (error) {
-          console.log('주소 좌표 변환 실패, 기본 검색으로 진행');
-        }
-      }
+
   
       // 지도 페이지로 이동하면서 데이터 전달
       navigate('/restaurant-map', {
         state: {
-          restaurant: restaurant,
-          coordinates: coordinates,
-          searchQuery: restaurant.name,
-          address: restaurant.address || restaurant.location
+          restaurants: restaurants,
+          returnPath: returnPath,
         }
       });
   
@@ -43,11 +30,11 @@ export const useThridParty = () => {
       // 에러 발생 시에도 페이지 이동 (검색 기능으로 처리)
       navigate('/restaurant-map', {
         state: {
-          restaurant: restaurant,
+          restaurants: restaurants,
           coordinates: null,
           error: '위치 정보를 불러오는데 실패했습니다.',
-          searchQuery: restaurant.name,
-          address: restaurant.address || restaurant.location
+          searchQuery: restaurants[0].name,
+          address: restaurants[0].address || restaurants[0].location
         }
       });
     }

@@ -35,6 +35,10 @@ const SavePage: React.FC = () => {
   const { handleMapClick } = useThridParty();
   const navigate = useNavigate();
 
+
+
+
+
   // 저장된 맛집 데이터 불러오기
   useEffect(() => {
     const fetchSavedRestaurants = async () => {
@@ -52,7 +56,12 @@ const SavePage: React.FC = () => {
             distance: 1200,
             category: '이탈리아 음식',
             location: '서울 성동구',
-            hours: '12:00 ~ 18:00'
+            hours: '12:00 ~ 18:00',
+            coordinates: {
+              lat: 37.5665,
+              lng: 126.9780
+            }
+
           },
           {
             id: '2',
@@ -66,7 +75,12 @@ const SavePage: React.FC = () => {
             address: '서울 성동구 성수동1가 685-142',
             distance: 520,
             location: '서울 성동구',
-            hours: '11:00 ~ 21:00'
+            hours: '11:00 ~ 21:00',
+            coordinates: {
+              lat: 37.5665,
+              lng: 126.9780
+            }
+
           },
           {
             id: '3',
@@ -78,7 +92,11 @@ const SavePage: React.FC = () => {
             distance: 160,
             category: '이탈리아 음식',
             location: '서울 성동구',
-            hours: '12:00 ~ 18:00'
+            hours: '12:00 ~ 18:00',
+            coordinates: {
+              lat: 37.5665,
+              lng: 126.9780
+            }
           },
           {
             id: '4',
@@ -90,7 +108,11 @@ const SavePage: React.FC = () => {
             distance: 450,
             category: '이탈리아 음식',
             location: '서울 성동구',
-            hours: '12:00 ~ 18:00'
+            hours: '12:00 ~ 18:00',
+            coordinates: {
+              lat: 37.5665,
+              lng: 126.9780
+            }
           }
         ];
         
@@ -116,7 +138,7 @@ const SavePage: React.FC = () => {
         {/* 페이지 제목 */}
         <div className="px-[5%] py-[3%]">
           <div className="flex items-center justify-between"
-          onClick={() => handleMapClick(savedRestaurants[0])}
+          onClick={() => handleMapClick(savedRestaurants, '/save')}
           >
             <MapIcon size="md"/>
 
