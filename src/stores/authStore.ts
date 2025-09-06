@@ -2,221 +2,325 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from '../types/user.types';
+import { authApi } from '../api/authApi';
+import {
+  User,
+  EmailLoginRequest,
+  EmailSignupRequest,
+  OAuthCallbackRequest,
+  ProfileUpdateRequest,
+  OAuthSignupRequest,
+} from '../types/auth';
 
-export type SocialProvider = 'google' | 'kakao' | 'naver' | 'apple' | 'email';
+export type SocialProvider = 'google' | 'kakao';
 
-export interface AuthState {
+interface AuthState {
+  // State
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-}
-
-export interface LoginCredentials {
-  provider: SocialProvider;
-}
-
-export interface AuthActions {
-  login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => void;
-  updateUser: (user: Partial<User>) => void;
+  
+  // Actions
+  login: (credentials: EmailLoginRequest) => Promise<void>;
+  signup: (signupData: EmailSignupRequest) => Promise<void>;
+  socialLogin: (provider: SocialProvider) => Promise<void>;
+  handleOAuthCallback: (request: OAuthCallbackRequest) => Promise<void>;
+  completeOAuthSignup: (signupData: OAuthSignupRequest) => Promise<void>;
+  logout: () => Promise<void>;
+  updateProfile: (data: ProfileUpdateRequest) => Promise<void>;
+  loadUser: () => Promise<void>;
+  refreshToken: () => Promise<void>;
   clearError: () => void;
+  setLoading: (loading: boolean) => void;
+
 }
 
-interface AuthStore extends AuthState, AuthActions {}
-
-// Mock 사용자 데이터 (user.types.ts 형식에 맞춰 조정)
-const MOCK_USERS: Record<SocialProvider, User> = {
-  google: {
-    id: 'mock-google-user',
-    email: 'hong@gmail.com',
-    nickname: '삐이야악123',
-    profileImage: 'https://res.cloudinary.com/deggvyhsw/image/upload/v1743397376/sbmakf34rszypdbhhhlk.jpg',
-    provider: 'google',
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: new Date().toISOString(),
-    name: 'Hong Gil Dong',
-    preferences: {
-      notifications: true,
-      marketing: false,
-      locationTracking: true
-    }
-  },
-  kakao: {
-    id: 'mock-kakao-user',
-    email: 'hong@kakao.com',
-    nickname: '카카오친구',
-    profileImage: 'https://res.cloudinary.com/deggvyhsw/image/upload/v1743397376/sbmakf34rszypdbhhhlk.jpg',
-    provider: 'kakao',
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: new Date().toISOString(),
-    name: '홍길동',
-    preferences: {
-      notifications: true,
-      marketing: false,
-      locationTracking: true
-    }
-  },
-  naver: {
-    id: 'mock-naver-user',
-    email: 'hong@naver.com',
-    nickname: '네이버유저',
-    profileImage: 'https://via.placeholder.com/100',
-    provider: 'naver',
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: new Date().toISOString(),
-    name: '홍길동',
-    preferences: {
-      notifications: true,
-      marketing: false,
-      locationTracking: true
-    }
-  },
-  apple: {
-    id: 'mock-apple-user',
-    email: 'hong@icloud.com',
-    nickname: '애플유저',
-    profileImage: 'https://via.placeholder.com/100',
-    provider: 'apple',
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: new Date().toISOString(),
-    name: 'Hong Gil Dong',
-    preferences: {
-      notifications: true,
-      marketing: false,
-      locationTracking: true
-    }
-  },
-  email: {
-    id: 'mock-email-user',
-    email: 'hong@example.com',
-    nickname: '이메일유저',
-    profileImage: 'https://via.placeholder.com/100',
-    provider: 'email',
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: new Date().toISOString(),
-    name: '홍길동',
-    preferences: {
-      notifications: true,
-      marketing: false,
-      locationTracking: true
-    }
-  }
-};
-
-// Mock 로그인 함수
-const mockLogin = async (provider: SocialProvider): Promise<User> => {
-  // 실제 API 호출 시뮬레이션
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // 10% 확률로 실패 시뮬레이션
-  if (Math.random() < 0.1) {
-    throw new Error('로그인에 실패했습니다. 다시 시도해주세요.');
-  }
-  
-  const user = MOCK_USERS[provider];
-  return {
-    ...user,
-    updatedAt: new Date().toISOString(),
-  };
-};
-
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      // State
+      // Initial state
       user: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
 
       // Actions
-      login: async (credentials) => {
+      login: async (credentials: EmailLoginRequest) => {
         set({ isLoading: true, error: null });
-        
         try {
-          const mockUser = await mockLogin(credentials.provider);
-          // 토큰을 localStorage에 저장 (API 호출용)
-          localStorage.setItem('auth_token', `mock_token_${mockUser.id}`);
+          const response = await authApi.login(credentials);
           
-          set({ 
-            user: mockUser, 
-            isAuthenticated: true, 
-            isLoading: false 
-          });
+          if (response.success && response.data) {
+            const { accessToken, refreshToken, user } = response.data;
+            
+            // Store tokens
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            authApi.setAccessToken(accessToken);
+            
+            set({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            throw new Error(response.message || '로그인에 실패했습니다.');
+          }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.';
-          set({ 
-            error: errorMessage, 
-            isLoading: false 
+          set({
+            error: error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.',
+            isLoading: false,
           });
           throw error;
         }
       },
 
-      logout: () => {
-        // localStorage에서 토큰 제거
-        localStorage.removeItem('auth_token');
-        
-        set({ 
-          user: null, 
-          isAuthenticated: false, 
-          error: null 
-        });
+      signup: async (signupData: EmailSignupRequest) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.signup(signupData);
+          
+          if (response.success && response.data) {
+            const { accessToken, refreshToken, user } = response.data;
+            
+            // Store tokens
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            authApi.setAccessToken(accessToken);
+            
+            set({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            throw new Error(response.message || '회원가입에 실패했습니다.');
+          }
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.',
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
-      updateUser: (userData) => {
-        const currentUser = get().user;
-        if (currentUser) {
-          const updatedUser = {
-            ...currentUser,
-            ...userData,
-            updatedAt: new Date().toISOString()
-          };
+      socialLogin: async (provider: SocialProvider) => {
+        set({ isLoading: true, error: null });
+        try {
+          // OAuth state 생성 및 저장
+          const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+          sessionStorage.setItem('oauth_state', state);
+          sessionStorage.setItem('oauth_provider', provider);
           
-          set({ 
-            user: updatedUser
+          // 현재 페이지 위치 저장 (OAuth 완료 후 돌아올 위치)
+          sessionStorage.setItem('oauth_return_url', window.location.pathname + window.location.search);
+          
+          console.log(`Requesting OAuth URL for ${provider} with state: ${state}`);
+          
+          const response = await authApi.getOAuthUrl(provider, state);
+          
+          console.log('OAuth URL response:', response);
+          
+          if (response.success && response.data?.authUrl) {
+            console.log('Redirecting to OAuth page:', response.data.authUrl);
+            // 현재 탭에서 OAuth URL로 리다이렉트
+            window.location.href = response.data.authUrl;
+          } else {
+            const errorMessage = response.message || response.error || '소셜 로그인 URL을 가져올 수 없습니다.';
+            console.error('OAuth URL request failed:', errorMessage);
+            throw new Error(errorMessage);
+          }
+        } catch (error) {
+          console.error('Social login error:', error);
+          set({
+            error: error instanceof Error ? error.message : '소셜 로그인 중 오류가 발생했습니다.',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      handleOAuthCallback: async (request: OAuthCallbackRequest) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.handleOAuthCallback(request);
+          
+          if (response.success && response.data) {
+            const { accessToken, refreshToken, user } = response.data;
+            
+            // Store tokens
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            authApi.setAccessToken(accessToken);
+            
+            // Clear OAuth state
+            sessionStorage.removeItem('oauth_state');
+            sessionStorage.removeItem('oauth_provider');
+            
+            set({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            throw new Error(response.message || '소셜 로그인에 실패했습니다.');
+          }
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : '소셜 로그인 처리 중 오류가 발생했습니다.',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      completeOAuthSignup: async (signupData: {
+        provider: string;
+        tempKey: string;
+        nickname: string;
+      }) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.completeOAuthSignup(signupData);
+          
+          if (response.success && response.data) {
+            const { accessToken, refreshToken, user } = response.data;
+            
+            // Store tokens
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            authApi.setAccessToken(accessToken);
+            
+            set({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            throw new Error(response.message || '회원가입에 실패했습니다.');
+          }
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      logout: async () => {
+        set({ isLoading: true });
+        try {
+          await authApi.logout();
+        } catch (error) {
+          console.error('로그아웃 API 호출 실패:', error);
+        } finally {
+          // Clear all auth data
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          authApi.setAccessToken(null);
+          
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
           });
         }
       },
 
-      clearError: () => {
-        set({ error: null });
+      updateProfile: async (data: ProfileUpdateRequest) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.updateProfile(data);
+          
+          if (response.success && response.data) {
+            set({
+              user: response.data,
+              isLoading: false,
+            });
+          } else {
+            throw new Error(response.message || '프로필 업데이트에 실패했습니다.');
+          }
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : '프로필 업데이트 중 오류가 발생했습니다.',
+            isLoading: false,
+          });
+          throw error;
+        }
       },
+
+      loadUser: async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) return;
+
+        set({ isLoading: true });
+        try {
+          authApi.setAccessToken(accessToken);
+          const response = await authApi.getMe();
+          
+          if (response.success && response.data) {
+            set({
+              user: response.data,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } else {
+            throw new Error('사용자 정보를 가져올 수 없습니다.');
+          }
+        } catch (error) {
+          console.error('사용자 정보 로드 실패:', error);
+          // 토큰이 유효하지 않으면 로그아웃 처리
+          get().logout();
+        }
+      },
+
+      refreshToken: async () => {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          get().logout();
+          return;
+        }
+
+        try {
+          const response = await authApi.refreshToken({ refreshToken });
+          
+          if (response.success && response.data) {
+            const { accessToken: newAccessToken, refreshToken: newRefreshToken, user } = response.data;
+            
+            localStorage.setItem('accessToken', newAccessToken);
+            localStorage.setItem('refreshToken', newRefreshToken);
+            authApi.setAccessToken(newAccessToken);
+            
+            set({
+              user,
+              isAuthenticated: true,
+            });
+          } else {
+            throw new Error('토큰 갱신에 실패했습니다.');
+          }
+        } catch (error) {
+          console.error('토큰 갱신 실패:', error);
+          get().logout();
+        }
+      },
+
+      clearError: () => set({ error: null }),
+      setLoading: (loading: boolean) => set({ isLoading: loading }),
     }),
     {
-      name: 'flik-auth-storage',
-      partialize: (state) => ({ 
-        user: state.user, 
-        isAuthenticated: state.isAuthenticated 
+      name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
       }),
-      // 스토리지에서 복원 시 토큰도 복원
-      onRehydrateStorage: () => (state) => {
-        if (state && state.user) {
-          const token = localStorage.getItem('auth_token');
-          if (token) {
-            // 토큰이 있으면 인증된 상태로 유지
-            state.isAuthenticated = true;
-          } else {
-            // 토큰이 없으면 로그아웃 상태로 설정
-            state.user = null;
-            state.isAuthenticated = false;
-          }
-        }
-      }
     }
   )
 );
-
-// 인증 상태 확인 헬퍼
-export const useIsAuthenticated = () => {
-  const { isAuthenticated, user } = useAuthStore();
-  return isAuthenticated && user !== null;
-};
-
-// 현재 사용자 정보 헬퍼  
-export const useCurrentUser = () => {
-  const { user } = useAuthStore();
-  return user;
-};
