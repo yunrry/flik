@@ -14,8 +14,8 @@ import {
   } from '../types/auth';
   import { getApiBaseUrl } from '../utils/env';
   
-  // const API_BASE_URL = getApiBaseUrl() || 'http://localhost:8080/api';
-  const API_BASE_URL = 'http://localhost:8080/api';
+  const API_BASE_URL = getApiBaseUrl();
+  // const API_BASE_URL = 'http://localhost:8080/api';
 
   class AuthApi {
     private baseUrl: string;
