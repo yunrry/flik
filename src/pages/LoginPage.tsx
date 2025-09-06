@@ -1,24 +1,126 @@
 // src/pages/LoginPage.tsx
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore, type SocialProvider } from '../stores/authStore';
 import { LogoIcon } from '../components/Icons';
+import EmailAuthForm from '../components/Auth/EmailAuthForm';
+import OAuthCallback from '../components/Auth/OAuthCallback';
+import NicknameSetup from '../components/Auth/NicknameSetup';
 
 const LoginPage: React.FC = () => {
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [showNicknameSetup, setShowNicknameSetup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login, error, clearError } = useAuthStore();
+  
+  const { socialLogin, user, isAuthenticated, error, clearError } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // OAuth 콜백 처리 확인
+  const isOAuthCallback = searchParams.has('code');
+  const hasError = searchParams.has('error');
+
+  useEffect(() => {
+    // 이미 로그인된 경우 홈으로 리다이렉트
+    if (isAuthenticated && user) {
+      // 닉네임이 없거나 기본값인 경우 닉네임 설정 화면으로
+      if (!user.nickname || user.nickname.trim() === '') {
+        setShowNicknameSetup(true);
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
+
+    // URL 에러 파라미터 처리
+    if (hasError) {
+      const errorType = searchParams.get('error');
+      const errorMessage = searchParams.get('message');
+      
+      console.log('OAuth Error Details:', { errorType, errorMessage });
+      
+      switch (errorType) {
+        case 'oauth_error':
+          console.error('OAuth 인증 오류가 발생했습니다.', errorMessage);
+          break;
+        case 'invalid_callback':
+          console.error('잘못된 콜백 요청입니다.');
+          break;
+        case 'invalid_session':
+          console.error('세션이 유효하지 않습니다.');
+          break;
+        case 'state_mismatch':
+          console.error('보안 검증에 실패했습니다.');
+          break;
+        case 'callback_failed':
+          console.error('로그인 처리 중 오류가 발생했습니다.');
+          break;
+        default:
+          console.error('알 수 없는 오류:', errorType, errorMessage);
+      }
+      // 에러 파라미터 제거
+      navigate('/login', { replace: true });
+    }
+  }, [isAuthenticated, user, hasError, searchParams, navigate]);
+
+  // OAuth 콜백 처리 중인 경우
+  if (isOAuthCallback) {
+    return <OAuthCallback />;
+  }
+
+  // 닉네임 설정 화면
+  if (showNicknameSetup) {
+    return (
+      <NicknameSetup
+        onComplete={() => {
+          setShowNicknameSetup(false);
+          navigate('/', { replace: true });
+        }}
+        isRequired={true}
+      />
+    );
+  }
+
+  // 이메일 로그인 폼
+  if (showEmailForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+              <div className="mb-6">
+                <button
+                  onClick={() => setShowEmailForm(false)}
+                  className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  뒤로 가기
+                </button>
+              </div>
+              
+              <EmailAuthForm
+                onSuccess={() => {
+                  // 이메일 로그인/회원가입 성공 후 처리
+                  setShowEmailForm(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSocialLogin = async (provider: SocialProvider) => {
     setIsLoading(true);
     clearError();
     
     try {
-      await login({ provider });
-      navigate('/', { replace: true });
+      await socialLogin(provider);
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Social login failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -37,18 +139,6 @@ const LoginPage: React.FC = () => {
       color: 'bg-yellow-400 hover:bg-yellow-500',
       textColor: 'text-gray-800',
       icon: '💬'
-    },
-    {
-      provider: 'naver' as SocialProvider,
-      name: 'Naver',
-      color: 'bg-green-500 hover:bg-green-600',
-      icon: 'N'
-    },
-    {
-      provider: 'apple' as SocialProvider,
-      name: 'Apple',
-      color: 'bg-black hover:bg-gray-800',
-      icon: '🍎'
     }
   ];
 
@@ -63,7 +153,7 @@ const LoginPage: React.FC = () => {
                 <LogoIcon size="xxl" className="mx-auto" />
               </h1>
               <p className="text-gray-600 text-sm sm:text-base">
-              관광지 맛집 고르는 고민, 스와이프로 끝
+                관광지 맛집 고르는 고민, 스와이프로 끝
               </p>
             </div>
 
@@ -116,11 +206,11 @@ const LoginPage: React.FC = () => {
             </div>
 
             <button
-              onClick={() => handleSocialLogin('google')}
+              onClick={() => setShowEmailForm(true)}
               disabled={isLoading}
               className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors"
             >
-              🚀 빠른 체험하기 (Google 계정)
+              📧 이메일로 로그인/회원가입
             </button>
 
             <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
@@ -140,6 +230,7 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Background Animation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200 rounded-full opacity-50 animate-pulse"></div>
         <div className="absolute top-40 right-16 w-16 h-16 bg-purple-200 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>

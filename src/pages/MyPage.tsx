@@ -154,7 +154,7 @@ const MyPage: React.FC = () => {
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
       <main className="pt-header-default w-full px-0 lg:px-8 py-6">
 
-      <ProfileSection user={user!} onUserUpdate={handleUserUpdate} />
+      {/* <ProfileSection user={user!} onUserUpdate={handleUserUpdate} /> */}
 
  {/* 리뷰 활동 목록 */}
       <div className="space-y-1">
