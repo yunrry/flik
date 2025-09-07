@@ -138,7 +138,7 @@ function App() {
 
   return (
     <Router>
-      <KakaoMapProvider>
+      {/* <KakaoMapProvider> */}
         <div className="App">
           <Routes>
             {/* Public Routes - Only login and auth callback */}
@@ -283,7 +283,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
-      </KakaoMapProvider>
+      {/* </KakaoMapProvider> */}
     </Router>
   );
 }
