@@ -8,7 +8,7 @@ export const getEnvVar = (key: string, defaultValue?: string): string => {
   
   // 각 환경변수별 getter 함수들
   export const getApiBaseUrl = (): string => {
-    return getEnvVar('VITE_API_BASE_URL', 'https://flikapp.org/apitest');
+    return getEnvVar('VITE_API_BASE_URL', 'http://localhost:8080/api');
   };
   
   export const getNaverClientId = (): string => {
