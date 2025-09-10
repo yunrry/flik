@@ -22,51 +22,51 @@ export const KakaoMapProvider: React.FC<KakaoMapProviderProps> = ({ children }) 
   const [error, setError] = useState<string | null>(null);
   const [kakao, setKakao] = useState<any>(null);
 
-  // useEffect(() => {
-  //   const loadSDK = async () => {
-  //     // 이미 로드된 경우
-  //     if (window.kakao && window.kakao.maps && window.kakao.maps.LatLng) {
-  //       setKakao(window.kakao);
-  //       setIsLoaded(true);
-  //       return;
-  //     }
+  useEffect(() => {
+    const loadSDK = async () => {
+      // 이미 로드된 경우
+      if (window.kakao && window.kakao.maps && window.kakao.maps.LatLng) {
+        setKakao(window.kakao);
+        setIsLoaded(true);
+        return;
+      }
 
-  //     // 이미 로딩 중인 경우
-  //     if (isLoading) return;
+      // 이미 로딩 중인 경우
+      if (isLoading) return;
 
-  //     try {
-  //       setIsLoading(true);
-  //       setError(null);
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  //       const kakaoKey = getKakaoJavaScriptKey();
-  //       if (!kakaoKey) {
-  //         throw new Error('카카오맵 API 키가 설정되지 않았습니다');
-  //       }
+        const kakaoKey = getKakaoJavaScriptKey();
+        if (!kakaoKey) {
+          throw new Error('카카오맵 API 키가 설정되지 않았습니다');
+        }
 
-  //       // 기존 스크립트 확인
-  //       const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
+        // 기존 스크립트 확인
+        const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
         
-  //       if (!existingScript) {
-  //         // 스크립트 로드
-  //         await loadKakaoScript(kakaoKey);
-  //       }
+        if (!existingScript) {
+          // 스크립트 로드
+          await loadKakaoScript(kakaoKey);
+        }
 
-  //       // SDK 초기화 대기
-  //       await waitForKakaoMaps();
+        // SDK 초기화 대기
+        await waitForKakaoMaps();
         
-  //       setKakao(window.kakao);
-  //       setIsLoaded(true);
-  //     } catch (err) {
-  //       const errorMessage = err instanceof Error ? err.message : '카카오맵 SDK 로드에 실패했습니다';
-  //       setError(errorMessage);
-  //       console.error('카카오맵 SDK 로드 실패:', err);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+        setKakao(window.kakao);
+        setIsLoaded(true);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : '카카오맵 SDK 로드에 실패했습니다';
+        setError(errorMessage);
+        console.error('카카오맵 SDK 로드 실패:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  //   loadSDK();
-  // }, [isLoading]);
+    loadSDK();
+  }, [isLoading]);
 
   return (
     <KakaoMapContext.Provider value={{ isLoaded, isLoading, error, kakao }}>
