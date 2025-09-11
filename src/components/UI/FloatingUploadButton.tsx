@@ -11,7 +11,7 @@ const FloatingUploadButton: React.FC = () => {
   return (
     <button
       onClick={handleUploadClick}
-      className="fixed bottom-24 right-4 z-50 w-14 h-14 bg-main-1 hover:bg-orange-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
+      className="fixed bottom-24 right-4 z-50 w-14 h-14 bg-main-1 hover:bg-main-1 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
       aria-label="게시글 작성"
     >
       {/* 플러스 아이콘 */}

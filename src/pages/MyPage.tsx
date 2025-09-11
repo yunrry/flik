@@ -161,7 +161,7 @@ const MyPage: React.FC = () => {
           {isLoading ? (
             // 로딩 상태
             <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-main-1"></div>
             </div>
           ) : error ? (
             // 에러 상태
