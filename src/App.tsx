@@ -183,7 +183,7 @@ function App() {
               path="/nationwide" 
               element={
                 <ProtectedRoute>
-                  <NavigationPageWrapper requireNickname={true}>
+                  <NavigationPageWrapper disableScroll={true} requireNickname={true}>
                     <NationwidePage />
                   </NavigationPageWrapper>
                 </ProtectedRoute>

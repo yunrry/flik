@@ -101,7 +101,7 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
       <button
         onClick={handleClick}
         className={`
-          ${isOverlayMode || isSelectedMode || isTextOnlyMode ? 'relative group' : ''} ${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden
+          ${(isOverlayMode || isSelectedMode || isTextOnlyMode) ? 'relative group' : ''} ${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden
           transition-all duration-200 active:scale-95
           ${isActive && isSelectedMode
             ? 'ring-2 ring-main-1 ring-offset-2' 
@@ -127,7 +127,7 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
               src={icon} 
               alt={name}
               className={`w-full h-full object-cover ${
-                isOverlayMode || isSelectedMode || isTextOnlyMode ? 'transition-transform duration-200 group-hover:scale-110' : ''
+                (isOverlayMode || isSelectedMode || isTextOnlyMode) ? 'transition-transform duration-200 group-hover:scale-110' : ''
               }`}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -136,7 +136,7 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
             />
             
             {/* 오버레이 모드일 때만 오버레이와 텍스트 표시 */}
-            {isOverlayMode || isSelectedMode && (
+            {(isOverlayMode || isSelectedMode) && (
               <>
                 {/* 어두운 오버레이 */}
                 <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-50 transition-all duration-200" />

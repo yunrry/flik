@@ -373,7 +373,7 @@ const TravelSelectionPage: React.FC = () => {
       {/* 하단 버튼 */}
 
       {currentStep !== 5 && (
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90">
         <div className={`flex gap-3 max-w-md mx-auto ${currentStep === 1 ? 'justify-center' : ''}`}>
           {currentStep !== 1 && (
             <button
