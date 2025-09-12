@@ -19,6 +19,7 @@ import RestaurantMapPage from './pages/RestaurantMapPage';
 import RestaurantCardPage from './pages/RestaurantCardPage';
 import PostingPage from './pages/PostingPage';
 import MapViewPage from './pages/MapViewPage';
+import TravelSelectionPage from './pages/TravelSelectionPage';
 import LocationSelectPage from './pages/LocationSelectPage';
 
 // Layouts
@@ -182,7 +183,7 @@ function App() {
               path="/nationwide" 
               element={
                 <ProtectedRoute>
-                  <NavigationPageWrapper requireNickname={true}>
+                  <NavigationPageWrapper disableScroll={true} requireNickname={true}>
                     <NationwidePage />
                   </NavigationPageWrapper>
                 </ProtectedRoute>
@@ -244,6 +245,18 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            <Route 
+              path="/travel-select" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper disableScroll={false} requireNickname={true}>
+                    <TravelSelectionPage />
+                  </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
+
             
             {/* FlikPage - Login + Nickname required */}
             <Route 

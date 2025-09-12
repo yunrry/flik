@@ -56,7 +56,7 @@ const NationwidePage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-8 sm:gap-12">
+            <div className="grid grid-cols-4 gap-x-12 gap-y-5">
               {categories.map((category) => (
                 <CategoryCircle
                   key={category.id}

@@ -18,8 +18,12 @@ const FlikExploreButton: React.FC<FlikExploreButtonProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  // const handleClick = () => {
+  //   navigate('/flik');
+  // };
+
   const handleClick = () => {
-    navigate('/flik');
+    navigate('/travel-select');
   };
 
   return (

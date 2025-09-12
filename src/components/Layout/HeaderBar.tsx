@@ -20,7 +20,15 @@ const HeaderBar: React.FC<HeaderProps> = ({
   showRegister = false,
   registerText = '등록',
   isAvailable = false,
-  className = ''
+  className = '',
+  currentStep,
+  totalSteps,
+  stepTitle1,
+  stepTitle2,
+  stepSubtitle,
+  onNext,
+  onPrev,
+  canProceed,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -86,7 +94,25 @@ const HeaderBar: React.FC<HeaderProps> = ({
           </div>
         );
 
-
+        case 'travel-select':
+          return (
+            <div className="flex flex-col justify-start h-full py-1 pb-0">
+              <div className="flex items-center">
+              <button
+                onClick={currentStep === 1 ? onBack : onPrev}
+                className={`pl-2 -ml-2 transition-colors rounded-lg text-white hover:bg-white/20`}
+                aria-label="뒤로가기"
+              >
+                <BackArrowIcon size="lg" color="white" />
+              </button>
+              </div>
+              <div className="flex flex-col items-start pt-6 pl-0 pb-0 space-y-1 overflow-visible">
+              <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle1}</div>
+              <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle2}</div>
+              <div className="justify-start text-white text-sm font-medium font-['Pretendard'] leading-loose overflow-visible whitespace-nowrap pt-2">{stepSubtitle}</div>
+            </div>
+            </div>
+          );
 
       case 'back-from-nationwide':
         return (
@@ -224,12 +250,15 @@ const HeaderBar: React.FC<HeaderProps> = ({
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder={searchPlaceholder}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-main-1 focus:ring-1 focus:ring-main-1 text-sm"
               />
             </div>
           </form>
         );
       
+      
+    
+
       default:
         return null;
     }
@@ -272,7 +301,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
         return showRegister ? (
           <button
             onClick={onRegister}
-            className="px-4 py-1 text-orange-500 font-medium hover:text-orange-600 transition-colors"
+            className="px-4 py-1 text-main-1 font-medium hover:text-main-1 transition-colors"
           >
             {registerText}
           </button>
@@ -303,6 +332,57 @@ const HeaderBar: React.FC<HeaderProps> = ({
           </button>
         );
       
+        case 'travel-select':
+          if (!currentStep || !totalSteps) return null;
+          
+          // 모든 단계 번호 생성
+          const allSteps = [...Array(totalSteps-1)].map((_, i) => 
+            (i + 1).toString().padStart(2, '0')
+          );
+          
+          // currentStep에 따른 실제 진행 단계 계산
+          let actualStep = currentStep;
+          if (currentStep === 2) {
+            actualStep = 1; // 2단계도 1단계와 같은 진행률
+          }
+
+          return (
+            <div className="flex flex-col flex-1">
+              {/* 진행률 표시 */}
+              <div className="flex items-center justify-center space-x-2 text-white text-xs font-semibold font-['Pretendard'] mb-4">
+                {allSteps.map((step, i) => {
+                  const stepNum = i + 1;
+                  
+                  return (
+                    <div key={step} className="flex items-center">
+                      {actualStep === 1 ? (
+                        <>
+                        <span className="text-xs">{step}</span>
+                        {stepNum === actualStep && (
+                          <div className="w-9 h-[1px] bg-white ml-2 mr-1 mb-0.5"></div>
+                        )}
+                        
+                        </>
+                      ) : (
+                        <>
+                        <span className="text-xs">{step}</span>
+                        {stepNum === actualStep-1 && (
+                          <div className="w-9 h-[1px] bg-white ml-2 mr-1 mb-0.5"></div>
+                        )}
+
+                        </>
+                      )}
+                      
+                    </div>
+                  );
+                })}
+              </div>
+              
+            </div>
+          );
+
+
+
       default:
         return null;
     }
@@ -311,7 +391,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        variant === 'back-from-nationwide'
+        variant === 'back-from-nationwide' || variant === 'travel-select'
           ? 'bg-main-1 border-b border-main-1' 
           : variant === 'back-from-sido'
           ? `overflow-hidden pb-0 ${
@@ -324,7 +404,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
           ? isScrolled 
             ? '4rem' // 스크롤 시 축소 높이 (64px)
             : 'var(--header-height-extended)' // 기본 확장 높이
-          : (variant === 'back-from-nationwide')
+          : (variant === 'back-from-nationwide' || variant === 'travel-select')
           ? 'var(--header-height-extended)' 
           : 'var(--header-height-default)',
         minHeight: variant === 'back-from-sido' ? '4rem' : 'auto' // 최소 높이 보장
@@ -361,17 +441,30 @@ const HeaderBar: React.FC<HeaderProps> = ({
           {/* 상단 영역 - 기존 헤더 컨텐츠 */}
           <div className="flex items-center justify-between px-4 w-full h-full">
             {/* 왼쪽 영역 */}
+            {variant === 'travel-select'?(
+              <div className="flex items-center w-[63%] h-[80%]">
+                {renderLeftContent()}
+              </div>
+            ):(
             <div className="flex items-center">
               {renderLeftContent()}
             </div>
-
+            )}
             {/* 중앙 영역 */}
+            <div className="flex items-center bg-red-500">
             {renderCenterContent()}
+            </div>
 
             {/* 오른쪽 영역 */}
+            {variant === 'travel-select'?(
+              <div className="flex items-start w-[37%] h-[70%]">
+                {renderRightContent()}
+              </div>
+            ):(
             <div className="flex items-center">
-              {renderRightContent()}
-            </div>
+                {renderRightContent()}
+              </div>
+            )}
           </div>
 
           {/* 하단 영역 - FlikExploreButton (back-from-sido일 때만, 스크롤되지 않았을 때만) */}

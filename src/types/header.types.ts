@@ -1,9 +1,9 @@
 import { RegionCode } from './region.types';
 
 export interface HeaderProps {
-  variant: 'logo' | 'back' | 'close' | 'search' | 'backWithMore'| 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting';
+  variant: 'logo' | 'back' | 'close' | 'search' | 'backWithMore'| 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting' | 'travel-select';
   title?: string;
-  region?: RegionCode; // 지역 코드 추가
+  region?: RegionCode;
   onBack?: () => void;
   onClose?: () => void;
   onRegister?: () => void;
@@ -14,6 +14,16 @@ export interface HeaderProps {
   registerText?: string;
   isAvailable?: boolean;
   className?: string;
+  // travel-select용 optional 속성들
+  currentStep?: number;
+  totalSteps?: number;
+  stepTitle1?: string;
+  stepTitle2?: string;
+  stepSubtitle?: string;
+  onNext?: () => void;
+  onPrev?: () => void;
+  canProceed?: boolean;
 }
 
-export type HeaderVariant = 'logo' | 'back' | 'close' | 'search' | 'backWithMore' | 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting';
+export type HeaderVariant = 'logo' | 'back' | 'close' | 'search' | 'backWithMore' | 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting' | 'travel-select';
+

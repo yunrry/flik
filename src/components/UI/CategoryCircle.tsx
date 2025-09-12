@@ -12,7 +12,7 @@ interface CategoryCircleProps {
   isActive?: boolean;
   onClick: (id: string) => void;
   className?: string;
-  variant?: 'default' | 'overlay' | 'photo-only'; // photo-only 추가
+  variant?: 'default' | 'overlay' | 'photo-only' | 'selected' | 'text-only';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -30,6 +30,12 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
   const navigate = useNavigate();
 
   const handleClick = () => {
+    // selected 모드일 때는 네비게이션 하지 않고 onClick만 실행
+    if (variant === 'selected' || variant === 'text-only') {
+      onClick(id);
+      return;
+    }
+
     // 더보기 버튼일 때 NationwidePage로 이동
     if (id === 'more') {
       navigate('/nationwide');
@@ -42,14 +48,31 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
     }
   };
 
+
+  // console.log('variant', variant);
+  // console.log('isActive', isActive);
+  // console.log('id', id);
+  // console.log('name', name);
+  // console.log('icon', icon);
+  // console.log('backgroundColor', backgroundColor);
+  // console.log('onClick', onClick);
+  // console.log('className', className);
+  // console.log('size', size);
+
+  // 텍스트 오직 모드인지 확인
+  const isTextOnlyMode = variant === 'text-only' && icon === '';
   // 더보기 버튼인지 확인
   const isMoreButton = id === 'more';
   // 이미지 URL인지 확인 (/ 또는 http로 시작)
-  const isImageUrl = !isMoreButton && (icon.startsWith('/') || icon.startsWith('http'));
+  const isImageUrl = !isTextOnlyMode && !isMoreButton && (icon.startsWith('/') || icon.startsWith('http'));
   // 오버레이 모드인지 확인
   const isOverlayMode = variant === 'overlay';
   // 사진만 모드인지 확인
   const isPhotoOnlyMode = variant === 'photo-only';
+  // 선택 모드인지 확인
+  const isSelectedMode = variant === 'selected';
+  
+
 
   // 크기별 스타일 정의
   const sizeClasses = {
@@ -71,22 +94,27 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
   };
 
   // photo-only 모드일 때는 라벨을 표시하지 않음
-  const shouldShowLabel = !isPhotoOnlyMode && (!isOverlayMode || !isImageUrl);
+  const shouldShowLabel = !isPhotoOnlyMode && !isSelectedMode && !isTextOnlyMode && (!isOverlayMode || !isImageUrl);
 
   return (
     <div className={`flex flex-col items-center ${isPhotoOnlyMode ? '' : 'space-y-2'} ${className}`}>
       <button
         onClick={handleClick}
         className={`
-          ${isOverlayMode ? 'relative group' : ''} ${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden
+          ${(isOverlayMode || isSelectedMode || isTextOnlyMode) ? 'relative group' : ''} ${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden
           transition-all duration-200 active:scale-95
-          ${isActive 
-            ? 'ring-2 ring-blue-500 ring-offset-2' 
+          ${isActive && isSelectedMode
+            ? 'ring-2 ring-main-1 ring-offset-2' 
+            : isActive && isTextOnlyMode
+            ? 'border border-main-1 border-2'
+            : isActive
+            ? 'ring-2 ring-blue-500 ring-offset-2'
             : 'hover:scale-105'
           }
-          ${isMoreButton ? 'border border-dashed border-gray-300 hover:border-gray-400' : ''}
+          ${isMoreButton  ? 'border border-dashed border-gray-300 hover:border-gray-400' : ''}
+          ${isTextOnlyMode && !isActive ? 'border border-gray-800 border-2' : ''}
         `}
-        style={!isImageUrl ? { backgroundColor } : undefined}
+        style={!isImageUrl ? { backgroundColor } : { backgroundColor: 'white' }}
         aria-label={`${name} 카테고리`}
       >
         {isMoreButton ? (
@@ -99,7 +127,7 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
               src={icon} 
               alt={name}
               className={`w-full h-full object-cover ${
-                isOverlayMode ? 'transition-transform duration-200 group-hover:scale-110' : ''
+                (isOverlayMode || isSelectedMode || isTextOnlyMode) ? 'transition-transform duration-200 group-hover:scale-110' : ''
               }`}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -108,7 +136,7 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
             />
             
             {/* 오버레이 모드일 때만 오버레이와 텍스트 표시 */}
-            {isOverlayMode && (
+            {(isOverlayMode || isSelectedMode) && (
               <>
                 {/* 어두운 오버레이 */}
                 <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-50 transition-all duration-200" />
@@ -122,6 +150,10 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
               </>
             )}
           </>
+        ) : isTextOnlyMode ? (
+          <span className={`text-xs font-medium font-['Pretendard'] leading-normal text-center px-1 text-gray-800`}>
+    {name}
+  </span>
         ) : (
           <span className={iconSizeClasses[size]}>{icon}</span>
         )}
@@ -138,7 +170,12 @@ const CategoryCircle: React.FC<CategoryCircleProps> = ({
       {shouldShowLabel && (
         <span className={`
           ${textSizeClasses[size]} font-medium text-center leading-tight
-          ${isActive ? 'text-blue-600' : 'text-gray-700'}
+          ${isActive && isSelectedMode
+            ? 'text-main-1' 
+            : isActive 
+            ? 'text-blue-600' 
+            : 'text-gray-700'
+          }
           ${isMoreButton ? 'text-gray-500' : ''}
         `}>
           {name}
