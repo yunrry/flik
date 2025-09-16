@@ -132,12 +132,12 @@ const FlikPage: React.FC = () => {
         {/* FlikCard 영역 - 남은 공간 모두 사용 */}
         <div className=" w-full flik-card-adaptive overflow-hidden flex-1 pb-[5%] flex items-center justify-center">
           <div className="sm:w-[98%] xs:w-[90%] h-full">
-            <FlikCardLayout
-              restaurants={sampleRestaurants}
+            {/* <FlikCardLayout
+              spots={sampleSpots}
               onSave={handleSave}
               onBlogReview={handleBlogReview}
               onKakaoMap={handleKakaoMap}
-            />
+            /> */}
           </div>
         </div>
       </main>

@@ -5,9 +5,13 @@ import CategoryCircle from '../components/UI/CategoryCircle';
 import { Category } from '../types/category.types';
 import { getAllCategoryData } from '../data/categoryData';
 import { STEP_OPTIONS, getStepOptions } from '../types/stepOptions.types';
+import { REGION_CONFIG, RegionCode } from '../types/region.types';
 import { TravelData } from '../types/travelData.types';
 import { RegionName } from '../types/sigungu.types';
 import FlikCardLayout from '../components/Layout/FlikCardLayout';
+import { getSpotsByCategories } from '../api/flikCardsApi';
+import { Spot } from '../types/spot.types';
+import { convertRegionToCode } from '../utils/regionUtils';
 import { Restaurant } from '../types/restaurant.types';
 import { sampleRestaurants } from '../data/sampleRestaurants';
 
@@ -83,28 +87,74 @@ const TravelSelectionPage: React.FC = () => {
   const currentStepInfo = TRAVEL_STEPS.find(step => step.id === currentStep);
   const currentOptions = getStepOptions(currentStep, travelData.regions[0] as RegionName) || [];
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
+  const [savedSpots, setSavedSpots] = useState<Spot[]>([]);
+  const [spotResponse, setSpotResponse] = useState<Spot[]>([]);
+  const [cacheKey, setCacheKey] = useState<string>('');
 
 
 
+  // API 호출 함수
+  const fetchSpots = async () => {
+    try {
+      // 기본 카테고리 설정
+      const categories: string[] = ['RESTAURANT'];
+      
+      // duration이 1이 아니면 ACCOMMODATION 추가
+      if (travelData.duration[0] == '2' || travelData.duration[0] == '3') {
+        categories.push('ACCOMMODATION');
+      }
+      
+      // themes에서 선택된 카테고리 추가
+      travelData.themes.forEach(theme => {
+        if (!categories.includes(theme)) {
+          categories.push(theme);
+        }
+      });
 
-  // 저장된 맛집 핸들러
-  const handleSave = (restaurants: Restaurant[]) => {
-    setSavedRestaurants(restaurants);
-    console.log('저장된 맛집들:', restaurants);
+      const regionCode = convertRegionToCode(travelData.regions[0]) + travelData.sigungus[0];
+
+      // API 요청 파라미터
+      const params = {
+        categories,
+        regionCode: regionCode, // 첫 번째 선택된 지역
+        tripDuration: parseInt(travelData.duration[0] || '1'),
+        limitPerCategory: 21 // 기본값
+      };
+
+      console.log('API 요청 파라미터:', params);
+      
+      const response = await getSpotsByCategories(params);
+      
+      if (response.success) {
+        console.log('스팟 데이터 조회 성공:', response.data.spots);
+        // TODO: 스팟 데이터를 FlikCardLayout에 전달
+        setSpotResponse(response.data.spots);
+        setCacheKey(response.data.cacheKey);
+      } else {
+        console.error('스팟 데이터 조회 실패:', response.message);
+      }
+    } catch (error) {
+      console.error('스팟 데이터 조회 중 오류:', error);
+    }
+  };
+
+  // 저장된 장소 핸들러
+  const handleSave = (spots: Spot[]) => {
+    setSavedSpots(spots);
+    console.log('저장된 장소들:', spots);
   };
 
   // 블로그 리뷰 버튼 핸들러
-  const handleBlogReview = (restaurant: Restaurant) => {
-    console.log('블로그 리뷰 보기:', restaurant.name);
+  const handleBlogReview = (spot: Spot) => {
+    console.log('블로그 리뷰 보기:', spot.name);
     // 블로그 리뷰 페이지로 이동하는 로직 추가
   };
 
   // 카카오맵 버튼 핸들러
-  const handleKakaoMap = (restaurant: Restaurant) => {
-    console.log('카카오맵 열기:', restaurant.name);
+  const handleKakaoMap = (spot: Spot) => {
+    console.log('카카오맵 열기:', spot.name);
     // 카카오맵 앱이나 웹으로 이동하는 로직 추가
-    const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(restaurant.name)}`;
+    const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(spot.name)}`;
     window.open(kakaoMapUrl, '_blank');
   };
   
@@ -214,11 +264,16 @@ const TravelSelectionPage: React.FC = () => {
     console.log('currentStep', currentStep);
     if (currentStep === 5) {
       console.log('여행 선택 완료:', travelData);
+
       setSearchLoading(true);
-      setTimeout(() => {
-        setSearchLoading(false);
-        console.log('searchLoadingtime out');
-      }, 5000);
+      
+      // API 호출
+      fetchSpots().finally(() => {
+        setTimeout(() => {
+          setSearchLoading(false);
+          console.log('searchLoading timeout');
+        }, 5000);
+      });
     }
   }, [currentStep]);
 
@@ -360,7 +415,7 @@ const TravelSelectionPage: React.FC = () => {
       <main className="pt-header-extended bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
         <div className="flex flex-1 pt-[3%]">
        <FlikCardLayout
-         restaurants={sampleRestaurants}
+         spots={spotResponse}
          onSave={handleSave}
          onBlogReview={handleBlogReview}
          onKakaoMap={handleKakaoMap}

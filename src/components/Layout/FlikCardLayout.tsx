@@ -1,52 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import FlikCard from '../Feed/FlikCard';
 import { useAuthStore } from '../../stores/authStore';
-import { Restaurant } from '../../types/restaurant.types';
+import { Spot } from '@/types/spot.types';
 
 
 // Props 타입 정의
 interface FlikCardLayoutProps {
-  restaurants: Restaurant[];
-  onSave?: (savedRestaurants: Restaurant[]) => void;
-  onBlogReview?: (restaurant: Restaurant) => void;
-  onKakaoMap?: (restaurant: Restaurant) => void;
+  spots: Spot[];
+  onSave?: (savedSpots: Spot[]) => void;
+  onBlogReview?: (spot: Spot) => void;
+  onKakaoMap?: (spot: Spot) => void;
 }
 
 const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({ 
-  restaurants, 
+  spots, 
   onSave, 
 }) => {
   const { user } = useAuthStore();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
+  const [savedSpots, setSavedSpots] = useState<Spot[]>([]);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
 
   // 저장된 맛집이 변경될 때마다 부모에게 알림
   useEffect(() => {
-    if (savedRestaurants.length > 0) {
-      onSave && onSave(savedRestaurants);
+    if (savedSpots.length > 0) {
+      onSave && onSave(savedSpots);
     }
-  }, [savedRestaurants, onSave]);
+  }, [savedSpots, onSave]);
 
   // 현재 카드와 다음 카드들
-  const visibleCards = restaurants.slice(currentIndex, currentIndex + 3);
+  const visibleCards = spots.slice(currentIndex, currentIndex + 3);
 
   // 왼쪽 스와이프 (저장) 핸들러 - onSave 호출 제거
-  const handleSwipeLeft = async (restaurant: Restaurant) => {
+  const handleSwipeLeft = async (Spot: Spot) => {
     if (isAnimating) return;
     
     setIsAnimating(true);
     
     try {
       // API 호출로 서버에 저장
-      // await saveRestaurant(restaurant.id, user?.id);
+      // await saveSpot(Spot.id, user?.id);
       
       // // 성공하면 로컬 state 업데이트
-      // setSavedRestaurants(prev => {
-      //   const isAlreadySaved = prev.some(r => r.id === restaurant.id);
+      // setSavedSpots(prev => {
+      //   const isAlreadySaved = prev.some(r => r.id === Spot.id);
       //   if (!isAlreadySaved) {
-      //     return [...prev, restaurant];
+      //     return [...prev, Spot];
       //   }
       //   return prev;
       // });
@@ -71,7 +71,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   };
 
   // 위로 스와이프 (다음 카드) 핸들러
-  const handleSwipeUp = (restaurant: Restaurant) => {
+  const handleSwipeUp = (Spot: Spot) => {
     if (isAnimating) return;
     
     setIsAnimating(true);
@@ -133,7 +133,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   };
 
   // 더 이상 카드가 없을 때
-  const hasMoreCards = currentIndex < restaurants.length;
+  const hasMoreCards = currentIndex < spots.length;
 
   return (
     <div className="relative w-full h-full rounded-xl flex items-center justify-center pb-[10%] ">
@@ -143,7 +143,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
       {/* 카드 스택 - 소형 디바이스 최적화 */}
       <div className="relative w-full h-full mx-auto px-2 xs:px-4">
         {hasMoreCards ? (
-          visibleCards.map((restaurant: Restaurant, index: number) => {
+          visibleCards.map((Spot: Spot, index: number) => {
             const isTop = index === 0;
             const zIndex = 10 - index;
             
@@ -154,7 +154,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
             
             return (
               <div
-                key={`${restaurant.id}-${currentIndex + index}`}
+                key={`${Spot.id}-${currentIndex + index}`}
                 className="absolute inset-0"
                 style={{
                   zIndex,
@@ -166,7 +166,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
                 {/* 첫 번째와 두 번째 카드는 실제 FlikCard 렌더링 */}
                 {(index === 0 || index === 1) && (
                   <FlikCard
-                    restaurant={restaurant}
+                    spot={Spot}
                     onSwipeLeft={index === 0 ? handleSwipeLeft : undefined}
                     onSwipeUp={index === 0 ? handleSwipeUp : undefined}
                   />
@@ -186,7 +186,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
               모든 맛집을 확인했어요!
             </h3>
             <p className="sm:text-sm xs:text-base text-gray-600 text-center sm:mb-6 xs:mb-4">
-              저장된 맛집 {savedRestaurants.length}개를 확인해보세요
+              저장된 맛집 {savedSpots.length}개를 확인해보세요
             </p>
             <button
               onClick={resetCards}
@@ -223,13 +223,13 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
         <div className="absolute top-4 xs:top-8 left-1/2 transform -translate-x-1/2 w-48 xs:w-64">
           <div className="flex justify-between text-xs xs:text-sm text-gray-600 mb-1 xs:mb-2">
             <span>{currentIndex + 1}</span>
-            <span>{restaurants.length}</span>
+            <span>{spots.length}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-1.5 xs:h-2">
             <div
               className="bg-blue-500 h-1.5 xs:h-2 rounded-full transition-all duration-300"
               style={{
-                width: `${((currentIndex + 1) / restaurants.length) * 100}%`
+                width: `${((currentIndex + 1) / spots.length) * 100}%`
               }}
             />
           </div>
@@ -237,9 +237,9 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
       )}
 
       {/* 저장된 맛집 수 표시 - 소형 디바이스 최적화 */}
-      {savedRestaurants.length > 0 && (
+      {savedSpots.length > 0 && (
         <div className="absolute top-4 xs:top-8 right-4 xs:right-8 bg-pink-500 text-white px-2 xs:px-3 py-1 rounded-full text-xs xs:text-sm font-medium shadow-lg">
-          ❤️ {savedRestaurants.length}
+          ❤️ {savedSpots.length}
         </div>
       )}
     </div>
