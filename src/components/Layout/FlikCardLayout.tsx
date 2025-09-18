@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FlikCard from '../Feed/FlikCard';
 import { useAuthStore } from '../../stores/authStore';
 import { Spot } from '@/types/spot.types';
+import { saveSpot } from '../../api/flikCardsApi';
 
 
 // Props 타입 정의
@@ -32,7 +33,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
   // 현재 카드와 다음 카드들
   const visibleCards = spots.slice(currentIndex, currentIndex + 3);
 
-  // 왼쪽 스와이프 (저장) 핸들러 - onSave 호출 제거
+  // 왼쪽 스와이프 (저장) 핸들러
   const handleSwipeLeft = async (Spot: Spot) => {
     if (isAnimating) return;
     
@@ -40,16 +41,16 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
     
     try {
       // API 호출로 서버에 저장
-      // await saveSpot(Spot.id, user?.id);
+      await saveSpot(Spot.id);
       
-      // // 성공하면 로컬 state 업데이트
-      // setSavedSpots(prev => {
-      //   const isAlreadySaved = prev.some(r => r.id === Spot.id);
-      //   if (!isAlreadySaved) {
-      //     return [...prev, Spot];
-      //   }
-      //   return prev;
-      // });
+      // 성공하면 로컬 state 업데이트
+      setSavedSpots(prev => {
+        const isAlreadySaved = prev.some(r => r.id === Spot.id);
+        if (!isAlreadySaved) {
+          return [...prev, Spot];
+        }
+        return prev;
+      });
 
       // 저장 성공 애니메이션 표시
       showSaveAnimation();
@@ -183,7 +184,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({
           <div className="w-full h-full flex flex-col items-center justify-center bg-white rounded-2xl shadow-xl xs:p-4 sm:p-8">
             <div className="sm:text-4xl xs:text-6xl sm:mb-2 xs:mb-4">🎉</div>
             <h3 className="sm:text-lg xs:text-2xl font-bold text-gray-800 sm:mb-1 xs:mb-2 text-center">
-              모든 맛집을 확인했어요!
+              모든 장소를 확인했어요!
             </h3>
             <p className="sm:text-sm xs:text-base text-gray-600 text-center sm:mb-6 xs:mb-4">
               저장된 맛집 {savedSpots.length}개를 확인해보세요

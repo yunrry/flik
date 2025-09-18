@@ -44,6 +44,12 @@ export default {
           9: '#A2A2A2',   // Gray/9
           10: '#F2F3F5',  // Gray/10 - 가장 연한 회색
         },
+        'teal': {
+          1: '#14A4AF',
+        },
+        blue: {
+          1: '#3A85E2',
+        },
       },
       fontSize: {
         // SemiBold styles

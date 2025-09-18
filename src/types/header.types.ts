@@ -1,7 +1,7 @@
 import { RegionCode } from './region.types';
 
 export interface HeaderProps {
-  variant: 'logo' | 'back' | 'close' | 'search' | 'backWithMore'| 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting' | 'travel-select';
+  variant: 'logo' | 'back' | 'close' | 'search' | 'backWithMore'| 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting' | 'travel-select' | 'course';
   title?: string;
   region?: RegionCode;
   onBack?: () => void;
@@ -25,5 +25,5 @@ export interface HeaderProps {
   canProceed?: boolean;
 }
 
-export type HeaderVariant = 'logo' | 'back' | 'close' | 'search' | 'backWithMore' | 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting' | 'travel-select';
+export type HeaderVariant = 'logo' | 'back' | 'close' | 'search' | 'backWithMore' | 'backWithSearch' | 'my' | 'back-from-nationwide' | 'back-from-sido' | 'posting' | 'travel-select' | 'course';
 

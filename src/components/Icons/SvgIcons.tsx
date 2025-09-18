@@ -12,7 +12,7 @@ interface IconProps {
   className?: string;
   isActive?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
-  color?: 'white' | 'default'; // 색상 옵션 추가
+  color?: 'white' | 'default' | 'outline-gray-1'; // 색상 옵션 추가
 }
 
 const getSizeStyles = (size: string = 'md') => {

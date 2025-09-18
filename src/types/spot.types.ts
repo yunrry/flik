@@ -39,6 +39,18 @@ export interface TimeInfo {
     time: string;
     dayOff: string;
   }
+
+  export interface SpotDetail {
+    id: number;
+    name: string;
+    category: string;
+    rating?: number;
+    description?: string;
+    address?: string;
+    longitude?: number;
+    latitude?: number;
+    imageUrls?: string[] | string;
+  }
   
   // API 응답 데이터 타입 정의
   export interface SpotsData {

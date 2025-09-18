@@ -21,6 +21,7 @@ import PostingPage from './pages/PostingPage';
 import MapViewPage from './pages/MapViewPage';
 import TravelSelectionPage from './pages/TravelSelectionPage';
 import LocationSelectPage from './pages/LocationSelectPage';
+import SearchPage from './pages/SearchPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -31,6 +32,7 @@ import NicknameSetup from './components/Auth/NicknameSetup';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import OAuthSignupPage from './pages/OAuthSignupPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
+import CoursePage from './pages/CoursePage';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -257,6 +259,27 @@ function App() {
               } 
             />
 
+            <Route 
+              path="/course" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper disableScroll={false} requireNickname={true}>
+                    <CoursePage />
+                  </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/search" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper disableScroll={false} requireNickname={true}>
+                    <SearchPage />
+                  </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
             
             {/* FlikPage - Login + Nickname required */}
             <Route 

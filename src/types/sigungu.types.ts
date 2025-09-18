@@ -6,6 +6,46 @@ export interface SigunguConfig {
   code: string;
 }
 
+export const getRegionName = (code: string): string | undefined => {
+  if (code.length !== 5) return undefined;
+
+  const regionCode = code.slice(0, 2); // 앞 2자리
+  const sigunguCode = code.slice(2, 5); // 뒤 3자리
+
+  const regionKorean = REGION_NAME_MAP[regionCode];
+  if (!regionKorean) return undefined;
+
+  const regionKey = REGION_CODE_TO_KEY[regionCode];
+  if (!regionKey) return regionKorean;
+
+  const configList: SigunguConfig[] = SIGUNGU_CONFIG[regionKey] || [];
+  const sigungu = configList.find((s) => s.code === sigunguCode);
+
+  if (!sigungu) return regionKorean;
+
+  return `${regionKorean} ${sigungu.name}`;
+};
+
+
+
+const REGION_CODE_TO_KEY: Record<string, RegionName> = {
+  '11': 'seoul',
+  '26': 'busan',
+  '27': 'daegu',
+  '28': 'incheon',
+  '29': 'gwangju',
+  '30': 'daejeon',
+  '31': 'ulsan',
+  '36': 'gyeonggi',
+  '41': 'gangwon',
+  '43': 'chungbuk',
+  '44': 'chungnam',
+  '46': 'jeonbuk',
+  '47': 'jeonnam',
+  '48': 'gyeongbuk',
+  '50': 'gyeongnam',
+  '51': 'jeju',
+};
 
 export type SigunguCode = 
   | '11' 
@@ -45,6 +85,25 @@ export type RegionName =
   | 'gyeongnam' 
   | 'jeju';
 
+  export const REGION_NAME_MAP: Record<string, string> = {
+    '11': '서울시',
+    '26': '부산시',
+    '27': '대구시',
+    '28': '인천시',
+    '29': '광주시',
+    '30': '대전시',
+    '31': '울산시',
+    '36': '경기도',
+    '41': '강원도',
+    '43': '충청북도',
+    '44': '충청남도',
+    '46': '전라북도',
+    '47': '전라남도',
+    '48': '경상북도',
+    '50': '경상남도',
+    '51': '제주도',
+  };
+  
 export const SIGUNGU_CONFIG: Record<RegionName, SigunguConfig[]> = {
   seoul:[
       { name: '종로구', code: '110', englishName: 'Jongno-gu' },
