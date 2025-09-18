@@ -29,8 +29,9 @@ const CoursePage: React.FC = () => {
   const savedSpots = location.state?.savedSpots || [];
 //   const regionCode = location.state?.regionCode;
   const regionCode = '11110';
-
-  const regionName: string = getRegionName(regionCode) || '';
+  const categoriesString = location.state?.categoriesString;
+  const locationString = location.state?.locationString;
+  const regionName: string = locationString? locationString: getRegionName(regionCode) || '';
 
   const courseDataMock = {
     id: 12345,
@@ -270,7 +271,7 @@ const CoursePage: React.FC = () => {
         }
         LocationCode={regionName} // TODO: 실제 지역명으로 변경
         duration={formatDuration(courseData.days)}
-        Categories={courseData.categories?.map(translateCategory) || []}
+        Categories= {categoriesString? categoriesString: courseData.categories?.map(translateCategory).join('/') || []}
         isOwner={true}
       />
 
@@ -313,15 +314,7 @@ const CoursePage: React.FC = () => {
         </div>
       </DragDropContext>
     
-        {/* 디버그 정보 */}
-        {process.env.NODE_ENV === 'development' && (
-          <section className="mt-8 p-4 bg-gray-100 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">디버그 정보</h3>
-            <pre className="text-xs text-gray-600 overflow-auto">
-              {JSON.stringify(courseData, null, 2)}
-            </pre>
-          </section>
-        )}
+      
       </main>
     </div>
   );

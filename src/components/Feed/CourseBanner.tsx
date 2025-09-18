@@ -15,7 +15,7 @@ interface CourseBannerProps {
   totalSpot: number;
   LocationCode: string;
   duration: string;
-  Categories: string[];
+  Categories: string;
 }
 
 const CourseBanner: React.FC<CourseBannerProps> = ({
@@ -51,7 +51,7 @@ const CourseBanner: React.FC<CourseBannerProps> = ({
             <div className="flex flex-row">
                 <span className="text-gray-3 text-sm font-semibold font-['Pretendard'] leading-normal">총 {totalSpot}개 여행지</span>
                 <span className="text-gray-9 text-sm font-normal font-['Pretendard'] leading-normal mx-1">·</span>
-                <span className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-normal">{Categories.join('/')}</span>
+                <span className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-normal">{Categories}</span>
             </div>
 
      

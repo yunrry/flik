@@ -1,44 +1,12 @@
 import { 
     Spot, 
     SpotDetail,
-    SpotsData, 
-    ApiResponse, 
     SpotsResponse, 
     SpotsRequestParams,
-    TimeInfo,
-    formatTime,
-    getMainImageUrl,
-    formatAddress
-  } from '../types/spot.types';
   
-// 코스 슬롯 타입 정의
-export interface CourseSlot {
-  day: number;
-  slot: number;
-  slotType: string;
-  mainCategory: string | null;
-  slotName: string;
-  recommendedSpotIds: number[];
-  selectedSpotId: number | null;
-  isContinue: boolean | null;
-  hasRecommendations: boolean;
-  hasSelectedSpot: boolean;
-  empty: boolean;
-}  
-// 코스 데이터 타입 정의
-export interface CourseData {
-  id: number;
-  userId: number;
-  days: number;
-  totalDistance: number;
-  courseSlots: CourseSlot[][];
-  createdAt: string;
-  courseType: string;
-  totalSlots: number;
-  filledSlots: number;
-  allRecommendedSpotIds: number[];
-}
-
+  } from '../types/spot.types';
+import { ApiResponse } from '../types/response.types';
+  
 
 
   // API 기본 설정
@@ -126,57 +94,6 @@ export const getSpotsByIds = async (ids: number[]): Promise<ApiResponse<SpotDeta
     }
   };
 
-
-
-
-  export const createCourse = async (
-    categories: string[], 
-    regionCode: string, 
-    tripDuration: number
-  ): Promise<ApiResponse<CourseData>> => {
-    const accessToken = getAuthToken();
-    
-    if (!accessToken) {
-      throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
-    }
-    
-    try {
-      // 쿼리 파라미터 생성
-      const queryParams = new URLSearchParams();
-      categories.forEach(category => {
-        queryParams.append('categories', category.toLowerCase());
-      });
-      queryParams.append('regionCode', regionCode);
-      queryParams.append('tripDuration', tripDuration.toString());
-  
-      const url = `${API_BASE_URL}/travel-courses/generate?${queryParams.toString()}`;
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        if (response.status === 401) {
-          // 토큰 만료 또는 인증 실패
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const data: ApiResponse<CourseData> = await response.json();
-      return data;
-    } catch (error) {
-      console.error('코스 생성 API 요청 중 오류 발생:', error);
-      throw error;
-    }
-  };
 
 
   

@@ -1,3 +1,7 @@
+
+import { ApiResponse } from './response.types';
+
+
 // 시간 정보 타입 정의
 export interface TimeInfo {
     hour: number;
@@ -52,19 +56,11 @@ export interface TimeInfo {
     imageUrls?: string[] | string;
   }
   
-  // API 응답 데이터 타입 정의
   export interface SpotsData {
     spots: Spot[];
     cacheKey: string;
   }
-  
-  // API 응답 타입 정의
-  export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message: string;
-  }
-  
+
   // 스팟 조회 API 응답 타입
   export type SpotsResponse = ApiResponse<SpotsData>;
   

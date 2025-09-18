@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import CourseBanner from '../Feed/CourseBanner';
 import { BackArrowIcon } from '../Icons/SvgIcons';
 import CoursePublicButton from '../Buttons/CoursePublicButton';
+import { useNavigate } from 'react-router-dom';
 
 interface CourseHeaderProps {
     totalDistance: number;
     totalSpot: number;
     LocationCode: string;
     duration: string;
-    Categories: string[];
+    Categories: string;
     isOwner: boolean;
 }
 
@@ -21,6 +22,10 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
     isOwner,
 }) => {
   
+  const navigate = useNavigate();
+  const onBack = () => {
+    navigate(-1);
+  };
 
     
   return (
@@ -35,8 +40,9 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
             
         <div className="flex flex-row items-center justify-between w-full mb-2 mt-5">
          
-          <BackArrowIcon size="lg" color="white"  />
-
+         <button onClick={onBack}>
+          <BackArrowIcon size="lg" color="white" />
+          </button>
         {isOwner?(
             
                 <CoursePublicButton />

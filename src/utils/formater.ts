@@ -45,6 +45,8 @@ export const formatAddress = (address: string) => {
         simpleSido = sido.replace('광역시', '').trim();
     } else if (sido.includes('도')) {
         simpleSido = sido.replace('도', '').trim();
+    } else if (sido.includes('시')) {
+        simpleSido = sido.replace('시', '').trim();
     }
     
     return `${simpleSido} ${gu}`;

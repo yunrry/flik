@@ -11,6 +11,7 @@ import imageSvg from '/assets/icons/image.svg';
 interface IconProps {
   className?: string;
   isActive?: boolean;
+  onClick?: () => void;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   color?: 'white' | 'default' | 'outline-gray-1'; // 색상 옵션 추가
 }
@@ -260,6 +261,7 @@ export const SettingIcon: React.FC<IconProps> = ({ size = 'xl' }) => {
 
 export const BackArrowIcon: React.FC<IconProps> = ({ 
   isActive, 
+  onClick,
   size = 'md', 
   color = 'default' 
 }) => {

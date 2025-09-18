@@ -7,9 +7,10 @@ export const translateCategory = (category: string) => {
       ACTIVITY: '액티비티',
       HISTORY_CULTURE: '역사문화',
       NATURE: '자연',
-      CULTURE: '문화',
-      HISTORY: '역사',
       MARKET: '시장',
+      THEMEPARK: '테마파크',
+      FESTIVAL: '축제',
+      INDOOR: '실내',
     };
     return categoryMap[category] || category;
   };

@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Spot } from "../types/spot.types";
 import { loadKakaoMapSDK, getCoordinatesFromAddress } from '../api/kakaoMapApi';
 import { searchNaverBlog, cleanBlogTitle, cleanBlogDescription, formatBlogDate } from '../api/naverBlogApi';
+import { SpotDetail } from "../types/spot.types";
 
-export const useThridParty = () => {
+export const useThirdParty = () => {
 
   const navigate = useNavigate();
 
-  const handleMapClick = async (spots: Spot[], returnPath: string) => {
+  const handleMapClick = async (spots: SpotDetail[], returnPath: string) => {
     try {
       console.log('지도 검색 시작:', spots[0].name);
       

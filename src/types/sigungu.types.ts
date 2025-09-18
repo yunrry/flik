@@ -28,7 +28,7 @@ export const getRegionName = (code: string): string | undefined => {
 
 
 
-const REGION_CODE_TO_KEY: Record<string, RegionName> = {
+export const REGION_CODE_TO_KEY: Record<string, RegionName> = {
   '11': 'seoul',
   '26': 'busan',
   '27': 'daegu',

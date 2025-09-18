@@ -260,7 +260,7 @@ function App() {
             />
 
             <Route 
-              path="/course" 
+              path="/course/:courseId" 
               element={
                 <ProtectedRoute>
                   <NavigationPageWrapper disableScroll={false} requireNickname={true}>

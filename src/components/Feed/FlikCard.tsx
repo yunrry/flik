@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
 import { Spot, parseImageUrls } from '../../types/spot.types';
-import { useThridParty } from '../../hooks/useThridParty';
+import { useThirdParty } from '../../hooks/useThirdParty';
 interface FlikCardProps {
   spot: Spot;
   onSwipeLeft?: (spot: Spot) => void; // 저장 액션
@@ -33,7 +33,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const [showHint, setShowHint] = useState<boolean>(false); // 힌트 표시 상태 추가
   const cardRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<NodeJS.Timeout | null>(null); // 타이머 ref 추가
-  const { handleMapClick } = useThridParty();
+  const { handleMapClick } = useThirdParty();
   // 터치/마우스 이벤트 핸들러
   const handleDragStart = useCallback((clientX: number, clientY: number): void => {
     setIsDragging(true);

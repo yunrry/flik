@@ -4,17 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import CategoryCircle from '../components/UI/CategoryCircle';
 import { Category } from '../types/category.types';
 import { getAllCategoryData } from '../data/categoryData';
-import { STEP_OPTIONS, getStepOptions } from '../types/stepOptions.types';
-import { REGION_CONFIG, RegionCode } from '../types/region.types';
+import { getStepOptions } from '../types/stepOptions.types';
 import { TravelData } from '../types/travelData.types';
 import { RegionName } from '../types/sigungu.types';
 import FlikCardLayout from '../components/Layout/FlikCardLayout';
-import { getSpotsByCategories, createCourse } from '../api/flikCardsApi';
+import { getSpotsByCategories} from '../api/flikCardsApi';
+import { createCourse } from '../api/travelCourseApi';
 import { Spot } from '../types/spot.types';
 import { convertRegionToCode } from '../utils/regionUtils';
-import { Restaurant } from '../types/restaurant.types';
-import { sampleRestaurants } from '../data/sampleRestaurants';
-import { parseCategoriesFromCacheKey, parseCacheKey } from '../utils/keyParser';
+
 
 // 단계별 데이터 타입 정의
 interface TravelStep {
@@ -220,7 +218,7 @@ const handleRecommendationConfirm = async () => {
       console.log('추출된 코스 데이터:', extractedData);
       
       // 코스 생성 성공 시 코스 페이지로 이동
-      navigate('/course', { 
+      navigate(`/course/${extractedData.id}`, { 
         state: { 
           courseData: extractedData,
           savedSpots: savedSpots,

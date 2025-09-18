@@ -1,31 +1,30 @@
 // 개별 맛집 카드 컴포넌트
-import { Restaurant } from '../../types/restaurant.types';
 import { SaveMarkIcon } from '../Icons/SvgIcons';
 import { useNavigate } from 'react-router-dom';
+import { SpotDetail } from '../../types/spot.types';
+import { translateCategory } from '../../utils/categoryMapper';
+import { formatAddress } from '../../utils/formater';
 
-const SavedFlikCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => {
+const SavedFlikCard: React.FC<{ spot: SpotDetail }> = ({ spot }) => {
     const navigate = useNavigate();
 
-    const getImage = (restaurant: Restaurant): string => {
-      if (restaurant.images && restaurant.images.length > 0) {
-        return restaurant.images[0];
-      }
-      if (restaurant.image) {
-        return restaurant.image;
+    const getImage = (spot: SpotDetail): string => {
+      if (spot.imageUrls && spot.imageUrls.length > 0) {
+        return spot.imageUrls[0];
       }
       return '/cardImages/marione.png';
     };
 
     const handleCardClick = () => {
-        // navigate 시 restaurant 정보를 state로 전달
-        navigate(`/save/${restaurant.id}`, {
-          state: { restaurant }
+        // navigate 시 spot 정보를 state로 전달
+        navigate(`/save/${spot.id}`, {
+          state: { spot }
         });
       };
 
     const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // 이벤트 전파 방지
-        console.log('삭제 버튼 클릭:', restaurant.id);
+        console.log('삭제 버튼 클릭:', spot.id);
       };
   
     return (
@@ -37,8 +36,8 @@ const SavedFlikCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => 
           {/* 이미지 섹션 */}
           <div className="w-[20%] h-[80%] border border-gray-8 rounded-lg flex-shrink-0">
             <img
-              src={getImage(restaurant)}
-              alt={restaurant.name}
+              src={getImage(spot)}
+              alt={spot.name}
               className="w-full h-full object-cover rounded-lg"
             />
           </div>
@@ -48,23 +47,23 @@ const SavedFlikCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => 
             <div className="flex-1 p-0">
               {/* 카테고리 */}
               <p className="text-gray-9 text-[10px] font-normal font-['Pretendard'] leading-3 ">
-                {restaurant.category || '이탈리아 음식'} · {restaurant.location || restaurant.address}
+              {translateCategory(spot.category)} · {formatAddress(spot.address || '')}
               </p>
               
               {/* 맛집 이름 */}
               <h3 className="text-gray-3 text-xl font-semibold font-['Pretendard'] leading-normal ">
-                {restaurant.name}
+                {spot.name}
               </h3>
               
               {/* 설명 */}
               <p className="text-gray-5 text-[10px] font-normal font-['Pretendard'] leading-3 line-clamp-2 pr-[10%]">
-                {restaurant.description}
+                {spot.description}
               </p>
               
               {/* 별점 */}
               <div className="flex items-center mt-1">
                 <span className="text-yellow-400 text-sm mb-0.5 mr-1">★</span>
-                <span className="text-gray-3 text-sm font-semibold font-['Pretendard'] leading-normal">{restaurant.rating}</span>
+                <span className="text-gray-3 text-sm font-semibold font-['Pretendard'] leading-normal">{spot.rating}</span>
               </div>
             </div>
             
