@@ -10,6 +10,9 @@ import { updateUserProfile, getUserReviews } from '../api/userApi';
 import ActivityItem from '../components/Profile/ActivityItem';
 import FloatingUploadButton from '../components/UI/FloatingUploadButton';
 import MyHeader from '../components/Layout/MyHeader';
+import { getUserPosts } from '../api/postApi';
+import { mapToUserActivity } from '../utils/mapUserActivity';
+
 
 
 const MyPage: React.FC = () => {
@@ -108,11 +111,12 @@ const MyPage: React.FC = () => {
       try {
         setIsLoading(true);
         setError(null);
-        
-        // 리뷰 타입 활동만 조회
-        // const response = await getUserReviews(1, 20);
-        // setReviewActivities(response.data);
-        setReviewActivities(MOCK_REVIEW_ACTIVITIES);
+
+        const response = await getUserPosts();
+        const mappedData = mapToUserActivity(response.content ?? [])
+
+        setReviewActivities(mappedData);
+        console.log('리뷰 활동 데이터:', mappedData);
       } catch (err) {
         console.error('리뷰 활동 조회 실패:', err);
         setError('리뷰 내역을 불러올 수 없습니다.');
@@ -187,10 +191,14 @@ const MyPage: React.FC = () => {
             // 리뷰 활동 목록
             reviewActivities.map((activity) => (
               <ActivityItem 
-                key={activity.id} 
-                activity={activity}
-                onClick={handleActivityClick}
-              />
+              key={activity.id} 
+              activity={{
+                ...activity,
+                description: activity.description ?? '',
+                imageUrl: activity.imageUrl ?? undefined
+              }}
+              onClick={handleActivityClick}
+            />
             ))
           )}
         </div>

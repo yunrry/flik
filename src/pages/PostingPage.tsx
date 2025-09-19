@@ -6,6 +6,8 @@ import { ImageIcon } from '../components/Icons/SvgIcons';
 import { SpotDetail } from '../types/spot.types';
 import { translateCategory } from '../utils/categoryMapper';
 import { formatAddress } from '../utils/formater';
+import { createPost } from '../api/postApi';
+import { uploadToCloudinary } from '../utils/cloudinary';
 
 const PostingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -119,10 +121,35 @@ const PostingPage: React.FC = () => {
     navigate('/my');
   };
 
-  const handleSubmit = () => {
-    // 게시글 작성 로직
-    console.log('게시글 작성:', { title, content, selectedLocation, images });
-    navigate('/my');
+
+  const handleSubmit = async () => {
+    try {
+      // 1) Cloudinary에 이미지 업로드
+      console.log('Cloudinary 업로드 시작...');
+      const uploadedImageUrls = await uploadToCloudinary(images);
+      console.log('Cloudinary 업로드 완료:', uploadedImageUrls);
+  
+      // 2) 서버에 전달할 데이터 생성
+      const requestData = {
+        title,
+        content,
+        type: 'review', // 서버에서 정의한 타입 코드
+        imageUrl: uploadedImageUrls, // 변환된 URL 배열
+        spotId: selectedLocation?.id ?? undefined,
+        courseId: undefined, // 코스가 있을 때만 값 설정
+      };
+  
+      console.log('게시글 작성 요청 데이터:', requestData);
+  
+      // 3) 게시글 생성 API 호출
+      const response = await createPost(requestData);
+      console.log('게시글 작성 완료:', response);
+  
+      // 4) 성공 시 이동
+      navigate('/my');
+    } catch (error) {
+      console.error('게시글 작성 중 오류 발생:', error);
+    }
   };
 
   // 제출 버튼 활성화 여부 체크
