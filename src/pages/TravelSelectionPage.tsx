@@ -94,6 +94,7 @@ const TravelSelectionPage: React.FC = () => {
   const [regionCode, setRegionCode] = useState<string>('');
   const [tripDuration, setTripDuration] = useState<number>(1);
   const [requestCategories, setRequestCategories] = useState<string[]>([]);
+  const [nextStepButtonCondition, setNextStepButtonCondition] = useState<boolean>(false);
 
   // API 호출 함수
   const fetchSpots = async () => {
@@ -149,7 +150,6 @@ const TravelSelectionPage: React.FC = () => {
   const handleSave = useCallback((spots: Spot[]) => {
     setSavedSpots(spots);
     console.log('저장된 장소들:', spots);
-    
     // 카테고리별 카운트 업데이트
     const newCategoryCounts: Record<string, number> = {};
     
@@ -165,7 +165,23 @@ const TravelSelectionPage: React.FC = () => {
 
         // 추천경로 조건 확인
         checkRecommendationCondition(newCategoryCounts);
+
       }, []);
+
+
+
+// useEffect(() => {
+//   checkNextStepButtonCondition(savedSpots.length);
+// }, [savedSpots]);
+
+// const checkNextStepButtonCondition = (spotsLength: number) => {
+//   if (spotsLength >= 2) {
+//     setNextStepButtonCondition(true);
+//   } else {
+//     setNextStepButtonCondition(false);
+//   }
+// };
+
 
 // 추천경로 조건 확인 함수
 const checkRecommendationCondition = (counts: Record<string, number>) => {
@@ -174,7 +190,7 @@ const checkRecommendationCondition = (counts: Record<string, number>) => {
   
   // RESTAURANT가 10개 이상이고, 다른 카테고리들이 각각 5개 이상인지 확인
   const hasEnoughRestaurants = restaurantCount >= 5;
-  const hasEnoughOtherCategories = otherCategories.every(([_, count]) => count >= 2);
+  const hasEnoughOtherCategories = otherCategories.every(([_, count]) => count >= 3);
   
   if (hasEnoughRestaurants && hasEnoughOtherCategories && otherCategories.length > 0) {
     setShowRecommendationModal(true);

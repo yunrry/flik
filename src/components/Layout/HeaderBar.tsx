@@ -97,7 +97,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
         case 'travel-select':
           return (
             <div className="flex flex-col justify-start h-full py-1 pb-0">
-              <div className="flex items-center">
+              <div className="flex flex-col items-start">
               <button
                 onClick={currentStep === 1 ? onBack : onPrev}
                 className={`pl-2 -ml-2 transition-colors rounded-lg text-white hover:bg-white/20`}
@@ -111,6 +111,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
               <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle2}</div>
               <div className="justify-start text-white text-sm font-medium font-['Pretendard'] leading-loose overflow-visible whitespace-nowrap pt-2">{stepSubtitle}</div>
             </div>
+
             </div>
           );
 
@@ -457,12 +458,13 @@ const HeaderBar: React.FC<HeaderProps> = ({
 
             {/* 오른쪽 영역 */}
             {variant === 'travel-select'?(
-              <div className="flex items-start w-[37%] h-[70%]">
+              <div className="flex flex-col items-start w-[37%] h-[70%]">
                 {renderRightContent()}
               </div>
             ):(
             <div className="flex items-center">
                 {renderRightContent()}
+                
               </div>
             )}
           </div>
