@@ -7,6 +7,7 @@
 
 :root {
   --header-height-default: 4rem;
+  --header-height-search: 8rem;
   --header-height-extended: 12rem;
 }
 
@@ -14,6 +15,10 @@
 /* 헤더 높이별 유틸리티 클래스 */
 .pt-header-default {
   padding-top: var(--header-height-default);
+}
+
+.pt-header-search {
+  padding-top: var(--header-height-search);
 }
 
 .pt-header-extended {

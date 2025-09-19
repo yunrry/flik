@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
-import { Restaurant } from '../../types/restaurant.types';
-import { useThridParty } from '../../hooks/useThridParty';
+import { Spot, parseImageUrls } from '../../types/spot.types';
+import { useThirdParty } from '../../hooks/useThirdParty';
 interface FlikCardProps {
-  restaurant: Restaurant;
-  onSwipeLeft?: (restaurant: Restaurant) => void; // 저장 액션
-  onSwipeUp?: (restaurant: Restaurant) => void;   // 다음 카드 액션
-  onBlogClick?: (restaurant: Restaurant) => void;
-  onMapClick?: (restaurant: Restaurant) => void;
+  spot: Spot;
+  onSwipeLeft?: (spot: Spot) => void; // 저장 액션
+  onSwipeUp?: (spot: Spot) => void;   // 다음 카드 액션
+  onBlogClick?: (spot: Spot) => void;
+  onMapClick?: (spot: Spot) => void;
 }
 
 interface DragOffset {
@@ -21,7 +21,7 @@ interface DragStart {
 }
 
 const FlikCard: React.FC<FlikCardProps> = ({ 
-  restaurant,
+  spot,
   onSwipeLeft,
   onSwipeUp,
 }) => {
@@ -33,7 +33,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
   const [showHint, setShowHint] = useState<boolean>(false); // 힌트 표시 상태 추가
   const cardRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<NodeJS.Timeout | null>(null); // 타이머 ref 추가
-  const { handleMapClick } = useThridParty();
+  const { handleMapClick } = useThirdParty();
   // 터치/마우스 이벤트 핸들러
   const handleDragStart = useCallback((clientX: number, clientY: number): void => {
     setIsDragging(true);
@@ -60,7 +60,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
       setIsExiting(true);
       // 카드가 완전히 사라진 후 콜백 호출
       setTimeout(() => {
-        onSwipeLeft && onSwipeLeft(restaurant);
+        onSwipeLeft && onSwipeLeft(spot);
       }, 300);
     }
     // 위로 스와이프 (다음 카드)
@@ -68,7 +68,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
       setIsExiting(true);
       // 카드가 완전히 사라진 후 콜백 호출
       setTimeout(() => {
-        onSwipeUp && onSwipeUp(restaurant);
+        onSwipeUp && onSwipeUp(spot);
       }, 300);
     }
     else {
@@ -77,7 +77,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
       setDragOffset({ x: 0, y: 0 });
       startHintTimer(); // 드래그가 끝나고 원위치로 돌아갔을 때 힌트 타이머 시작
     }
-  }, [isDragging, dragOffset, onSwipeLeft, onSwipeUp, restaurant]);
+  }, [isDragging, dragOffset, onSwipeLeft, onSwipeUp, spot]);
 
   // 마우스 이벤트 핸들러들을 useCallback으로 메모이제이션
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
@@ -102,17 +102,17 @@ const FlikCard: React.FC<FlikCardProps> = ({
   }, [handleDragEnd]);
 
   // 이미지 배열 처리 (단일 이미지일 경우 배열로 변환)
-  const getImages = (): string[] => {
-    if (restaurant.images && restaurant.images.length > 0) {
-      return restaurant.images;
-    }
-    if (restaurant.image) {
-      return [restaurant.image];
+  const getimageUrls = (): string[] => {
+    if (spot.imageUrls) {
+      const parsedUrls = parseImageUrls(spot.imageUrls);
+      if (parsedUrls.length > 0) {
+        return parsedUrls;
+      }
     }
     return ['/cardImages/marione.png']; // 기본 이미지
   };
 
-  const images = getImages();
+  const imageUrls = getimageUrls();
 
   // 이미지 터치로 넘기기
   const handleImageTouch = (e: React.MouseEvent<HTMLImageElement> | React.TouchEvent<HTMLImageElement>): void => {
@@ -136,30 +136,18 @@ const FlikCard: React.FC<FlikCardProps> = ({
     
     if (clientX > centerX) {
       setCurrentImageIndex((prev) => 
-        prev < images.length - 1 ? prev + 1 : 0
+        prev < imageUrls.length - 1 ? prev + 1 : 0
       );
     } else {
       setCurrentImageIndex((prev) => 
-        prev > 0 ? prev - 1 : images.length - 1
+        prev > 0 ? prev - 1 : imageUrls.length - 1
       );
     }
   };
 
-  // 거리 표시 (1km 이하일 때만) - JSX.Element 대신 React.ReactElement 사용
-  const renderDistance = (): React.ReactElement | null => {
-    if (restaurant.distance && restaurant.distance <= 1000) {
-      const distanceKm = (restaurant.distance);
-      return (
-        <span>
-          {distanceKm}m
-        </span>
-      );
-    }
-    return null;
-  };
 
   // 별점 렌더링 - JSX.Element 대신 React.ReactElement 사용
-  const renderStars = (rating: number): React.ReactElement => {
+  const rendeStaS = (rating: number): React.ReactElement => {
     return (
       <div className="flex items-center space-x-1 ">
         <span className="text-yellow-400 text-base font-semibold font-['Pretendard'] leading-normal ">★</span>
@@ -240,7 +228,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className="relative w-full h-full bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden cursor-grab active:cursor-grabbing select-none" // select-none 추가
+      className="relative w-full h-full bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden cuSor-grab active:cuSor-grabbing select-none" // select-none 추가
       style={cardStyle}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
@@ -251,17 +239,17 @@ const FlikCard: React.FC<FlikCardProps> = ({
       {/* 이미지 섹션 - 소형 디바이스 최적화 */}
       <div className="relative h-[55%] sm:h-[53%] xs:h-[50%]">
         <img
-          src={images[currentImageIndex]}
-          alt={restaurant.name}
+          src={imageUrls[currentImageIndex]}
+          alt={spot.name}
           className="w-full h-full object-cover pointer-events-none" // pointer-events-none 추가로 이미지 드래그 방지
           onClick={handleImageTouch}
           onDragStart={(e) => e.preventDefault()} // 이미지 드래그 방지
         />
         
         {/* 이미지 인디케이터 */}
-        {images.length > 1 && (
+        {imageUrls.length > 1 && (
           <div className="absolute xs: bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex xs:space-x-1 sm:space-x-2">
-            {images.map((_, index) => (
+            {imageUrls.map((_, index) => (
               <div
                 key={index}
                 className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
@@ -281,7 +269,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
 
         {/* 이미지 개수 - 소형 디바이스 최적화 */}
         <div className="absolute xs:bottom-2 sm:bottom-[3%] xs:right-2 sm:right-[4%] bg-black/35 rounded-full xs:px-2 sm:px-[5%] xs:py-1 sm:py-[1.5%] flex items-center justify-center">
-          <span className="text-white text-xs font-normal font-['Pretendard'] leading-normal">{currentImageIndex + 1} / {images.length}</span>
+          <span className="text-white text-xs font-normal font-['Pretendard'] leading-normal">{currentImageIndex + 1} / {imageUrls.length}</span>
         </div>
       </div>
 
@@ -290,25 +278,25 @@ const FlikCard: React.FC<FlikCardProps> = ({
         <div className="space-y-1 xs:py-0 xs:pt-1">
           {/* 카테고리 */}
           <p className="text-neutral-400 text-xs font-normal font-['Pretendard'] leading-tight">
-            이탈리아 음식
+            {spot.labelDepth3}
           </p>
           
           {/* 가게 이름과 별점 - 반응형 레이아웃 */}
           <div className="flex sm:flex-col xs:flex-row items-start xs:justify-start sm:justify-between sm:space-y-1 xs:space-y-0 sm:space-x-0 xs:space-x-1 xs:pt-0">
             {/* 가게 이름 */}
             <h3 className="text-gray-800 text-lg xs:text-xl font-semibold font-['Pretendard'] leading-tight flex-none xs:flex-1">
-              {restaurant.name}
+              {spot.name}
             </h3>
             
             {/* 별점 */}
             <div className="sm:flex-shrink xs:flex-shrink-0">
-              {renderStars(restaurant.rating)}
+              {rendeStaS(spot.rating)}
             </div>
           </div>
 
           {/* 소개 - 소형 디바이스에서 줄 수 제한 */}
           <p className="text-gray-5 xs:text-xs sm:text-sm font-normal font-['Pretendard'] leading-tight xs:line-clamp-2 sm:line-clamp-3">
-            {restaurant.description}
+            {spot.description}
           </p>
 
           {/* 구분선 */}
@@ -317,14 +305,13 @@ const FlikCard: React.FC<FlikCardProps> = ({
           {/* 주소와 거리 */}
           <div className="flex items-center justify-start xs:text-xs sm:text-sm pt-1 text-gray-5 font-normal font-['Pretendard'] leading-normal">
             <span className="truncate pr-2">
-              {restaurant.address || restaurant.location} 
+              {spot.address}
             </span>
-            {renderDistance()}
           </div>
 
           {/* 영업시간 */}
           <div className="text-gray-5 xs:text-xs sm:text-sm font-normal font-['Pretendard'] leading-normal">
-            <span>영업시간:</span> {restaurant.hours}
+            <span>영업시간:</span> {spot.time}
           </div>
         </div>
 
@@ -334,7 +321,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
             onClick={(e) => {
               e.stopPropagation();
             }}
-            className="flex-1 bg-white text-gray-6 border border-gray-8 sm:py-1.5 xs:py-2 sm:px-4 xs:px-3 rounded-lg font-medium xs:text-xs sm:text-sm  transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-white text-gray-6 border border-gray-8 sm:py-1.5 xs:py-2 sm:px-4 xs:px-3 rounded-lg font-medium xs:text-xs sm:text-sm  transition-coloS flex items-center justify-center space-x-1"
           >
             <NaverBlogIcon />
             <span className="hidden text-sm font-medium font-['Pretendard'] leading-normal xs:inline sm:inline">블로그 리뷰</span>
@@ -342,9 +329,9 @@ const FlikCard: React.FC<FlikCardProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleMapClick([restaurant], '/flik');
+              handleMapClick([spot], '/flik');
             }}
-            className="flex-1 bg-white text-gray-6 border border-gray-8 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm  transition-colors flex items-center justify-center space-x-1"
+            className="flex-1 bg-white text-gray-6 border border-gray-8 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm  transition-coloS flex items-center justify-center space-x-1"
           >
             <KakaoMapIcon />
             <span className="hidden text-sm font-medium font-['Pretendard'] leading-normal xs:inline sm:inline">카카오맵</span>

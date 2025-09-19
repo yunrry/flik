@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategoryCircle from '../UI/CategoryCircle';
-import FlikExploreButton from '../Buttons/FlikExploreButton';
+import LocationExploreButton from '../Buttons/LocationExploreButton';
 import { REGION_CONFIG } from '../../data/categoryData';
 import { FeaturedLocation } from '../../data/featuredLocationData'; // 타입 import 추가
 
@@ -151,7 +151,9 @@ const FeaturedLocationCard: React.FC<FeaturedLocationCardProps> = ({
           </div> */}
 
           {/* 플릭하러 가기 버튼 */}
-          <FlikExploreButton/>
+          <LocationExploreButton
+            onClick={handleLocationClick}
+          />
         </div>
       )}
     </div>

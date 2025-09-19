@@ -1,156 +1,77 @@
-// src/pages/FlikPage.tsx
-
 import React, { useEffect, useState } from 'react';
-import { useAuthStore } from '../stores/authStore';
-import { LocationPermissionModal } from '../components/Location';
-import { LocationSelector } from '../components/Location';
-import { CurrentLocationButton } from '../components/Location';
 import { HeaderBar } from '../components/Layout';
 import FlikCardLayout from '../components/Layout/FlikCardLayout';
-import { Restaurant } from '../types/restaurant.types';
-import { sampleRestaurants } from '../data/sampleRestaurants';
-
-interface UserLocation {
-  coordinates: {
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-  };
-  timestamp: number;
-  address?: {
-    country: string;
-    region: string;
-    city: string;
-    district?: string;
-  };
-}
-
-
+import { Spot } from '../types/spot.types';
+import { getRandomSpots } from '../api/flikCardsApi';
 
 const FlikPage: React.FC = () => {
-    const { user } = useAuthStore();
-    const [showLocationModal, setShowLocationModal] = useState(false);
-    const [currentLocation, setCurrentLocation] = useState<UserLocation | null>(null);
-    const [selectedLocation, setSelectedLocation] = useState('성수역 1번 출구');
-    const [savedRestaurants, setSavedRestaurants] = useState<Restaurant[]>([]);
+  const [spots, setSpots] = useState<Spot[]>([]); // FlikCardLayout에 전달할 전체 스팟 목록
+  const [savedSpots, setSavedSpots] = useState<Spot[]>([]);
+  const [page, setPage] = useState<number>(1); // 현재 페이지
+  const [hasNext, setHasNext] = useState<boolean>(true); // 다음 페이지 존재 여부
+  const [isLoading, setIsLoading] = useState<boolean>(false); // 로딩 상태
 
-  
+  // 첫 로드 시 1페이지 데이터 가져오기
+  useEffect(() => {
+    fetchRandomSpots(page);
+  }, []);
 
-  const handleLocationChange = (location: string) => {
-    setSelectedLocation(location);
-    console.log('선택된 지역:', location);
+  // 랜덤 스팟 조회 함수
+  const fetchRandomSpots = async (pageToFetch: number) => {
+    if (isLoading || !hasNext) return; // 중복 요청 방지
+    setIsLoading(true);
+    console.log('API 호출 시작: page', pageToFetch);
+    try {
+      const data = await getRandomSpots(pageToFetch);
+      console.log('API 응답:', data); // ✅ 응답 확인
+      setSpots(prev => [...prev, ...data.spots]); // 기존 + 신규 데이터 합치기
+      setHasNext(data.hasNext); // 다음 페이지 존재 여부 업데이트
+    } catch (error) {
+      console.error('랜덤 스팟 조회 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  
-    // 위치 권한 상태 관리
-    const [isFirstVisit, setIsFirstVisit] = useState(true);
-  
-    const handleLocationUpdate = (location: any) => {
-      console.log('위치 업데이트:', location);
-    };
 
-    // 저장된 맛집 핸들러
-    const handleSave = (restaurants: Restaurant[]) => {
-      setSavedRestaurants(restaurants);
-      console.log('저장된 맛집들:', restaurants);
-    };
+  // 카드 저장 시 부모 state 업데이트
+  const handleSave = (spots: Spot[]) => {
+    setSavedSpots(spots);
+    console.log('저장된 장소들:', spots);
+  };
 
-    // 블로그 리뷰 버튼 핸들러
-    const handleBlogReview = (restaurant: Restaurant) => {
-      console.log('블로그 리뷰 보기:', restaurant.name);
-      // 블로그 리뷰 페이지로 이동하는 로직 추가
-    };
+  // 모든 카드를 다 본 경우 -> 다음 페이지 호출
+  const handleFinished = () => {
+    console.log('모든 맛집을 확인했습니다.');
+    if (hasNext && !isLoading) {
+      setPage(prev => prev + 1); // 여기서만 페이지 증가
+    }
+  };
 
-    // 카카오맵 버튼 핸들러
-    const handleKakaoMap = (restaurant: Restaurant) => {
-      console.log('카카오맵 열기:', restaurant.name);
-      // 카카오맵 앱이나 웹으로 이동하는 로직 추가
-      const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(restaurant.name)}`;
-      window.open(kakaoMapUrl, '_blank');
-    };
-  
-
-    // 첫 방문 시 위치 권한 모달 표시
-    useEffect(() => {
-      // localStorage에서 위치 권한 상태 확인
-      const hasLocationPermission = localStorage.getItem('location_permission_granted');
-      
-      if (!hasLocationPermission && isFirstVisit) {
-        const timer = setTimeout(() => {
-          setShowLocationModal(true);
-        }, 1500); // 1.5초 후 모달 표시
-        
-        return () => clearTimeout(timer);
-      } else if (hasLocationPermission) {
-        setIsFirstVisit(false);
-      }
-    }, [isFirstVisit]);
-  
-    const handleLocationSuccess = (location: UserLocation) => {
-      console.log('위치 허용됨:', location);
-      setCurrentLocation(location);
-      setIsFirstVisit(false);
-      setShowLocationModal(false);
-      
-      // localStorage에 권한 상태 저장
-      localStorage.setItem('location_permission_granted', 'true');
-      localStorage.setItem('user_location', JSON.stringify(location));
-    };
-  
-    const handleLocationSkip = () => {
-      console.log('위치 권한 스킵됨');
-      setIsFirstVisit(false);
-      setShowLocationModal(false);
-      
-      // 스킵 상태도 저장 (다음에 다시 묻지 않음)
-      localStorage.setItem('location_permission_skipped', 'true');
-    };
-  
-    // 위치 권한 다시 요청하는 함수
-    const requestLocationAgain = () => {
-      setShowLocationModal(true);
-    };
-  
-    
-  
-    return (
-      <div className="h-screen-mobile overflow-hidden bg-gray-50 flex flex-col">
+  return (
+    <div className="h-screen-mobile overflow-hidden bg-gray-50 flex flex-col">
       {/* 헤더 */}
       <HeaderBar variant="logo" />
 
-      {/* 메인 콘텐츠 - BottomNavigation 제외 */}
+      {/* 메인 콘텐츠 */}
       <main className="pt-header-default bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
-        {/* 위치 선택 영역 - 높이 축소 */}
+        {/* 위치 선택 영역 */}
         <div className="flex items-center justify-between h-12 sm:mb-2 xs:mb-0 xs:pt-0 sm:pt-[3%] flex-shrink-0">
-          <LocationSelector
-            selectedLocation={selectedLocation}
-            onLocationSelect={handleLocationChange}
-            className="w-fit text-sm"
-          />
-          <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
+          {/* 위치 선택 UI 필요시 추가 */}
         </div>
 
-        {/* FlikCard 영역 - 남은 공간 모두 사용 */}
-        <div className=" w-full flik-card-adaptive overflow-hidden flex-1 pb-[5%] flex items-center justify-center">
+        {/* FlikCardLayout 영역 */}
+        <div className="w-full flik-card-adaptive overflow-hidden flex-1 pb-[5%] flex items-center justify-center">
           <div className="sm:w-[98%] xs:w-[90%] h-full">
             <FlikCardLayout
-              restaurants={sampleRestaurants}
+              spots={spots}
               onSave={handleSave}
-              onBlogReview={handleBlogReview}
-              onKakaoMap={handleKakaoMap}
+              onFinished={handleFinished}
             />
           </div>
         </div>
       </main>
-
-      {/* 위치 권한 모달 */}
-      <LocationPermissionModal
-        isOpen={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-        onSuccess={handleLocationSuccess}
-        onSkip={handleLocationSkip}
-      />
     </div>
-    );
-  };
+  );
+};
 
 export default FlikPage;

@@ -1,22 +1,24 @@
 import { Restaurant } from "../types/restaurant.types";
 import { useNavigate } from "react-router-dom";
+import { Spot } from "../types/spot.types";
 import { loadKakaoMapSDK, getCoordinatesFromAddress } from '../api/kakaoMapApi';
 import { searchNaverBlog, cleanBlogTitle, cleanBlogDescription, formatBlogDate } from '../api/naverBlogApi';
+import { SpotDetail } from "../types/spot.types";
 
-export const useThridParty = () => {
+export const useThirdParty = () => {
 
   const navigate = useNavigate();
 
-  const handleMapClick = async (restaurants: Restaurant[], returnPath: string) => {
+  const handleMapClick = async (spots: SpotDetail[], returnPath: string) => {
     try {
-      console.log('지도 검색 시작:', restaurants[0].name);
+      console.log('지도 검색 시작:', spots[0].name);
       
 
   
       // 지도 페이지로 이동하면서 데이터 전달
-      navigate('/restaurant-map', {
+      navigate('/spot-map', {
         state: {
-          restaurants: restaurants,
+          spots: spots,
           returnPath: returnPath,
         }
       });
@@ -28,13 +30,13 @@ export const useThridParty = () => {
       console.error('지도 처리 실패:', error);
       
       // 에러 발생 시에도 페이지 이동 (검색 기능으로 처리)
-      navigate('/restaurant-map', {
+      navigate('/spot-map', {
         state: {
-          restaurants: restaurants,
+          spots: spots,
           coordinates: null,
           error: '위치 정보를 불러오는데 실패했습니다.',
-          searchQuery: restaurants[0].name,
-          address: restaurants[0].address || restaurants[0].location
+          searchQuery: spots[0].name,
+          address: spots[0].address
         }
       });
     }

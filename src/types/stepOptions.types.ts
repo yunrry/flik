@@ -47,18 +47,18 @@ export const STEP_OPTIONS: Record<number, StepOption[]> = {
       
     ],
     3: [
-      { id: 'day', name: '당일치기', icon: '☀️' },
-      { id: '1night', name: '1박2일', icon: '🌙' },
-      { id: '2night', name: '2박3일', icon: '🌟' },
+      { id: '1', name: '당일치기', icon: '☀️' },
+      { id: '2', name: '1박2일', icon: '🌙' },
+      { id: '3', name: '2박3일', icon: '🌟' },
     ],
     4: [
-        { id: 'nature', name: '자연', icon: '/assets/theme/nature.jpg' },
-        { id: 'indoor', name: '실내여행지', icon: '/assets/theme/indoor.jpg' },
-        { id: 'history', name: '문화역사', icon: '/assets/theme/history.jpg' },
-        { id: 'cafe', name: '카페', icon: '/assets/theme/cafe.jpg' },
-        { id: 'activity', name: '액티비티', icon: '/assets/theme/activity.jpg' },
-        { id: 'festival', name: '축제', icon: '/assets/theme/festival.jpg' },
-        { id: 'market', name: '전통시장', icon: '/assets/theme/market.jpg' },
-        { id: 'themePark', name: '테마파크', icon: '/assets/theme/themePark.jpeg' },
-    ]
-  };
+        { id: 'NATURE', name: '자연', icon: '/assets/theme/nature.jpg' },
+        { id: 'INDOOR', name: '실내여행지', icon: '/assets/theme/indoor.jpg' },
+        { id: 'HISTORY_CULTURE', name: '문화역사', icon: '/assets/theme/history.jpg' },
+        { id: 'CAFE', name: '카페', icon: '/assets/theme/cafe.jpg' },
+        { id: 'ACTIVITY', name: '액티비티', icon: '/assets/theme/activity.jpg' },
+        { id: 'FESTIVAL', name: '축제', icon: '/assets/theme/festival.jpg' },
+        { id: 'MARKET', name: '전통시장', icon: '/assets/theme/market.jpg' },
+        { id: 'THEMEPARK', name: '테마파크', icon: '/assets/theme/themePark.jpeg' },
+      ]
+    };

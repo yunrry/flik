@@ -9,6 +9,7 @@ import { User, UserActivity } from '../types/user.types';
 import { updateUserProfile, getUserReviews } from '../api/userApi';
 import ActivityItem from '../components/Profile/ActivityItem';
 import FloatingUploadButton from '../components/UI/FloatingUploadButton';
+import MyHeader from '../components/Layout/MyHeader';
 
 
 const MyPage: React.FC = () => {
@@ -142,17 +143,25 @@ const MyPage: React.FC = () => {
 
   const handleCancelLogout = () => {
     setShowLogoutModal(false);
+  };
 
-    
+  const handleSettings = () => {
+    navigate('/settings');
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <HeaderBar variant="my" />
+      <MyHeader
+        handleSettings={() => console.log('설정 이동')}
+        profileImage={user?.profileImageUrl || '/assets/profile/defaultProfileImage.png'}
+        nickname={user?.nickname || '사용자'}
+        onProfileImageChange={() => console.log('프로필 이미지 변경')}
+        onNicknameChange={() => console.log('닉네임 변경')}
+      />
 
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-header-default w-full px-0 lg:px-8 py-6">
+      <main className="pt-header-extended w-full px-0 lg:px-8 py-6">
 
       {/* <ProfileSection user={user!} onUserUpdate={handleUserUpdate} /> */}
 
