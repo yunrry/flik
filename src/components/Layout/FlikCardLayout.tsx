@@ -164,7 +164,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({ spots, onSave, onFinish
           <div className="w-full h-full flex flex-col items-center justify-center bg-white rounded-2xl shadow-xl">
             <div className="text-4xl mb-4">🎉</div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">모든 장소를 확인했어요!</h3>
-            <p className="text-sm text-gray-600 mb-4">저장된 맛집 {savedSpots.length}개를 확인해보세요</p>
+            <p className="text-sm text-gray-600 mb-4">저장된 장소 {savedSpots.length}개를 확인해보세요</p>
             <button
               onClick={resetCards}
               className="bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors"

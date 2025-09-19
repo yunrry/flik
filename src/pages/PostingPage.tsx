@@ -19,6 +19,7 @@ const PostingPage: React.FC = () => {
   const [imageUrls, setImageUrls] = useState<string[]>([]); // 이미지 미리보기용 URL
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [title, setTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
     
   // location-select에서 전달받은 장소 정보
   const [selectedLocation, setSelectedLocation] = useState<SpotDetail | null>(
@@ -121,8 +122,11 @@ const PostingPage: React.FC = () => {
     navigate('/my');
   };
 
-
+  // 게시글 등록
   const handleSubmit = async () => {
+    if (isLoading) return; // ✅ 중복 클릭 방지
+    setIsLoading(true);
+
     try {
       // 1) Cloudinary에 이미지 업로드
       console.log('Cloudinary 업로드 시작...');
@@ -149,6 +153,9 @@ const PostingPage: React.FC = () => {
       navigate('/my');
     } catch (error) {
       console.error('게시글 작성 중 오류 발생:', error);
+      alert('게시글 등록 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -169,17 +176,17 @@ const PostingPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative">
       {/* 헤더 */}
       <HeaderBar 
         variant="posting" 
         onBack={handleBackClick}
         onRegister={handleSubmit}
-        isAvailable={isSubmitEnabled}
+        isAvailable={isSubmitEnabled && !isLoading} // ✅ 로딩 중엔 비활성화
       />
       
       {/* 메인 콘텐츠 */}
-      <main className="pt-header-default px-4 py-6 mt-[5%] flex flex-col min-h-screen">
+      <main className={`pt-header-default px-4 py-6 mt-[5%] flex flex-col min-h-screen ${isLoading ? 'pointer-events-none opacity-50' : ''}`}>
         {/* 제목 입력 */}
         <div className="mb-6">
           <input
@@ -187,6 +194,7 @@ const PostingPage: React.FC = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목"
+            disabled={isLoading}
             className="w-full text-lg font-medium text-gray-800 placeholder-gray-400 border-none outline-none focus:ring-0"
           />
           <div className="h-px bg-gray-200 mt-2"></div>
@@ -195,62 +203,55 @@ const PostingPage: React.FC = () => {
         {/* 장소 추가 */}
         <div className="mb-2">
           {selectedLocation ? (
-            // 선택된 장소가 있을 때: 이미지와 같은 레이아웃
-            <div 
-        
-            className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors"
-          >
-            {/* 왼쪽: 이미지 + 정보 */}
-            <div className="flex items-center space-x-3">
-              {/* 플레이스홀더 이미지 */}
-              <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
-                {selectedLocation.imageUrls ? (
-                  <img 
-                    src={selectedLocation.imageUrls[0]} 
-                    alt={selectedLocation.name}
-                    className="w-full h-full object-cover rounded-sm"
-                  />
-                ) : (
-                  <div className="w-6 h-6 bg-gray-300 rounded"></div>
-                )}
-              </div>
-              
-              {/* 매장 정보 */}
-              <div>
-              <div className="text-gray-9 text-[10px] font-normal font-['Pretendard'] leading-3">
-                  {translateCategory(selectedLocation.category)} · {formatAddress(selectedLocation.address || '')}
+            <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
+              {/* 왼쪽: 이미지 + 정보 */}
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
+                  {selectedLocation.imageUrls ? (
+                    <img 
+                      src={selectedLocation.imageUrls[0]} 
+                      alt={selectedLocation.name}
+                      className="w-full h-full object-cover rounded-sm"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                  )}
                 </div>
-                <div className="text-gray-3 text-base font-semibold font-['Pretendard'] leading-normal pt-1.5">
-                  {selectedLocation.name}
+                
+                <div>
+                  <div className="text-gray-9 text-[10px] font-normal leading-3">
+                    {translateCategory(selectedLocation.category)} · {formatAddress(selectedLocation.address || '')}
+                  </div>
+                  <div className="text-gray-3 text-base font-semibold leading-normal pt-1.5">
+                    {selectedLocation.name}
+                  </div>
                 </div>
-    
               </div>
-            </div>
 
-            {/* 오른쪽: 선택 버튼 */}
-            <button
-              onClick={() => handleLocationClick()}
-              className="w-11 h-7 p-0.5 inline-flex flex-col justify-center items-center gap-2.5"
-            >
-              <text className="text-center justify-start text-gray-6 text-xs font-semibold font-['Pretendard'] leading-normal">변경</text>
-            </button>
-          </div>
+              <button
+                onClick={handleLocationClick}
+                disabled={isLoading}
+                className="w-11 h-7 p-0.5 inline-flex flex-col justify-center items-center gap-2.5"
+              >
+                <span className="text-gray-6 text-xs font-semibold">변경</span>
+              </button>
+            </div>
           ) : (
-            // 선택된 장소가 없을 때: 기존 장소 추가 버튼
             <button
               onClick={handleLocationClick}
+              disabled={isLoading}
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <LocationIcon size="sm" variant="blurred" />
-              <span className="text-gray-6 text-sm font-medium font-['Pretendard'] leading-tight pt-1">
+              <span className="text-gray-6 text-sm font-medium leading-tight pt-1">
                 장소 추가
               </span>
             </button>
           )}
         </div>
         
+        {/* 이미지 미리보기 */}
         <div className="mb-6">
-          {/* 이미지 미리보기 */}
           {imageUrls.length > 0 && (
             <div className="grid grid-cols-1 gap-2 mb-4 p-4">
               {imageUrls.map((url, index) => (
@@ -260,18 +261,19 @@ const PostingPage: React.FC = () => {
                     alt={`이미지 ${index + 1}`}
                     className="w-full h-full object-cover rounded-lg"
                   />
-                  {/* 삭제 버튼 */}
-                  <button
-                    onClick={() => handleImageDelete(index)}
-                    className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs"
-                  >
-                    ×
-                  </button>
+                  {!isLoading && (
+                    <button
+                      onClick={() => handleImageDelete(index)}
+                      className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
           )}
-          </div>
+        </div>
 
         {/* 내용 입력 */}
         <div className="mb-6">
@@ -279,21 +281,19 @@ const PostingPage: React.FC = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="내용을 입력해주세요."
-            className="w-full h-48 text-gray-6 text-sm font-normal font-['Pretendard'] leading-normal placeholder-gray-400 border-none outline-none focus:ring-0 resize-none"
+            disabled={isLoading}
+            className="w-full h-48 text-gray-6 text-sm font-normal leading-normal placeholder-gray-400 border-none outline-none focus:ring-0 resize-none"
           />
         </div>
 
-        {/* 이미지 업로드 영역 */}
-        
+        {/* 이미지 업로드 버튼 */}
         <div className="mb-6 flex items-end bottom-0">
-          {/* 이미지 업로드 버튼 */}
-          {images.length < 5 && (
+          {images.length < 5 && !isLoading && (
             <button
               onClick={handleImageUploadClick}
-             className="fixed bottom-[5%] left-4 z-40 w-12 h-12 bg-white flex items-center justify-center text-gray-500 hover:border-main-1 hover:text-main-1 transition-colors"
+              className="fixed bottom-[5%] left-4 z-40 w-12 h-12 bg-white flex items-center justify-center text-gray-500 hover:border-main-1 hover:text-main-1 transition-colors"
             >
               <ImageIcon size="xl" />
-              
             </button>
           )}
         </div>
@@ -308,6 +308,13 @@ const PostingPage: React.FC = () => {
         onChange={handleImageUpload}
         className="hidden"
       />
+
+      {/* ✅ 로딩 오버레이 */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 };
