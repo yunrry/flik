@@ -23,6 +23,15 @@ export const getEnvVar = (key: string, defaultValue?: string): string => {
     return getEnvVar('VITE_KAKAO_JAVASCRIPT_KEY');
   };
   
+  export const getCloudinaryCloudName = (): string => {
+    return getEnvVar('VITE_CLOUDINARY_CLOUD_NAME');
+  };
+  
+  export const getCloudinaryUploadPreset = (): string => {
+    return getEnvVar('VITE_CLOUDINARY_UPLOAD_PRESET');
+  };
+
+
   // 개발 환경 체크
   export const isDevelopment = (): boolean => {
     return getEnvVar('MODE') === 'development';

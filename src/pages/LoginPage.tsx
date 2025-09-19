@@ -130,7 +130,7 @@ const LoginPage: React.FC = () => {
     {
       provider: 'google' as SocialProvider,
       name: 'Google',
-      color: 'bg-red-500 hover:bg-red-600',
+      color: 'bg-blue-1 hover:bg-blue-1',
       icon: '🔍'
     },
     {
@@ -143,7 +143,7 @@ const LoginPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-white ">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-screen">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
@@ -205,13 +205,13 @@ const LoginPage: React.FC = () => {
               <div className="flex-1 border-t border-gray-200"></div>
             </div>
 
-            <button
+            {/* <button
               onClick={() => setShowEmailForm(true)}
               disabled={isLoading}
               className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors"
             >
               📧 이메일로 로그인/회원가입
-            </button>
+            </button> */}
 
             <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
               로그인 시{' '}
