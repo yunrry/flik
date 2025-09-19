@@ -11,6 +11,7 @@ export interface UserActivityPostResponse {
   }
   
   export interface PostSearchResponse {
+    data: any;
     content: UserActivityPostResponse[];
     pageable: {
       pageNumber: number;
