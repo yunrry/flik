@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Search } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getSpotsUserSaved } from '../api/flikCardsApi';
 import { SpotDetail } from '../types/spot.types';
 import { translateCategory } from '../utils/categoryMapper';
@@ -29,7 +30,26 @@ const SearchPage: React.FC = () => {
   const [searchResults, setSearchResults] = useState<spot[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+  // PostingPage에서 전달받은 현재 선택된 장소
+  const currentLocation = location.state?.currentLocation as SpotDetail | null;
+  const images = location.state?.images as File[];
+  const content = location.state?.content as string;
+  const title = location.state?.title as string;
+  const returnPath = location.state?.returnPath || '/search';
+
+  const handleBack = () => {
+    navigate(returnPath);
+  };
+
+  const handleLocationSelect = (selectedLocation: SpotDetail) => {
+    // 선택된 장소를 PostingPage로 전달
+    navigate(returnPath, {
+      state: { selectedLocation, images, content, title }
+    });
+  };
+
   // 저장한 곳 데이터 가져오기
   const fetchSavedspots = async (): Promise<void> => {
     try {
@@ -133,15 +153,8 @@ const SearchPage: React.FC = () => {
     return () => clearTimeout(delayedSearch);
   }, [searchTerm]);
 
-  const handleBack = (): void => {
-    // 뒤로가기 로직
-    console.log('뒤로가기');
-  };
 
-  const handleSelect = (spot: SpotDetail): void => {
-    // 선택 로직
-    console.log('선택됨:', spot);
-  };
+
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchTerm(e.target.value);
@@ -231,7 +244,7 @@ const SearchPage: React.FC = () => {
 
                 {/* 오른쪽: 선택 버튼 */}
                 <button
-                  onClick={() => handleSelect(spot)}
+                  onClick={() => handleLocationSelect(spot)}
                   className="w-11 h-7 p-0.5 bg-gray-8 rounded-3xl inline-flex flex-col justify-center items-center gap-2.5"
                 >
                   <text className="text-center justify-start text-gray-3 text-xs font-semibold font-['Pretendard'] leading-normal">선택</text>

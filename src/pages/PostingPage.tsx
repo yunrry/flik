@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HeaderBar } from '../components/Layout';
 import LocationIcon from '../components/Icons/LocationIcon';
-import { Restaurant } from '../types/restaurant.types';
 import { ImageIcon } from '../components/Icons/SvgIcons';
+import { SpotDetail } from '../types/spot.types';
+import { translateCategory } from '../utils/categoryMapper';
+import { formatAddress } from '../utils/formater';
 
 const PostingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ const PostingPage: React.FC = () => {
   const [title, setTitle] = useState('');
     
   // location-select에서 전달받은 장소 정보
-  const [selectedLocation, setSelectedLocation] = useState<Restaurant | null>(
+  const [selectedLocation, setSelectedLocation] = useState<SpotDetail | null>(
     location.state?.selectedLocation || null
   );
 
@@ -102,7 +104,7 @@ const PostingPage: React.FC = () => {
 
   const handleLocationClick = () => {
     // 장소 선택 페이지로 이동하면서 현재 편집 내용 전달
-    navigate('/location-select', {
+    navigate('/search', {
       state: { 
         currentLocation: selectedLocation,
         title: title,
@@ -164,28 +166,48 @@ const PostingPage: React.FC = () => {
         </div>
         
         {/* 장소 추가 */}
-        <div className="mb-6">
+        <div className="mb-2">
           {selectedLocation ? (
             // 선택된 장소가 있을 때: 이미지와 같은 레이아웃
-            <div className="bg-gray-900 text-white p-4 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <LocationIcon size="sm" variant="filled" className="text-white" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-300 font-medium">
-                    {selectedLocation.category || '음식점'} · {selectedLocation.location || selectedLocation.address}
-                  </p>
-                  <p className="text-lg font-semibold text-white mt-1">
-                    {selectedLocation.name}
-                  </p>
+            <div 
+        
+            className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            {/* 왼쪽: 이미지 + 정보 */}
+            <div className="flex items-center space-x-3">
+              {/* 플레이스홀더 이미지 */}
+              <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
+                {selectedLocation.imageUrls ? (
+                  <img 
+                    src={selectedLocation.imageUrls[0]} 
+                    alt={selectedLocation.name}
+                    className="w-full h-full object-cover rounded-sm"
+                  />
+                ) : (
+                  <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                )}
+              </div>
+              
+              {/* 매장 정보 */}
+              <div>
+              <div className="text-gray-9 text-[10px] font-normal font-['Pretendard'] leading-3">
+                  {translateCategory(selectedLocation.category)} · {formatAddress(selectedLocation.address || '')}
                 </div>
-                <button
-                  onClick={handleLocationClick}
-                  className="text-gray-400 hover:text-white text-sm"
-                >
-                  변경
-                </button>
+                <div className="text-gray-3 text-base font-semibold font-['Pretendard'] leading-normal pt-1.5">
+                  {selectedLocation.name}
+                </div>
+    
               </div>
             </div>
+
+            {/* 오른쪽: 선택 버튼 */}
+            <button
+              onClick={() => handleLocationClick()}
+              className="w-11 h-7 p-0.5 inline-flex flex-col justify-center items-center gap-2.5"
+            >
+              <text className="text-center justify-start text-gray-6 text-xs font-semibold font-['Pretendard'] leading-normal">변경</text>
+            </button>
+          </div>
           ) : (
             // 선택된 장소가 없을 때: 기존 장소 추가 버튼
             <button
@@ -203,13 +225,13 @@ const PostingPage: React.FC = () => {
         <div className="mb-6">
           {/* 이미지 미리보기 */}
           {imageUrls.length > 0 && (
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-1 gap-2 mb-4 p-4">
               {imageUrls.map((url, index) => (
                 <div key={index} className="relative group">
                   <img
                     src={url}
                     alt={`이미지 ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full h-full object-cover rounded-lg"
                   />
                   {/* 삭제 버튼 */}
                   <button

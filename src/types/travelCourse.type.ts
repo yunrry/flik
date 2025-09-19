@@ -24,5 +24,6 @@ export interface CourseSlot {
     totalSlots: number;
     filledSlots: number;
     selectedCategories: string[];
+    isPublic: boolean;
   }
   

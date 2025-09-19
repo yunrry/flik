@@ -71,25 +71,57 @@ export interface TimeInfo {
     tripDuration: number;
     limitPerCategory?: number;
   }
+
+  export interface RandomSpotsApiResponse {
+    page: number;
+    pageSize: number;
+    spots: Spot[];
+    hasNext: boolean;
+  }
   
   // 이미지 URL 문자열을 파싱하는 함수
-  export const parseImageUrls = (imageUrlsString: string): string[] => {
+  export const parseImageUrls = (
+    imageUrlsInput: string | string[] | null | undefined
+  ): string[] => {
     try {
-      // JSON 문자열을 파싱
-      const parsed = JSON.parse(imageUrlsString);
-      
-      // 배열인지 확인하고 반환
-      if (Array.isArray(parsed)) {
-        return parsed.filter(url => url && url.trim() !== '');
+      // 1. 값이 없으면 빈 배열
+      if (!imageUrlsInput) return [];
+  
+      // 2. 이미 배열일 경우 그대로 반환 (null, 빈값 제거)
+      if (Array.isArray(imageUrlsInput)) {
+        return imageUrlsInput.filter(url => url && url.trim() !== '');
       }
-      
-      // 배열이 아니면 빈 배열 반환
+  
+      // 3. 문자열인 경우
+      if (typeof imageUrlsInput === 'string') {
+        // JSON 문자열일 가능성 체크
+        try {
+          const parsed = JSON.parse(imageUrlsInput);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(url => url && url.trim() !== '');
+          }
+        } catch {
+          // JSON 파싱 실패 → 콤마 구분 문자열 처리
+          if (imageUrlsInput.includes(',')) {
+            return imageUrlsInput
+              .split(',')
+              .map(url => url.trim())
+              .filter(url => url !== '');
+          }
+  
+          // 단일 문자열일 경우
+          return imageUrlsInput.trim() ? [imageUrlsInput.trim()] : [];
+        }
+      }
+  
+      console.warn('parseImageUrls: 예상치 못한 타입', imageUrlsInput);
       return [];
     } catch (error) {
       console.error('이미지 URL 파싱 오류:', error);
       return [];
     }
   };
+  
   
   // Spot을 Restaurant 타입으로 변환하는 유틸리티 함수들
   export const formatTime = (time: TimeInfo): string => {
@@ -111,4 +143,44 @@ export interface TimeInfo {
   
   export const getSpotTags = (spot: Spot): string[] => {
     return [spot.tag1, spot.tag2, spot.tag3].filter(tag => tag && tag.trim() !== '');
+  };
+
+
+  export const convertToSpot = (detail: SpotDetail): Spot => {
+    return {
+      id: detail.id,
+      name: detail.name,
+      category: detail.category || '',
+      description: detail.description || '',
+      address: detail.address || '',
+      latitude: detail.latitude || 0,
+      longitude: detail.longitude || 0,
+      rating: detail.rating || 0,
+      imageUrls: Array.isArray(detail.imageUrls) 
+        ? detail.imageUrls.join(',') 
+        : detail.imageUrls || '',
+      
+      // 기본값으로 채우는 필드들
+      contentTypeId: '',
+      contentId: '',
+      regnCd: '',
+      signguCd: '',
+      info: '',
+      googlePlaceId: '',
+      reviewCount: 0,
+      tag1: '',
+      tag2: '',
+      tag3: '',
+      tags: '',
+      labelDepth1: '',
+      labelDepth2: '',
+      labelDepth3: '',
+      parking: '',
+      petCarriage: '',
+      babyCarriage: '',
+      openTime: { hour: 0, minute: 0 },
+      closeTime: { hour: 0, minute: 0 },
+      time: '',
+      dayOff: ''
+    } as Spot;
   };

@@ -265,7 +265,7 @@ const CoursePage: React.FC = () => {
     <div className="pt-header-extended min-h-screen bg-white">
       {/* 헤더 */}
       <CourseHeader
-        totalDistance={parseFloat(courseData.totalDistance.toFixed(1))}
+        totalDistance={parseFloat(courseData.totalDistance?.toFixed(1))|| 0}
         totalSpot={
           courseData.daySlots?.reduce((total: number, daySlot: any) => total + daySlot.selectedSpotIds.length, 0) || 0
         }

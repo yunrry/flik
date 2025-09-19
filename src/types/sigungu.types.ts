@@ -27,6 +27,11 @@ export const getRegionName = (code: string): string | undefined => {
 };
 
 
+export const getRegionCode = (name: string): string | undefined => {
+  return Object.keys(REGION_CODE_TO_KEY).find((key) => REGION_CODE_TO_KEY[key] === name);
+};
+
+
 
 export const REGION_CODE_TO_KEY: Record<string, RegionName> = {
   '11': 'seoul',

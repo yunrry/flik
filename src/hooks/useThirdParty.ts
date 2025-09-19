@@ -16,7 +16,7 @@ export const useThirdParty = () => {
 
   
       // 지도 페이지로 이동하면서 데이터 전달
-      navigate('/restaurant-map', {
+      navigate('/spot-map', {
         state: {
           spots: spots,
           returnPath: returnPath,
@@ -30,7 +30,7 @@ export const useThirdParty = () => {
       console.error('지도 처리 실패:', error);
       
       // 에러 발생 시에도 페이지 이동 (검색 기능으로 처리)
-      navigate('/restaurant-map', {
+      navigate('/spot-map', {
         state: {
           spots: spots,
           coordinates: null,

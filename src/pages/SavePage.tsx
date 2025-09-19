@@ -9,6 +9,7 @@ import { SpotDetail } from '../types/spot.types';
 import { getSpotsUserSaved } from '../api/flikCardsApi';
 import { getUserSavedCourses } from '../api/travelCourseApi';
 import { TravelCourse } from '../types/travelCourse.type';
+import FloatingMapButton from '../components/UI/FloatingMapButton';
 
 
 const SavePage: React.FC = () => {
@@ -94,31 +95,31 @@ const SavePage: React.FC = () => {
   const currentData = activeTab === 'places' 
   ? (savedSpots ?? []) 
   : (savedCourses ?? []);
-
+  
   return (
     <div className="min-h-screen bg-white">
       <HeaderBar variant="logo" />
       
       <main className="pt-header-default w-full px-0 lg:px-8 py-6">
         {/* 토글 버튼 */}
-        <div className="mx-[5%] mb-6">
-          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+        <div className="mx-[5%] mb-2 pt-4">
+          <div className="flex h-9 border items-center border-gray-5 overflow-hidden">
             <button
               onClick={() => setActiveTab('courses')}
-              className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
+              className={`flex-1 py-3 px-4 mt-0.5 text-center text-xs font-medium font-['Pretendard'] leading-normal transition-colors ${
                 activeTab === 'courses'
-                  ? 'bg-gray-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'bg-gray-5 text-white'
+                  : 'bg-white text-gray-5 hover:bg-gray-50'
               }`}
             >
               저장한 플랜
             </button>
             <button
               onClick={() => setActiveTab('places')}
-              className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
+              className={`flex-1 py-3 px-4 mt-0.5 text-center text-xs font-medium font-['Pretendard'] leading-normal transition-colors ${
                 activeTab === 'places'
-                  ? 'bg-gray-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  ? 'bg-gray-5 text-white'
+                  : 'bg-white text-gray-5 hover:bg-gray-50'
               }`}
             >
               저장한 장소
@@ -132,9 +133,9 @@ const SavePage: React.FC = () => {
             className="flex items-center justify-between cursor-pointer"
             onClick={() => activeTab === 'places' && handleMapClick(savedSpots, '/save')}
           >
-            {activeTab === 'places' && <MapIcon size="md"/>}
+  
             <span className="text-sm text-gray-500 ml-auto">
-              총 {currentCount}개의 {activeTab === 'places' ? '매장' : '플랜'}
+           {activeTab === 'places' ? '총 ' + currentCount + '곳' : ''}
             </span>
           </div>
         </div>
@@ -185,6 +186,11 @@ const SavePage: React.FC = () => {
           )}
         </div>
       </main>
+      {activeTab === 'places' && (
+      <FloatingMapButton 
+        handleMapClick={() => handleMapClick(savedSpots, '/save')}
+        />
+      )}
     </div>
   );
 };

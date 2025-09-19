@@ -26,6 +26,7 @@ const CourseBanner: React.FC<CourseBannerProps> = ({
     Categories,
 }) => {
 
+  const totalDistanceString = totalDistance === 0 ? ' -- ' : totalDistance.toString();
 
   return (
     <div className="flex w-full h-full items-center bg-white rounded-md ">
@@ -39,7 +40,7 @@ const CourseBanner: React.FC<CourseBannerProps> = ({
             <div className="flex flex-row">
                 <span className="text-gray-3 text-sm font-semibold font-['Pretendard'] leading-normal">총 이동거리</span>
                 <span className="text-gray-9 text-sm font-normal font-['Pretendard'] leading-normal mx-1">·</span>
-                <span className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-normal">{totalDistance}km</span>
+                <span className="text-gray-5 text-sm font-normal font-['Pretendard'] leading-normal">{totalDistanceString}km</span>
             </div>
 
             <div className="flex flex-row">

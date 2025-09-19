@@ -1,8 +1,10 @@
 import { ApiResponse } from '../types/response.types';
 import { TravelCourse, CourseSlot } from '../types/travelCourse.type';
+import { getApiBaseUrl } from '../utils/env';
 
   // API 기본 설정
-  const API_BASE_URL = 'http://localhost:8080/api/v1';
+
+  const API_BASE_URL = getApiBaseUrl();
   
   // 인증 토큰 가져오기 (useAuth와 연동)
   const getAuthToken = (): string | null => {
@@ -30,7 +32,7 @@ import { TravelCourse, CourseSlot } from '../types/travelCourse.type';
       queryParams.append('regionCode', regionCode);
       queryParams.append('tripDuration', tripDuration.toString());
   
-      const url = `${API_BASE_URL}/travel-courses/generate?${queryParams.toString()}`;
+      const url = `${API_BASE_URL}/v1/travel-courses/generate?${queryParams.toString()}`;
       
       const response = await fetch(url, {
         method: 'POST',
@@ -66,7 +68,7 @@ import { TravelCourse, CourseSlot } from '../types/travelCourse.type';
       throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/travel-courses`, {
+      const response = await fetch(`${API_BASE_URL}/v1/travel-courses`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
       },
@@ -89,7 +91,7 @@ import { TravelCourse, CourseSlot } from '../types/travelCourse.type';
       throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/travel-courses/${courseId}`, {
+      const response = await fetch(`${API_BASE_URL}/v1/travel-courses/${courseId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -112,7 +114,7 @@ import { TravelCourse, CourseSlot } from '../types/travelCourse.type';
       throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
     }
     try {
-    const response = await fetch(`${API_BASE_URL}/travel-courses/${courseId}`, {
+    const response = await fetch(`${API_BASE_URL}/v1/travel-courses/${courseId}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
       },
@@ -129,7 +131,39 @@ import { TravelCourse, CourseSlot } from '../types/travelCourse.type';
   };
 
 
+  export interface RegionCoursesResponse {
+    data: TravelCourse[];
+    message?: string;
+  }
   
+  export const getRegionCourses = async (regionCode: string): Promise<RegionCoursesResponse> => {
+    const url = `${API_BASE_URL}/v1/travel-courses/region/${regionCode}`;
+    const token = getAuthToken();
+  
+    if (!token) {
+      throw new Error('로그인이 필요합니다.');
+    }
+  
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP 오류: ${response.status}`);
+      }
+  
+      const data: RegionCoursesResponse = await response.json();
+      console.log('지역 코스 조회 응답', data);
+      return data;
+    } catch (error) {
+      console.error('지역 코스 API 호출 오류:', error);
+      throw error;
+    }
+  };
   
   
   // 에러 타입 정의

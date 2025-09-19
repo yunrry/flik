@@ -17,8 +17,9 @@ const SavedFlikCard: React.FC<{ spot: SpotDetail }> = ({ spot }) => {
 
     const handleCardClick = () => {
         // navigate 시 spot 정보를 state로 전달
+        console.log('네비게이션 시도:', spot); //
         navigate(`/save/${spot.id}`, {
-          state: { spot }
+          state: { spotDetail: spot }
         });
       };
 

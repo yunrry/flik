@@ -15,8 +15,8 @@ const API_BASE_URL = getApiBaseUrl();
 export const getUserProfile = async (userId?: string): Promise<UserProfile> => {
   try {
     const url = userId 
-      ? `${API_BASE_URL}/user/profile/${userId}`
-      : `${API_BASE_URL}/user/profile`;
+      ? `${API_BASE_URL}/v1/user/profile/${userId}`
+      : `${API_BASE_URL}/v1/user/profile`;
 
     const response = await fetch(url, {
       headers: {
@@ -55,7 +55,7 @@ export const updateUserProfile = async (
   profileData: UpdateUserProfileRequest
 ): Promise<UserProfile> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const updateUserProfile = async (
 // 프로필 이미지 URL로 업로드
 export const uploadProfileImageByUrl = async (imageUrl: string): Promise<string> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/profile/image`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user/profile/image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export const getUserActivities = async (
         params.append('type', type);
       }
   
-      const response = await fetch(`${API_BASE_URL}/user/activities?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/v1/user/activities?${params}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(localStorage.getItem('auth_token') && {
@@ -186,7 +186,7 @@ export const getUserActivities = async (
 // 닉네임 중복 확인
 export const checkNicknameAvailability = async (nickname: string): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/user/check-nickname?nickname=${encodeURIComponent(nickname)}`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user/check-nickname?nickname=${encodeURIComponent(nickname)}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(localStorage.getItem('auth_token') && {

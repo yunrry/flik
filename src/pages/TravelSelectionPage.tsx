@@ -245,19 +245,7 @@ const handleRecommendationCancel = () => {
 };
 
 
-  // 블로그 리뷰 버튼 핸들러
-  const handleBlogReview = (spot: Spot) => {
-    console.log('블로그 리뷰 보기:', spot.name);
-    // 블로그 리뷰 페이지로 이동하는 로직 추가
-  };
 
-  // 카카오맵 버튼 핸들러
-  const handleKakaoMap = (spot: Spot) => {
-    console.log('카카오맵 열기:', spot.name);
-    // 카카오맵 앱이나 웹으로 이동하는 로직 추가
-    const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(spot.name)}`;
-    window.open(kakaoMapUrl, '_blank');
-  };
   
   useEffect(() => {
     const loadAllCategories = async () => {
@@ -515,14 +503,9 @@ const handleRecommendationCancel = () => {
       
       <main className="pt-header-extended bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
         <div className="flex flex-1 pt-[3%]">
-          <button onClick={() => navigate('/course')}>
-            코스 보기
-          </button>
        <FlikCardLayout
          spots={spotResponse}
          onSave={handleSave}
-         onBlogReview={handleBlogReview}
-         onKakaoMap={handleKakaoMap}
        />
       </div>
       </main>

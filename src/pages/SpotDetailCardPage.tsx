@@ -6,18 +6,23 @@ import { HeaderBar } from '../components/Layout';
 import FlikCard from '../components/Feed/FlikCard';
 import { useAuthStore } from '../stores/authStore';
 import { BackArrowIcon } from '../components/Icons/SvgIcons';
-import { Restaurant } from '../types/restaurant.types';
+import { SpotDetail, convertToSpot } from '../types/spot.types';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 
-const RestaurantCardPage: React.FC = () => {
+const SpotDetailCardPage: React.FC = () => {
   const location = useLocation();
-  const restaurant = location.state?.restaurant as Restaurant | undefined;
+  const spotDetail = location.state?.spotDetail as SpotDetail | undefined;
   const navigate = useNavigate();
-  if (!restaurant) {
-    return <div>Restaurant not found</div>;
+  const { spotId } = useParams<{ spotId: string }>();
+  if (!spotDetail) {
+    return <div>Spot not found</div>;
   }
-  
+  const spot = convertToSpot(spotDetail);
+
+  console.log('받은 spot 데이터:', spot); // 디버깅
+  console.log('URL spotId:', spotId); //
+
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
 
@@ -33,7 +38,7 @@ const RestaurantCardPage: React.FC = () => {
             <BackArrowIcon size="lg"/>
           </div>
 
-          <FlikCard restaurant={restaurant} />
+          <FlikCard spot={spot} />
 
         </div>
 
@@ -46,4 +51,4 @@ const RestaurantCardPage: React.FC = () => {
 
 
 
-export default RestaurantCardPage;
+export default SpotDetailCardPage;

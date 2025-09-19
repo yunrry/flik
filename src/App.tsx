@@ -15,8 +15,8 @@ import FlikPage from './pages/FlikPage';
 import NationwidePage from './pages/NationwidePage';
 import IconGallary from './pages/IconGallary';
 import RegionPage from './pages/RegionPage';
-import RestaurantMapPage from './pages/RestaurantMapPage';
-import RestaurantCardPage from './pages/RestaurantCardPage';
+import SpotMapPage from './pages/SpotMapPage';
+import SpotDetailCardPage from './pages/SpotDetailCardPage';
 import PostingPage from './pages/PostingPage';
 import MapViewPage from './pages/MapViewPage';
 import TravelSelectionPage from './pages/TravelSelectionPage';
@@ -204,11 +204,11 @@ function App() {
             />
 
             <Route 
-              path="/save/:restaurantId" 
+              path="/save/:spotId" 
               element={
                 <ProtectedRoute>
                   <NavigationPageWrapper disableScroll={true} requireNickname={true}>
-                    <RestaurantCardPage />
+                    <SpotDetailCardPage />
                   </NavigationPageWrapper>
                 </ProtectedRoute>
               } 
@@ -294,11 +294,11 @@ function App() {
             />
 
             <Route 
-              path="/restaurant-map" 
+              path="/spot-map" 
               element={
                 <ProtectedRoute>
                   <NicknameRequiredRoute>
-                    <RestaurantMapPage />
+                    <SpotMapPage />
                   </NicknameRequiredRoute>
                 </ProtectedRoute>
               } 

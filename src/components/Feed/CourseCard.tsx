@@ -17,25 +17,38 @@ interface CourseCardProps {
 const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove }) => {
   const navigate = useNavigate();
 
-  const handleCardClick = () => {
- // 코스 데이터에서 필요한 정보만 추출
- const courseData = course;
- const extractedData = {
-   id: courseData.id,
-   userId: courseData.userId,
-   categories: courseData.selectedCategories, // 요청한 카테고리들
-   totalDistance: courseData.totalDistance,
-   days: courseData.days,
-   // 동적으로 각 day별 selectedSpotId 추출 (null이 아닌 것만)
-   daySlots: courseData.courseSlots.map((daySlots, dayIndex) => ({
-     day: dayIndex + 1,
-     selectedSpotIds: daySlots
-       .map(slot => slot.selectedSpotId)
-       .filter(id => id !== null) // null이 아닌 것만 필터링
-   }))
- };
+  // 디버깅: 받은 course 데이터 확인
+  console.log('CourseCard에서 받은 course:', course);
 
-console.log('추출된 코스 데이터:', extractedData);
+  const handleCardClick = () => {
+    console.log('카드 클릭됨, course ID:', course.id);
+    
+    // 코스 데이터에서 필요한 정보만 추출
+    const courseData = course;
+    const extractedData = {
+      id: courseData.id,
+      userId: courseData.userId,
+      categories: courseData.selectedCategories, // 요청한 카테고리들
+      totalDistance: courseData.totalDistance,
+      days: courseData.days,
+      // 동적으로 각 day별 selectedSpotId 추출 (null이 아닌 것만)
+      daySlots: courseData.courseSlots.map((daySlots, dayIndex) => ({
+        day: dayIndex + 1,
+        selectedSpotIds: daySlots
+          .map(slot => slot.selectedSpotId)
+          .filter(id => id !== null) // null이 아닌 것만 필터링
+      }))
+    };
+
+    console.log('추출된 코스 데이터:', extractedData);
+
+    // 변수들 디버깅
+    const location = formatAddress(getRegionName(course.regionCode) || '');
+    const categories = formatCategories(course.selectedCategories);
+    
+    console.log('location:', location);
+    console.log('categories:', categories);
+    console.log('regionCode:', course.regionCode);
 
 // 코스 생성 성공 시 코스 페이지로 이동
 navigate(`/course/${course.id}`, { 
