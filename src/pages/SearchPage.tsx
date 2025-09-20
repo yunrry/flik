@@ -37,17 +37,35 @@ const SearchPage: React.FC = () => {
   const images = location.state?.images as File[];
   const content = location.state?.content as string;
   const title = location.state?.title as string;
+  const selectedDay = location.state?.selectedDay;
+  const isEditing = location.state?.isEditing;
+  const courseData = location.state?.courseData;
   const returnPath = location.state?.returnPath || '/search';
+  const source = location.state?.source; // 어디서 왔는지 확인
 
   const handleBack = () => {
     navigate(returnPath);
   };
 
   const handleLocationSelect = (selectedLocation: SpotDetail) => {
-    // 선택된 장소를 PostingPage로 전달
-    navigate(returnPath, {
-      state: { selectedLocation, images, content, title }
-    });
+    if (source === 'course') {
+      // CoursePage에서 온 요청
+      navigate(returnPath, {
+        state: {
+          addedSpot: selectedLocation,
+          selectedDay: selectedDay,
+          source: 'course',
+          isEditing: isEditing,
+          courseData: courseData,
+
+        },
+      });
+    } else {
+      // 기존 PostingPage 요청
+      navigate(returnPath, {
+        state: { selectedLocation, images, content, title },
+      });
+    }
   };
 
   // 저장한 곳 데이터 가져오기

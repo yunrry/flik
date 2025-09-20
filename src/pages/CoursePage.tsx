@@ -8,6 +8,7 @@ import { getSpotsByIds } from '../api/flikCardsApi';
 import { SpotDetail, parseImageUrls } from '../types/spot.types';
 import { translateCategory } from '../utils/categoryMapper';
 import { getRegionName } from '../types/sigungu.types';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Spot {
     id: number;
@@ -82,7 +83,10 @@ const CoursePage: React.FC = () => {
     }))
   );
 
+
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+  const { courseId } = useParams();
   const [dragState, setDragState] = useState<{ day: number | null; from: number | null }>({
     day: null,
     from: null,
@@ -96,29 +100,36 @@ const CoursePage: React.FC = () => {
   /** 일정 편집 모드 토글 */
   const toggleEditAll = () => setIsEditing(prev => !prev);
 
-
-  // 장소추가 함수
-  const addSpotToDay = (day: number) => {
-    setDayDetails((prev) =>
-      prev.map((d) => {
-        if (d.day === day) {
-          // 새 Spot 예시: id는 timestamp, 이름은 임시
-          const newSpot: Spot = {
-            id: Date.now(), 
-            name: "새 장소",
-            category: "ACTIVITY", // 기본 카테고리
-          };
-  
-          return {
-            ...d,
-            spots: [...d.spots, newSpot],
-            selectedSpotIds: [...d.selectedSpotIds, newSpot.id],
-          };
-        }
-        return d;
-      })
-    );
+  // 날짜별 Spot 추가를 SearchPage에서 선택 후 처리
+  const goToSearchPage = (day: number) => {
+    navigate('/search', {
+      state: {
+        returnPath: `/course/${courseId}`, // 돌아갈 경로에 courseId 포함
+        selectedDay: day,
+        isEditing: isEditing,
+        courseData: courseData,
+        source: 'course',                  // 어디서 왔는지 표시
+      },
+    });
   };
+
+  useEffect(() => {
+    const { addedSpot, selectedDay, source } = location.state || {};
+
+    if (source === 'course' && addedSpot && selectedDay) {
+      setDayDetails((prev) =>
+        prev.map((d) =>
+          d.day === selectedDay
+            ? {
+                ...d,
+                spots: [...d.spots, addedSpot],
+                selectedSpotIds: [...d.selectedSpotIds, addedSpot.id],
+              }
+            : d
+        )
+      );
+    }
+  }, [location.state]);
 
   // **드래그 종료 시 실행되는 함수**
   const handleDragEnd = (result: DropResult) => {
@@ -302,7 +313,7 @@ const CoursePage: React.FC = () => {
     {isEditing && (
           <div className="mt-2">
             <button
-              onClick={() => addSpotToDay(dayData.day)} // 함수 구현 필요
+              onClick={() => goToSearchPage(dayData.day)} // 함수 구현 필요
               className="px-3 py-1 text-sm border rounded-md bg-blue-500 text-white hover:bg-blue-600"
             >
               장소 추가
