@@ -85,7 +85,7 @@ import { PostSearchResponse } from '../types/post.types';
     const accessToken = getAuthToken();
   
     const response = await fetch(
-      `${API_BASE_URL}/v1/posts/my-posts?page=${page}&size=${size}&type=review`,
+      `${API_BASE_URL}/v1/posts?page=${page}&size=${size}&type=review`,
       {
         headers: {
           Accept: 'application/json',

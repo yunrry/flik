@@ -9,6 +9,7 @@ import { SpotDetail, parseImageUrls } from '../types/spot.types';
 import { translateCategory } from '../utils/categoryMapper';
 import { getRegionName } from '../types/sigungu.types';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getCourse } from '../api/travelCourseApi';
 
 interface Spot {
     id: number;
@@ -100,6 +101,24 @@ const CoursePage: React.FC = () => {
   /** 일정 편집 모드 토글 */
   const toggleEditAll = () => setIsEditing(prev => !prev);
 
+
+  // useEffect(() => {
+  //   if (!courseId) return;
+  //   const fetchCourse = async () => {
+  //     const data = await getCourse(courseId);
+  //     getCourse(data);
+
+  //     setDayDetails(
+  //       data.daySlots.map((d: any) => ({
+  //         day: d.day,
+  //         spots: d.spots || [],
+  //         selectedSpotIds: d.selectedSpotIds || [],
+  //       }))
+  //     );
+  //   };
+  //   fetchCourse();
+  // }, [courseId]);
+
   // 날짜별 Spot 추가를 SearchPage에서 선택 후 처리
   const goToSearchPage = (day: number) => {
     navigate('/search', {
@@ -107,7 +126,6 @@ const CoursePage: React.FC = () => {
         returnPath: `/course/${courseId}`, // 돌아갈 경로에 courseId 포함
         selectedDay: day,
         isEditing: isEditing,
-        courseData: courseData,
         source: 'course',                  // 어디서 왔는지 표시
       },
     });
@@ -128,8 +146,28 @@ const CoursePage: React.FC = () => {
             : d
         )
       );
+      navigate(location.pathname, { replace: true });
     }
   }, [location.state]);
+
+    // 4) 최종 저장
+    const handleSaveCourse = async () => {
+      if (!courseId) return;
+  
+      try {
+        const response = await fetch(`/api/course/${courseId}/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dayDetails }),
+        });
+  
+        if (!response.ok) throw new Error('코스 저장 실패');
+        alert('코스가 저장되었습니다!');
+      } catch (err) {
+        console.error(err);
+        alert('코스 저장 중 오류가 발생했습니다.');
+      }
+    };
 
   // **드래그 종료 시 실행되는 함수**
   const handleDragEnd = (result: DropResult) => {
