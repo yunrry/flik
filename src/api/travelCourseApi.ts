@@ -108,7 +108,7 @@ import { getApiBaseUrl } from '../utils/env';
     }
   };
 
-  export const getCourse = async (courseId: number): Promise<ApiResponse<TravelCourse>> => {
+  export const getCourse = async (courseId: string): Promise<ApiResponse<TravelCourse>> => {
     const accessToken = getAuthToken();
     if (!accessToken) {
       throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
