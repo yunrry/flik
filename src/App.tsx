@@ -280,6 +280,17 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            <Route 
+              path="/course" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper disableScroll={false} requireNickname={true}>
+                    <CoursePage />
+                  </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
             
             {/* FlikPage - Login + Nickname required */}
             <Route 
