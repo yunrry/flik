@@ -17,6 +17,12 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({ spots, onSave, onFinish
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [finishedCalled, setFinishedCalled] = useState(false);
 
+  useEffect(() => {
+    if (savedSpots.length > 0) {
+      onSave && onSave(savedSpots);
+    }
+  }, [savedSpots, onSave]);
+  
   /** 
    * 더 이상 카드가 있는지 여부 (렌더링 최적화)
    */
