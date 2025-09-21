@@ -78,14 +78,21 @@ import { PostSearchResponse } from '../types/post.types';
     }
   };
 
-  export const getUserPosts = async (
-    page = 0,
-    size = 20
-  ): Promise<PostSearchResponse> => {
+  export const getUserPosts = async (): Promise<PostSearchResponse> => {
     const accessToken = getAuthToken();
   
+    // const response = await fetch(
+    //   `${API_BASE_URL}/v1/posts?page=${page}&size=${size}&type=review`,
+    //   {
+    //     headers: {
+    //       Accept: 'application/json',
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //   }
+    // );
+
     const response = await fetch(
-      `${API_BASE_URL}/v1/posts?page=${page}&size=${size}&type=review`,
+      `${API_BASE_URL}/v1/posts?type=review`,
       {
         headers: {
           Accept: 'application/json',

@@ -113,7 +113,7 @@ const MyPage: React.FC = () => {
         setError(null);
 
         const response = await getUserPosts();
-        const mappedData = mapToUserActivity(response.data?.content ?? [])
+        const mappedData = mapToUserActivity(response.data?? [])
       console.log('response', response);
         setReviewActivities(mappedData);
         console.log('리뷰 활동 데이터:', mappedData);
