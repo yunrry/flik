@@ -72,6 +72,13 @@ export interface TimeInfo {
     limitPerCategory?: number;
   }
 
+  export interface SpotsRequestParamsPaged {
+    categories: string[];
+    regionCode: string;
+    page: number;
+    limitPerCategory?: number;
+  }
+
   export interface RandomSpotsApiResponse {
     page: number;
     pageSize: number;

@@ -33,7 +33,7 @@ interface AuthState {
   refreshToken: () => Promise<void>;
   clearError: () => void;
   setLoading: (loading: boolean) => void;
-
+  setUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -314,6 +314,7 @@ export const useAuthStore = create<AuthState>()(
 
       clearError: () => set({ error: null }),
       setLoading: (loading: boolean) => set({ isLoading: loading }),
+      setUser: (user: User) => set({ user }),
     }),
     {
       name: 'auth-storage',

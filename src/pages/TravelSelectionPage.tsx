@@ -125,7 +125,7 @@ const TravelSelectionPage: React.FC = () => {
       const params = {
         categories,
         regionCode: regionCode, // 첫 번째 선택된 지역
-        tripDuration: parseInt(travelData.duration[0] || '1'),
+        page: 1,
         limitPerCategory: 21 // 기본값
       };
 

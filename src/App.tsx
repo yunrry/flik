@@ -18,6 +18,7 @@ import RegionPage from './pages/RegionPage';
 import SpotMapPage from './pages/SpotMapPage';
 import SpotDetailCardPage from './pages/SpotDetailCardPage';
 import PostingPage from './pages/PostingPage';
+import ProfileUpdatePage from './pages/ProfileUpdatePage.tsx';
 import MapViewPage from './pages/MapViewPage';
 import TravelSelectionPage from './pages/TravelSelectionPage';
 import LocationSelectPage from './pages/LocationSelectPage';
@@ -41,10 +42,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   // 로딩 중일 때는 로딩 화면 표시
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-main-1 to-indigo-100 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-main-1  border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
               로딩 중...
             </h2>
@@ -117,15 +118,15 @@ const NavigationPageWrapper: React.FC<{
 // App Loading Component
 const AppLoading: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <div className="w-20 h-20 border-4 border-main-1 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
           FLIK
         </h2>
-        <p className="text-gray-600">
+        {/* <p className="text-gray-600">
           앱을 시작하는 중...
-        </p>
+        </p> */}
       </div>
     </div>
   );
@@ -219,7 +220,7 @@ function App() {
               path="/my" 
               element={
                 <ProtectedRoute>
-                  <NavigationPageWrapper requireNickname={true}>
+                  <NavigationPageWrapper requireNickname={false}>
                     <MyPage />
                   </NavigationPageWrapper>
                 </ProtectedRoute>
@@ -322,6 +323,17 @@ function App() {
                   <NicknameRequiredRoute>
                     <PostingPage />
                   </NicknameRequiredRoute>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/profile/:type" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper requireNickname={false}>
+                    <ProfileUpdatePage />
+                  </NavigationPageWrapper>
                 </ProtectedRoute>
               } 
             />
