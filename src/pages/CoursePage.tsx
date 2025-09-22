@@ -235,23 +235,23 @@ const CoursePage: React.FC = () => {
   /** 각 Day의 스팟 정보 불러오기 */
   useEffect(() => {
     let cancelled = false;
-
+  
     const fetchPerDay = async () => {
       await Promise.all(
-        courseDataMock.daySlots.map(async (d: any, idx: number) => {
+        courseData.daySlots.map(async (d: any, idx: number) => {
           const ids: number[] = d.selectedSpotIds || [];
           try {
             const res = await getSpotsByIds(ids);
             if (cancelled) return;
-
+  
             const list = res.data || [];
             const byId = new Map(list.map(s => [s.id, s]));
-
+  
             // selectedSpotIds 순서에 맞춰 재정렬
             const ordered = ids.map(id => byId.get(id)).filter(Boolean) as SpotDetail[];
             const extras = list.filter(s => !ids.includes(s.id));
             const finalList = [...ordered, ...extras];
-
+  
             setDayDetails(prev => {
               const next = [...prev];
               next[idx] = { day: d.day, spots: finalList, loading: false, selectedSpotIds: ids };
@@ -275,7 +275,7 @@ const CoursePage: React.FC = () => {
         })
       );
     };
-
+  
     fetchPerDay();
     return () => {
       cancelled = true;

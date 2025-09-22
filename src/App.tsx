@@ -19,10 +19,9 @@ import SpotMapPage from './pages/SpotMapPage';
 import SpotDetailCardPage from './pages/SpotDetailCardPage';
 import PostingPage from './pages/PostingPage';
 import ProfileUpdatePage from './pages/ProfileUpdatePage.tsx';
-import MapViewPage from './pages/MapViewPage';
-import PostDetailPage from './pages/PostDetailPage';
 import TravelSelectionPage from './pages/TravelSelectionPage';
 import LocationSelectPage from './pages/LocationSelectPage';
+import PostDetailPage from './pages/PostDetailPage';
 import SearchPage from './pages/SearchPage';
 
 // Layouts
@@ -187,7 +186,7 @@ function App() {
               path="/nationwide" 
               element={
                 <ProtectedRoute>
-                  <NavigationPageWrapper disableScroll={true} requireNickname={true}>
+                  <NavigationPageWrapper disableScroll={false} requireNickname={true}>
                     <NationwidePage />
                   </NavigationPageWrapper>
                 </ProtectedRoute>

@@ -27,7 +27,9 @@ export default {
       },
       screens: {
         'xs': '375px', // iPhone mini 크기 추가
-        'sm': '390px'
+        'sm': '390px',
+        'md': '768px',
+        'lg': '1024px', 
       },
       colors: {
         // Main 컬러 팔레트
