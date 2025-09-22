@@ -41,15 +41,16 @@ export const REGION_CODE_TO_KEY: Record<string, RegionName> = {
   '29': 'gwangju',
   '30': 'daejeon',
   '31': 'ulsan',
-  '36': 'gyeonggi',
-  '41': 'gangwon',
+  '36': 'sejong',
+  '41': 'gyeonggi',
+  '51': 'gangwon',
   '43': 'chungbuk',
   '44': 'chungnam',
-  '46': 'jeonbuk',
-  '47': 'jeonnam',
-  '48': 'gyeongbuk',
-  '50': 'gyeongnam',
-  '51': 'jeju',
+  '52': 'jeonbuk',
+  '46': 'jeonnam',
+  '47': 'gyeongbuk',
+  '48': 'gyeongnam',
+  '50': 'jeju',
 };
 
 export type SigunguCode = 
@@ -60,16 +61,16 @@ export type SigunguCode =
   | '29' 
   | '30' 
   | '31' 
-  | '36' 
+  | '36'  
   | '41' 
   | '51' 
   | '43' 
-  | '44' 
+  | '44'
+  | '52'
   | '46' 
   | '47' 
   | '48' 
   | '50'
-  | '51';
 
 export type RegionName = 
   | 'seoul' 
@@ -98,15 +99,16 @@ export type RegionName =
     '29': '광주시',
     '30': '대전시',
     '31': '울산시',
-    '36': '경기도',
-    '41': '강원도',
+    '36': '세종시',
+    '41': '경기도',
+    '51': '강원도',
     '43': '충청북도',
     '44': '충청남도',
-    '46': '전라북도',
-    '47': '전라남도',
-    '48': '경상북도',
-    '50': '경상남도',
-    '51': '제주도',
+    '52': '전라북도',
+    '46': '전라남도',
+    '47': '경상북도',
+    '48': '경상남도',
+    '50': '제주도',
   };
   
 export const SIGUNGU_CONFIG: Record<RegionName, SigunguConfig[]> = {

@@ -24,6 +24,29 @@ export type RegionCode =
   | 'gyeongnam' 
   | 'jeju';
 
+
+
+  export const REGION_NAME_MAP: Record<string, string> = {
+    '11': '서울시',
+    '26': '부산시',
+    '27': '대구시',
+    '28': '인천시',
+    '29': '광주시',
+    '30': '대전시',
+    '31': '울산시',
+    '36': '세종시',
+    '41': '경기도',
+    '51': '강원도',
+    '43': '충청북도',
+    '44': '충청남도',
+    '52': '전라북도',
+    '46': '전라남도',
+    '47': '경상북도',
+    '48': '경상남도',
+    '50': '제주도',
+  };
+
+  
 export const REGION_CONFIG: Record<RegionCode, RegionConfig> = {
   seoul: {
     name: '서울',
@@ -81,7 +104,7 @@ export const REGION_CONFIG: Record<RegionCode, RegionConfig> = {
   },
   gangwon: {
     name: '강원',
-    code: '51',
+    code: '52',
     englishName: 'Gangwon',
     imageUrl: '/assets/sidoImgaes/Gangwon.jpg'
   },
