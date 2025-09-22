@@ -27,9 +27,6 @@ interface ApiTravelCourse {
 }
 
 
-
-
-
 const RegionPage: React.FC = () => {
   const { region } = useParams<{ region: string }>();
   const [activeTab, setActiveTab] = useState<'blog' | 'courses'>('courses');

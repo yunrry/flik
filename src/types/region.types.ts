@@ -24,6 +24,26 @@ export type RegionCode =
   | 'gyeongnam' 
   | 'jeju';
 
+  export type RegionCodeForPost = 
+  | '11' 
+  | '26' 
+  | '27' 
+  | '28' 
+  | '29' 
+  | '30' 
+  | '31' 
+  | '36'
+  | '41' 
+  | '51' 
+  | '43' 
+  | '44' 
+  | '52' 
+  | '46' 
+  | '47' 
+  | '48' 
+  | '50';
+  
+
 
 
   export const REGION_NAME_MAP: Record<string, string> = {
@@ -145,6 +165,111 @@ export const REGION_CONFIG: Record<RegionCode, RegionConfig> = {
     imageUrl: '/assets/sidoImgaes/Gyeongnam.jpg'
   },
   jeju: {
+    name: '제주',
+    code: '50',
+    englishName: 'Jeju',
+    imageUrl: '/assets/sidoImgaes/Jeju.jpg'
+  }
+};
+
+export const REGION_CONFIG_FOR_POST: Record<RegionCodeForPost, RegionConfig> = {
+  '11': {
+    name: '서울',
+    code: '11',
+    englishName: 'Seoul',
+    imageUrl: '/assets/sidoImgaes/Seoul.jpg'
+  },
+  '26': {
+    name: '부산',
+    code: '26',
+    englishName: 'Busan', 
+    imageUrl: '/assets/sidoImgaes/Busan.jpg'
+  },
+  '27': {
+    name: '대구',
+    code: '27',
+    englishName: 'Daegu',
+    imageUrl: '/assets/sidoImgaes/Deagu.jpeg'
+  },
+  '28': {
+    name: '인천',
+    code: '28',
+    englishName: 'Incheon',
+    imageUrl: '/assets/sidoImgaes/Incheon.jpeg'
+  },
+  '29': {
+    name: '광주',
+    code: '29',
+    englishName: 'Gwangju',
+    imageUrl: '/assets/sidoImgaes/Gwangju.jpg'
+  },
+  '30': {
+    name: '대전',
+    code: '30',
+    englishName: 'Daejeon',
+    imageUrl: '/assets/sidoImgaes/Deajeon.jpeg'
+  },
+  '31': {
+    name: '울산',
+    code: '31',
+    englishName: 'Ulsan',
+    imageUrl: '/assets/sidoImgaes/Seoul.jpg' // 임시로 서울 이미지 사용
+  },
+  '36': {
+    name: '세종',
+    code: '36',
+    englishName: 'Sejong',
+    imageUrl: '/assets/sidoImgaes/Sejong.jpeg'
+  },
+  '41': {
+    name: '경기',
+    code: '41',
+    englishName: 'Gyeonggi',
+    imageUrl: '/assets/sidoImgaes/Gyeonggi.jpeg'
+  },
+  '51': {
+    name: '강원',
+    code: '52',
+    englishName: 'Gangwon',
+    imageUrl: '/assets/sidoImgaes/Gangwon.jpg'
+  },
+  '43': {
+    name: '충북',
+    code: '43',
+    englishName: 'Chungbuk',
+    imageUrl: '/assets/sidoImgaes/Chungbuk.jpeg'
+  },
+  '44': {
+    name: '충남',
+    code: '44',
+    englishName: 'Chungnam',
+    imageUrl: '/assets/sidoImgaes/Chungnam.jpg'
+  },
+  '52': {
+    name: '전북',
+    code: '52',
+    englishName: 'Jeonbuk',
+    imageUrl: '/assets/sidoImgaes/Geonbuk.jpeg'
+  },
+  '46': {
+    name: '전남',
+    code: '46',
+    englishName: 'Jeonnam',
+    imageUrl: '/assets/sidoImgaes/Geonnam.jpeg'
+  },
+  '47': {
+    name: '경북',
+    code: '47',
+    englishName: 'Gyeongbuk',
+    imageUrl: '/assets/sidoImgaes/Gyeongbuk.jpg'
+  },
+  '48': {
+    name: '경남',
+    code: '48',
+    englishName: 'Gyeongnam',
+    imageUrl: '/assets/sidoImgaes/Gyeongnam.jpg'
+  },
+  '50': {
     name: '제주',
     code: '50',
     englishName: 'Jeju',

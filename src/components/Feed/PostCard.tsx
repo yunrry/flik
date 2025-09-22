@@ -4,17 +4,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategoryCircle from '../UI/CategoryCircle';
 import { REGION_CONFIG } from '../../data/categoryData';
+import { REGION_CONFIG_FOR_POST, RegionCodeForPost } from '../../types/region.types';
 
 interface PostCardProps {
   id: string;
+  title: string;
   imageUrl: string;
   imageCount?: number;
-  location: {
-    name: string;
-    region: string;
-    imageUrl: string;
-  };
-  description: string;
+  regionCode: string;
+  content: string;
   likes?: number;
   comments?: number;
   isLiked?: boolean;
@@ -26,10 +24,11 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({
   id,
+  title,
   imageUrl,
   imageCount = 1,
-  location,
-  description,
+  regionCode,
+  content,
   likes = 0,
   comments = 0,
   isLiked = false,
@@ -70,7 +69,7 @@ const PostCard: React.FC<PostCardProps> = ({
     const regionEntry = Object.entries(REGION_CONFIG).find(
       ([_, config]) => config.name === regionName
     );
-    return regionEntry ? regionEntry[1].imageUrl : location.imageUrl;
+    return regionEntry ? regionEntry[1].imageUrl : '';
   };
 
   return (
@@ -99,9 +98,9 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* 위치 정보 */}
         <div className="flex items-center space-x-3 mb-3">
           <CategoryCircle
-            id={location.region.toLowerCase()}
-            name={location.region}
-            icon={getRegionImageUrl(location.region)}
+            id={REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].englishName.toLowerCase()}
+            name={REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].name}
+            icon={REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].imageUrl}
             onClick={handleLocationClick}
             className="flex-shrink-0"
             size="sm"
@@ -109,17 +108,17 @@ const PostCard: React.FC<PostCardProps> = ({
           />
           <div>
             <h3 className="font-semibold text-gray-900 text-base">
-              {location.name}
+              {title}
             </h3>
             <p className="text-gray-500 text-sm">
-              {location.region}
+              {REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].name}
             </p>
           </div>
         </div>
 
         {/* 설명 텍스트 */}
         <p className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-2">
-          {description}
+          {content}
         </p>
 
 
