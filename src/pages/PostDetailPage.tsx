@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
-import { Post } from '../types/post.types';
+import { Post } from '../data/postData';
 import { SpotDetail } from '../types/spot.types';
 import { translateCategory } from '../utils/categoryMapper';
 import { formatAddress } from '../utils/formater';
@@ -10,19 +10,26 @@ import { getPostById } from '../api/postApi';
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
-  
+  const location = useLocation();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const postData = location.state?.postData;
+
 
   useEffect(() => {
     const fetchPost = async () => {
+      if (postData) {
+        setPost(postData as unknown as Post);
+        setIsLoading(false);
+        return;
+      }
+      
       if (!postId) return;
       
       try {
         setIsLoading(true);
         const response = await getPostById(postId);
-        console.log('response', response);
         setPost(response as unknown as Post);
       } catch (err) {
         console.error('게시글 조회 실패:', err);
@@ -31,9 +38,9 @@ const PostDetailPage: React.FC = () => {
         setIsLoading(false);
       }
     };
-
+  
     fetchPost();
-  }, [postId]);
+  }, [postId, postData]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -170,10 +177,10 @@ const PostDetailPage: React.FC = () => {
         )} */}
 
         {/* 이미지 */}
-        {post.imageUrl && post.imageUrl.length > 0 && (
+        {post.imageUrls && post.imageUrls.length > 0 && (
           <div className="mb-6">
             <div className="space-y-2">
-              {post.imageUrl.map((url, index) => (
+              {post.imageUrls.map((url, index) => (
                 <div key={index} className="w-full">
                   <img
                     src={url}

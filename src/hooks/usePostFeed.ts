@@ -46,7 +46,7 @@ export const usePostFeed = ({ region, initialLimit = 6 }: UsePostFeedProps = {})
     };
 
     loadPosts();
-  }, [region, initialLimit]);
+  }, [region]);
 
   const loadMorePosts = useCallback(async () => {
     if (!isLoading && hasMore) {

@@ -3,22 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import PostCard from './PostCard';
 import { useNavigate } from 'react-router-dom';
+import { Post } from '../../data/postData';
 
-interface Post {
-  id: string;
-  imageUrl: string;
-  imageCount?: number;
-  location: {
-    name: string;
-    region: string;
-    imageUrl: string;
-  };
-  description: string;
-  likes: number;
-  comments: number;
-  isLiked: boolean;
-  isSaved: boolean;
-}
 
 interface PostFeedProps {
   posts?: Post[];
@@ -62,8 +48,13 @@ const PostFeed: React.FC<PostFeedProps> = ({
 
   const handlePostClick = (postId: string) => {
     console.log('Post clicked:', postId);
-    navigate(`/post/${postId}`);
-    // 추후 상세 페이지로 이동 로직 추가
+    const post = feedPosts.find(post => post.id === postId);
+    if (post) {
+    navigate(`/post/${postId}`,
+        { state: { postData: post } }
+      );
+    }
+
   };
 
   // 무한 스크롤 감지
@@ -90,10 +81,11 @@ const PostFeed: React.FC<PostFeedProps> = ({
         <PostCard
           key={post.id}
           id={post.id}
-          imageUrl={post.imageUrl}
+          title={post.title}
+          imageUrl={post.imageUrls[0]}
           imageCount={post.imageCount}
-          location={post.location}
-          description={post.description}
+          regionCode={post.spot[0].regionCode}
+          content={post.content}
           likes={post.likes}
           comments={post.comments}
           isLiked={post.isLiked}
