@@ -44,7 +44,8 @@ interface ApiCourseSlot {
 
 // 매핑 함수 추가
 const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse => {
-  return {
+  console.log('매핑 전 API 코스 ID:', apiCourse.id);
+  const mapped = {
     id: apiCourse.id,
     userId: apiCourse.userId,
     days: apiCourse.days,
@@ -63,6 +64,8 @@ const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse 
     selectedCategories: apiCourse.selectedCategories,
     isPublic: apiCourse.isPublic
   };
+  console.log('매핑 후 코스 ID:', mapped.id);
+  return mapped;
 };
 
 
@@ -126,15 +129,18 @@ const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse 
     }
     try {
       const response = await fetch(`${API_BASE_URL}/v1/travel-courses`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data: ApiResponse<TravelCourse[]> = await response.json();
-    return data;
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const rawData: ApiResponse<ApiTravelCourseResponse[]> = await response.json();
+      return {
+        ...rawData,
+        data: rawData.data.map(mapApiToTravelCourse)
+      };
     } catch (error) {
       console.error('코스 조회 API 요청 중 오류 발생:', error);
       throw error;

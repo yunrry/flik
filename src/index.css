@@ -8,7 +8,8 @@
 :root {
   --header-height-default: 4rem;
   --header-height-search: 8rem;
-  --header-height-extended: 12rem;
+  --header-height-middle: 10rem;
+  --header-height-extended: 11rem;
 }
 
 
@@ -19,6 +20,10 @@
 
 .pt-header-search {
   padding-top: var(--header-height-search);
+}
+
+.pt-header-middle {
+  padding-top: var(--header-height-middle);
 }
 
 .pt-header-extended {
