@@ -27,11 +27,12 @@ const CoursePublicButton: React.FC = () => {
             onClick={handleCoursePublic}
             aria-label="비공개"
             className="inline-flex justify-center items-center w-12 pl-1.5">
-                <text className="text-center text-white text-[10px] font-normal font-['Pretendard'] leading-3">비공개</text>
+                <div className="text-center text-white text-[10px] font-normal font-['Pretendard'] leading-3">비공개</div>
                 </button>
 
         <div className="w-12 h-6 bg-neutral-900/10 rounded-3xl inline-flex  justify-center items-center">
-            <text className="text-center justify-start text-white text-[10px] font-normal font-['Pretendard'] leading-3">공개</text> 
+            <div className="text-center justify-start text-white text-[10px] font-normal font-['Pretendard'] leading-3">공개</div> 
+
         </div>
         </div>
         ) : (
@@ -41,7 +42,7 @@ const CoursePublicButton: React.FC = () => {
             aria-label="공개"
             className="w-12 h-6 bg-neutral-900/10 rounded-3xl inline-flex flex-col justify-center items-center"
             >
-                <text className="text-center justify-start text-white text-[10px] font-normal font-['Pretendard'] leading-3">공개</text>
+                <div className="text-center justify-start text-white text-[10px] font-normal font-['Pretendard'] leading-3">공개</div>
             </button>
             </div>
         )}

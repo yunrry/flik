@@ -20,6 +20,7 @@ import SpotDetailCardPage from './pages/SpotDetailCardPage';
 import PostingPage from './pages/PostingPage';
 import ProfileUpdatePage from './pages/ProfileUpdatePage.tsx';
 import MapViewPage from './pages/MapViewPage';
+import PostDetailPage from './pages/PostDetailPage';
 import TravelSelectionPage from './pages/TravelSelectionPage';
 import LocationSelectPage from './pages/LocationSelectPage';
 import SearchPage from './pages/SearchPage';
@@ -323,6 +324,15 @@ function App() {
                   <NicknameRequiredRoute>
                     <PostingPage />
                   </NicknameRequiredRoute>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/post/:postId" 
+              element={
+                <ProtectedRoute>
+                  <PostDetailPage />
                 </ProtectedRoute>
               } 
             />

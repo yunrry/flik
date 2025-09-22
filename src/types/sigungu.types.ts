@@ -65,11 +65,11 @@ export type SigunguCode =
   | '51' 
   | '43' 
   | '44' 
-  | '52' 
   | '46' 
   | '47' 
   | '48' 
-  | '50';
+  | '50'
+  | '51';
 
 export type RegionName = 
   | 'seoul' 

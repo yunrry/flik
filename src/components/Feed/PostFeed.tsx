@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PostCard from './PostCard';
+import { useNavigate } from 'react-router-dom';
 
 interface Post {
   id: string;
@@ -33,6 +34,7 @@ const PostFeed: React.FC<PostFeedProps> = ({
   hasMore = true
 }) => {
   const [feedPosts, setFeedPosts] = useState<Post[]>(posts);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setFeedPosts(posts);
@@ -60,6 +62,7 @@ const PostFeed: React.FC<PostFeedProps> = ({
 
   const handlePostClick = (postId: string) => {
     console.log('Post clicked:', postId);
+    navigate(`/post/${postId}`);
     // 추후 상세 페이지로 이동 로직 추가
   };
 

@@ -64,6 +64,7 @@ const MyPage: React.FC = () => {
   }, []);
 
   const handleActivityClick = (activity: UserActivity) => {
+    navigate(`/post/${activity.id}`);
     console.log('활동 클릭:', activity);
   };
 

@@ -12,6 +12,7 @@ import { getSpotsByCategories} from '../api/flikCardsApi';
 import { createCourse } from '../api/travelCourseApi';
 import { Spot } from '../types/spot.types';
 import { convertRegionToCode } from '../utils/regionUtils';
+import LoadingScreen from '../components/UI/LoadingScreen';
 
 
 // 단계별 데이터 타입 정의
@@ -125,7 +126,7 @@ const TravelSelectionPage: React.FC = () => {
       const params = {
         categories,
         regionCode: regionCode, // 첫 번째 선택된 지역
-        page: 1,
+        tripDuration: parseInt(travelData.duration[0] || '1'),
         limitPerCategory: 21 // 기본값
       };
 
@@ -261,7 +262,6 @@ const handleRecommendationCancel = () => {
 };
 
 
-
   
   useEffect(() => {
     const loadAllCategories = async () => {
@@ -395,7 +395,10 @@ const handleRecommendationCancel = () => {
     }
   };
 
-
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+  
 
   return (
     <div className="h-screen-mobile flex flex-col bg-white">

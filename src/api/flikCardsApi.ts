@@ -4,7 +4,6 @@ import {
     SpotsResponse, 
     SpotsRequestParams,
     RandomSpotsApiResponse,
-    SpotsRequestParamsPaged,
   } from '../types/spot.types';
 import { ApiResponse } from '../types/response.types';
 import { getApiBaseUrl } from '../utils/env';
@@ -101,16 +100,16 @@ export const getSpotsByIds = async (ids: number[]): Promise<ApiResponse<SpotDeta
 
   
   // 스팟 카테고리별 조회 API
-  export const getSpotsByCategories = async (params: SpotsRequestParamsPaged): Promise<SpotsResponse> => {
-    const { categories, regionCode, page, limitPerCategory = 21 } = params;
+  export const getSpotsByCategories = async (params: SpotsRequestParams): Promise<SpotsResponse> => {
+    const { categories, regionCode, tripDuration, limitPerCategory = 21 } = params;
     
     // 쿼리 파라미터 생성
     const queryParams = new URLSearchParams();
-    categories.forEach((category: string) => {
+    categories.forEach(category => {
       queryParams.append('categories', category);
     });
     queryParams.append('regionCode', regionCode);
-    queryParams.append('page', page.toString());
+    queryParams.append('page', tripDuration.toString());
     // queryParams.append('page', '0');
     queryParams.append('limitPerCategory', limitPerCategory.toString());
   
@@ -217,29 +216,29 @@ export const getSpotsByIds = async (ids: number[]): Promise<ApiResponse<SpotDeta
 
 
   // 사용 예시 함수들
-  // export const getAccommodationSpots = async (regionCode: string, tripDuration: number) => {
-  //   return getSpotsByCategories({
-  //     categories: ['ACCOMMODATION'],
-  //     regionCode,
-  //     tripDuration,
-  //   });
-  // };
+  export const getAccommodationSpots = async (regionCode: string, tripDuration: number) => {
+    return getSpotsByCategories({
+      categories: ['ACCOMMODATION'],
+      regionCode,
+      tripDuration,
+    });
+  };
   
-  // export const getRestaurantSpots = async (regionCode: string, tripDuration: number) => {
-  //   return getSpotsByCategories({
-  //     categories: ['RESTAURANT'],
-  //     regionCode,
-  //     tripDuration,
-  //   });
-  // };
+  export const getRestaurantSpots = async (regionCode: string, tripDuration: number) => {
+    return getSpotsByCategories({
+      categories: ['RESTAURANT'],
+      regionCode,
+      tripDuration,
+    });
+  };
   
-  // export const getAllSpots = async (regionCode: string, tripDuration: number) => {
-  //   return getSpotsByCategories({
-  //     categories: ['ACCOMMODATION', 'RESTAURANT', 'ACTIVITY', 'CAFE'],
-  //     regionCode,
-  //     tripDuration,
-  //   });
-  // };
+  export const getAllSpots = async (regionCode: string, tripDuration: number) => {
+    return getSpotsByCategories({
+      categories: ['ACCOMMODATION', 'RESTAURANT', 'ACTIVITY', 'CAFE'],
+      regionCode,
+      tripDuration,
+    });
+  };
   
   // 에러 타입 정의
   export interface ApiError {
