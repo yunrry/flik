@@ -21,3 +21,15 @@ export interface UserActivityPostResponse {
     numberOfElements: number;
   }
   
+
+export interface Post {
+    id: number;
+    title: string;
+    content: string;
+    type: string;
+    imageUrl: string[];
+    createdAt: string;
+    userId: number;
+    spotId: number;
+    courseId: number;
+}

@@ -12,6 +12,60 @@ import { getApiBaseUrl } from '../utils/env';
   };
 
 
+  // API 응답 타입 정의
+interface ApiTravelCourseResponse {
+  id: number; // Long에서 number로 변환됨
+  userId: number;
+  days: number;
+  regionCode: string;
+  totalDistance: number | null;
+  courseSlots: ApiCourseSlot[][];
+  createdAt: string;
+  courseType: string;
+  totalSlots: number;
+  filledSlots: number;
+  selectedCategories: string[];
+  isPublic: boolean;
+}
+
+interface ApiCourseSlot {
+  day: number;
+  slot: number;
+  slotType: string;
+  mainCategory: string | null;
+  slotName: string;
+  recommendedSpotIds: number[]; // Long[]에서 number[]로 변환됨
+  selectedSpotId: number | null; // Long에서 number로 변환됨
+  isContinue: boolean | null;
+  isEmpty: boolean; // 백엔드 필드명
+  hasRecommendations: boolean;
+  hasSelectedSpot: boolean;
+}
+
+// 매핑 함수 추가
+const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse => {
+  return {
+    id: apiCourse.id,
+    userId: apiCourse.userId,
+    days: apiCourse.days,
+    regionCode: apiCourse.regionCode,
+    totalDistance: apiCourse.totalDistance,
+    courseSlots: apiCourse.courseSlots.map(daySlots =>
+      daySlots.map(slot => ({
+        ...slot,
+        empty: slot.isEmpty // isEmpty를 empty로 매핑
+      }))
+    ),
+    createdAt: apiCourse.createdAt,
+    courseType: apiCourse.courseType,
+    totalSlots: apiCourse.totalSlots,
+    filledSlots: apiCourse.filledSlots,
+    selectedCategories: apiCourse.selectedCategories,
+    isPublic: apiCourse.isPublic
+  };
+};
+
+
   export const createCourse = async (
     categories: string[], 
     regionCode: string, 
@@ -53,8 +107,11 @@ import { getApiBaseUrl } from '../utils/env';
         throw new Error(`HTTP error! status: ${response.status}`);
       }
   
-      const data: ApiResponse<TravelCourse> = await response.json();
-      return data;
+      const rawData: ApiResponse<ApiTravelCourseResponse> = await response.json();
+      return {
+        ...rawData,
+        data: mapApiToTravelCourse(rawData.data)
+      };
     } catch (error) {
       console.error('코스 생성 API 요청 중 오류 발생:', error);
       throw error;

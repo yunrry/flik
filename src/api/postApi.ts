@@ -107,3 +107,18 @@ import { PostSearchResponse } from '../types/post.types';
   
     return response.json();
   };
+
+
+  export const getPostById = async (postId: string): Promise<Post> => {
+    const accessToken = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/v1/posts/get/${postId}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`게시글 조회 실패: ${response.status}`);
+    }
+    return response.json();
+  };
