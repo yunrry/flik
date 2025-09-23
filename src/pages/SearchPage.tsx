@@ -41,6 +41,7 @@ const SearchPage: React.FC = () => {
   const isEditing = location.state?.isEditing;
   const courseData = location.state?.courseData;
   const returnPath = location.state?.returnPath || '/search';
+  const currentCourse = location.state?.currentCourse;
   const source = location.state?.source; // 어디서 왔는지 확인
 
   const handleBack = () => {
@@ -67,6 +68,7 @@ const SearchPage: React.FC = () => {
       navigate(returnPath, {
         state: { 
           selectedLocations: updatedLocations,
+          selectedCourse: currentCourse,
           images, 
           content, 
           title 

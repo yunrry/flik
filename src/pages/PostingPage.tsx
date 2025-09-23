@@ -9,6 +9,9 @@ import { formatAddress } from '../utils/formater';
 import { createPost } from '../api/postApi';
 import { uploadToCloudinary } from '../utils/cloudinary';
 import { TravelCourse } from '../types/travelCourse.type';
+import CourseIcon from '../components/Icons/CourseIcon';
+import AddSpotIcon from '../components/Icons/AddSpotIcon';
+import CourseCard from '../components/Feed/CourseCard';
 
 
 const PostingPage: React.FC = () => {
@@ -42,6 +45,7 @@ const PostingPage: React.FC = () => {
       if (location.state.selectedCourse) {
         setSelectedCourse(location.state.selectedCourse);
       }
+
       
       // 편집 내용 복원
       if (location.state.title !== undefined) {
@@ -119,6 +123,7 @@ const PostingPage: React.FC = () => {
     navigate('/search', {
       state: { 
         currentLocations: selectedLocations, 
+        currentCourse: selectedCourse,
         title: title,
         content: content,
         images: images,
@@ -134,7 +139,7 @@ const PostingPage: React.FC = () => {
 
   // 코스 선택 페이지로 이동
   const handleCourseClick = () => {
-    navigate('/savedCourses', { // 또는 코스 목록 페이지 경로
+    navigate('/my-course', { // 또는 코스 목록 페이지 경로
       state: { 
         currentLocations: selectedLocations,
         currentCourse: selectedCourse,
@@ -252,11 +257,37 @@ useEffect(() => {
           />
           <div className="h-px bg-gray-200 mt-2"></div>
         </div>
-        
-        {/* 장소 추가 */}
-        <div className="mb-2 space-y-2">
-          {selectedLocations.length > 0 ? (
+
+        {/* 코스 선택 */}
+        <div className="mb-1">
+          {selectedCourse ? (
             <>
+            <CourseCard
+              course={selectedCourse}
+              onRemove={handleCourseDelete}
+              fromMyCourse={false}
+            />
+          
+            </>
+          ) : (
+            <div className="mb-2">
+            <button
+              onClick={handleCourseClick}
+              disabled={isLoading}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <CourseIcon />
+              <span className="text-gray-6 text-sm font-medium">코스 추가</span>
+            </button>
+            </div>
+          )}
+        </div>
+
+
+        {/* 장소 추가 */}
+
+          {selectedLocations.length > 0 && (
+            <div className="mb-2 space-y-2">
               {selectedLocations.map((location, index) => (
                 <div key={index} className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
                   <div className="flex items-center space-x-3">
@@ -292,73 +323,17 @@ useEffect(() => {
                   )}
                 </div>
               ))}
-              
-              {/* 장소 추가 버튼 */}
-              <button
-                onClick={handleLocationClick}
-                disabled={isLoading}
-                className="flex items-center space-x-2 text-blue-500 hover:text-blue-700 py-2"
-              >
-                <span className="text-sm">+ 장소 추가</span>
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={handleLocationClick}
-              disabled={isLoading}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
-            >
-              <LocationIcon size="sm" variant="blurred" />
-              <span className="text-gray-6 text-sm font-medium pt-1">
-                장소 추가
-              </span>
-            </button>
-          )}
-        </div>
-
-
-        {/* 코스 선택 */}
-        <div className="mb-4">
-          {selectedCourse ? (
-            <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-200 rounded-sm flex items-center justify-center">
-                  <span className="text-blue-600 text-xs">{selectedCourse.days-1}박{selectedCourse.days}일</span>
-                </div>
-                
-                <div>
-                  <div className="text-blue-600 text-[10px] font-normal">
-                    코스 · {selectedCourse.filledSlots}개 장소
-                  </div>
-                  <div className="text-gray-3 text-base font-semibold pt-1.5">
-                    {selectedCourse.selectedCategories.join('/')} 코스
-                  </div>
-                </div>
-              </div>
-
-              {!isLoading && (
-                <button
-                  onClick={handleCourseDelete}
-                  className="text-red-500 text-xs px-2"
-                >
-                  삭제
-                </button>
-              )}
             </div>
-          ) : (
-            <button
-              onClick={handleCourseClick}
-              disabled={isLoading}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
-            >
-              <span className="text-gray-6 text-sm font-medium">+ 코스 추가</span>
-            </button>
           )}
-        </div>
+ 
+
+
+       
         
         {/* 이미지 미리보기 */}
-        <div className="mb-6">
+        
           {imageUrls.length > 0 && (
+            <div className="mb-1">
             <div className="grid grid-cols-1 gap-2 mb-4 p-4">
               {imageUrls.map((url, index) => (
                 <div key={index} className="relative group">
@@ -378,11 +353,12 @@ useEffect(() => {
                 </div>
               ))}
             </div>
+            </div>
           )}
-        </div>
+        
 
         {/* 내용 입력 */}
-        <div className="mb-6">
+        <div className="mt-4 mb-2">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -392,17 +368,29 @@ useEffect(() => {
           />
         </div>
 
-        {/* 이미지 업로드 버튼 */}
-        <div className="mb-6 flex items-end bottom-0">
-          {images.length < 5 && !isLoading && (
-            <button
-              onClick={handleImageUploadClick}
-              className="fixed bottom-[5%] left-4 z-40 w-12 h-12 bg-white flex items-center justify-center text-gray-500 hover:border-main-1 hover:text-main-1 transition-colors"
-            >
-              <ImageIcon size="xl" />
-            </button>
-          )}
-        </div>
+
+
+        <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-safe-bottom flex items-center justify-start space-x-4 pb-8 z-50">
+  {/* 이미지 업로드 버튼 */}
+  <button
+    onClick={handleImageUploadClick}
+    disabled={isLoading || images.length >= 5}
+    className="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-gray-800"
+  >
+    <ImageIcon size="lg" />
+    
+  </button>
+
+  {/* 장소 추가 버튼 */}
+  <button
+    onClick={handleLocationClick}
+    disabled={isLoading}
+    className="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-gray-800"
+  >
+    <AddSpotIcon />
+  
+  </button>
+</footer>
       </main>
 
       {/* 숨겨진 파일 입력 */}
