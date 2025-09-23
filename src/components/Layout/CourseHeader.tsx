@@ -11,6 +11,9 @@ interface CourseHeaderProps {
     duration: string;
     Categories: string;
     isOwner: boolean;
+    courseId: number;
+    isPublic: boolean;
+    setIsPublic: (isPublic: boolean) => void;
 }
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({
@@ -20,11 +23,14 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
     duration,
     Categories,
     isOwner,
+    courseId,
+    isPublic,
+    setIsPublic,
 }) => {
   
   const navigate = useNavigate();
   const onBack = () => {
-    navigate(-1);
+    navigate('/save');
   };
 
     
@@ -45,7 +51,11 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
           </button>
         {isOwner?(
             
-                <CoursePublicButton />
+                <CoursePublicButton 
+                courseId={courseId}
+                isPublic={isPublic}
+                setIsPublic={setIsPublic}
+                />
             
         ):(
             <text className="text-white text-lg font-medium font-['Pretendard'] leading-normal">-- 님의 여행코스</text>

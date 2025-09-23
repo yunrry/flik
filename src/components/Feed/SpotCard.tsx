@@ -2,7 +2,7 @@ import React from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import { SpotDetail } from "../../types/spot.types";
 import { translateCategory } from "../../utils/categoryMapper";
-
+import TransIcon from "../Icons/TransIcon";
 interface SpotCardProps {
   spot: SpotDetail;
   index: number;
@@ -39,12 +39,11 @@ const SpotCard = ({ spot, index, day, isEditing, onDelete }: SpotCardProps) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className={`flex items-center gap-4 p-3 bg-white border-b border-gray-200 mb-2 ${
-            isEditing ? "cursor-grab" : ""
-          }`}
+          // dragHandleProps 제거!
+          className={`flex items-center gap-4 p-3 bg-white border-b border-gray-200 mb-2`}
         >
-            <div className="flex">{index + 1}</div>
+          <div className="flex">{index + 1}</div>
+          
           {/* 이미지 */}
           <div className="w-16 h-16 flex-shrink-0 rounded-full">
             {imageUrl ? (
@@ -61,29 +60,37 @@ const SpotCard = ({ spot, index, day, isEditing, onDelete }: SpotCardProps) => {
           </div>
 
           {/* 이름 + 한글 카테고리 */}
-            <div className="flex-1 space-y-1">
-                
-              <div className="inline-flex flex-col bg-blue-500 mb-1.5 px-1 py-0.5">
-                <div className="text-center text-white text-[10px] font-normal font-['Pretendard'] leading-3">
-                  {translateCategory(spot.category)}
-                </div>
-              </div>
-              <div className="text-start text-gray-700 text-xs font-semibold font-['Pretendard'] leading-3">
-                {spot.name}
-              </div>
-              <div className="text-start text-gray-500 text-[10px] font-normal font-['Pretendard'] leading-3">
-                {spot.address}
+          <div className="flex-1 space-y-1">
+            <div className="inline-flex flex-col bg-blue-500 mb-1.5 px-1 py-0.5">
+              <div className="text-center text-white text-[10px] font-normal font-['Pretendard'] leading-3">
+                {translateCategory(spot.category)}
               </div>
             </div>
+            <div className="text-start text-gray-700 text-xs font-semibold font-['Pretendard'] leading-3">
+              {spot.name}
+            </div>
+            <div className="text-start text-gray-500 text-[10px] font-normal font-['Pretendard'] leading-3">
+              {spot.address}
+            </div>
+          </div>
 
           {isEditing && (
-            <button
-              onClick={onDelete}
-              className="text-gray-500 hover:text-red-600 text-xl ml-3"
-              title="삭제"
-            >
-              ✕
-            </button>
+            <div className="flex items-center space-x-4">
+              {/* dragHandleProps를 TransIcon을 감싼 div에 적용 */}
+              <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing p-1">
+                <TransIcon 
+                  width={16}
+                  height={16}
+                />
+              </div>
+              <button
+                onClick={onDelete}
+                className="text-gray-400 hover:text-red-500 text-lg ml-3"
+                title="삭제"
+              >
+                ✕
+              </button>
+            </div>
           )}
         </div>
       )}

@@ -55,7 +55,7 @@ const SearchPage: React.FC = () => {
       // CoursePage에서 온 요청
       navigate(returnPath, {
         state: {
-          addedSpot: currentLocations,
+          addedSpot: selectedLocation,
           selectedDay: selectedDay,
           source: 'course',
           isEditing: isEditing,

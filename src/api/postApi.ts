@@ -136,6 +136,7 @@ import { PostSearchResponse } from '../types/post.types';
 
   // 지역 필터링 포함 게시글 조회
   export const getAllPosts = async (params: GetPostsParams = {}): Promise<ApiResponse<PostSearchResponse>> => {
+    console.log('regionCode', params.regionCode);
     const accessToken = getAuthToken();
     
     if (!accessToken) {

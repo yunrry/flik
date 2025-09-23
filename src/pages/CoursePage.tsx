@@ -1,269 +1,160 @@
 // src/pages/CoursePage.tsx
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import DaySpots from '../components/Layout/DaySpots';
-import { useLocation } from 'react-router-dom';
 import CourseHeader from '../components/Layout/CourseHeader';
 import { getSpotsByIds } from '../api/flikCardsApi';
-import { SpotDetail} from '../types/spot.types';
+import { SpotDetail } from '../types/spot.types';
 import { parseImageUrls } from '../utils/imageUrlParser';
 import { translateCategory } from '../utils/categoryMapper';
 import { getRegionName } from '../types/sigungu.types';
-import { useNavigate, useParams } from 'react-router-dom';
 import { getCourse } from '../api/travelCourseApi';
+import { mapApiToCourseData, ApiCourseResponse } from '../utils/courseMapper';
+import { TravelCourseUpdateRequest } from '../api/travelCourseApi';
+import { updateCourse } from '../api/travelCourseApi';
+import { CourseSlot } from '../types/travelCourse.type';
 
-interface Spot {
-    id: number;
-    name: string;
-    category: string;
-    address?: string;
-    imageUrls?: string[];
-  }
-  
-  interface DayData {
-    day: number;
-    spots: Spot[];
-    selectedSpotIds: number[];
-  }
+interface DayDetails {
+  day: number;
+  spots: SpotDetail[];
+  selectedSpotIds: number[];
+  loading: boolean;
+  error?: string;
+}
 
 const CoursePage: React.FC = () => {
   const location = useLocation();
-  const courseData = location.state?.courseData;
-  const savedSpots = location.state?.savedSpots || [];
-//   const regionCode = location.state?.regionCode;
-  const regionCode = '11110';
-  const categoriesString = location.state?.categoriesString;
-  const locationString = location.state?.locationString;
-  const regionName: string = locationString? locationString: getRegionName(regionCode) || '';
-
-  const courseDataMock = {
-    id: 12345,
-    days: 3,
-    totalDistance: 42.7,
-    categories: ["RESTAURANT", "NATURE", "HISTORY_CULTURE"],
-    daySlots: [
-      {
-        day: 1,
-        selectedSpotIds: [1651, 1632, 1636, 1879, 1772],
-      },
-      {
-        day: 2,
-        selectedSpotIds: [1621, 970, 1657],
-      }
-    ],
-  };
-  
-
-  if (!courseData) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">코스 데이터를 찾을 수 없습니다</h2>
-          <p className="text-gray-600">이전 페이지로 돌아가서 다시 시도해주세요.</p>
-        </div>
-      </div>
-    );
-  }
-
-  /** 타입 정의 */
-  type DayDetails = {
-    day: number;
-    spots: SpotDetail[];
-    selectedSpotIds: number[];
-    loading: boolean;
-    error?: string;
-  };
-
-  /** 상태 관리 */
-  const [dayDetails, setDayDetails] = useState<DayDetails[]>(
-    courseData.daySlots.map((d: any) => ({
-      day: d.day,
-      selectedSpotIds: d.selectedSpotIds,
-      spots: [],
-      loading: true,
-      error: undefined,
-    }))
-  );
-
-
-  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const { courseId } = useParams();
-  const [dragState, setDragState] = useState<{ day: number | null; from: number | null }>({
-    day: null,
-    from: null,
-  });
-  const [dragHandle, setDragHandle] = useState<{ day: number | null; index: number | null }>({
-    day: null,
-    index: null,
-  });
-  const [isDragging, setIsDragging] = useState(false);
 
-  /** 일정 편집 모드 토글 */
-  const toggleEditAll = () => setIsEditing(prev => !prev);
+  // 상태 관리
+  const [courseData, setCourseData] = useState<any>(null);
+  const [dayDetails, setDayDetails] = useState<DayDetails[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [courseVersion, setCourseVersion] = useState(0);
+  const [isPublic, setIsPublic] = useState(false);
 
 
-  // useEffect(() => {
-  //   if (!courseId) return;
-  //   const fetchCourse = async () => {
-  //     const data = await getCourse(courseId);
-  //     getCourse(data);
-
-  //     setDayDetails(
-  //       data.daySlots.map((d: any) => ({
-  //         day: d.day,
-  //         spots: d.spots || [],
-  //         selectedSpotIds: d.selectedSpotIds || [],
-  //       }))
-  //     );
-  //   };
-  //   fetchCourse();
-  // }, [courseId]);
-
-  // 날짜별 Spot 추가를 SearchPage에서 선택 후 처리
-  const goToSearchPage = (day: number) => {
-    navigate('/search', {
-      state: {
-        returnPath: `/course/${courseId}`, // 돌아갈 경로에 courseId 포함
-        selectedDay: day,
-        isEditing: isEditing,
-        source: 'course',                  // 어디서 왔는지 표시
-      },
-    });
-  };
-
+  // courseId로 코스 데이터 불러오기
   useEffect(() => {
-    const { addedSpot, selectedDay, source } = location.state || {};
+    const fetchCourseData = async () => {
+      // location.state에 courseData가 있으면 그것을 사용
+      if (location.state?.courseData) {
+        setCourseData(location.state.courseData);
+        setIsPublic(location.state.courseData.isPublic);
+        setIsLoading(false);
+        return;
+      }
 
-    if (source === 'course' && addedSpot && selectedDay) {
-      setDayDetails((prev) =>
-        prev.map((d) =>
-          d.day === selectedDay
-            ? {
-                ...d,
-                spots: [...d.spots, addedSpot],
-                selectedSpotIds: [...d.selectedSpotIds, addedSpot.id],
-              }
-            : d
-        )
-      );
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location.state]);
+      // courseId가 없으면 에러
+      if (!courseId) {
+        setError('코스 ID가 없습니다.');
+        setIsLoading(false);
+        return;
+      }
 
-    // 4) 최종 저장
-    const handleSaveCourse = async () => {
-      if (!courseId) return;
-  
       try {
-        const response = await fetch(`/api/course/${courseId}/save`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ dayDetails }),
-        });
-  
-        if (!response.ok) throw new Error('코스 저장 실패');
-        alert('코스가 저장되었습니다!');
-      } catch (err) {
-        console.error(err);
-        alert('코스 저장 중 오류가 발생했습니다.');
+        setIsLoading(true);
+        const response = await getCourse(courseId);
+        
+        const mappedData = mapApiToCourseData(response.data as ApiCourseResponse);
+        setCourseData(mappedData);
+        console.log('API로 불러온 코스 데이터:', mappedData);
+        setIsPublic(response.data.isPublic);
+      } catch (error) {
+        console.error('코스 조회 실패:', error);
+        setError('코스 정보를 불러올 수 없습니다.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-  // **드래그 종료 시 실행되는 함수**
-  const handleDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return;
-  
-    setDayDetails(prev => {
-      const newDetails = prev.map(d => ({ ...d, spots: [...d.spots] })); // 깊은 복사
-  
-      const sourceDayData = newDetails.find(d => d.day === parseInt(source.droppableId));
-      const destDayData = newDetails.find(d => d.day === parseInt(destination.droppableId));
-      if (!sourceDayData || !destDayData) return prev;
-  
-      // 드래그한 아이템 제거
-      const [movedSpot] = sourceDayData.spots.splice(source.index, 1);
-  
-      // 이동
-      destDayData.spots.splice(destination.index, 0, movedSpot);
-  
-      return newDetails;
+    // courseData가 이미 있으면 스킵
+    if (!courseData) {
+      fetchCourseData();
+    }
+  }, [courseId]); // courseData는 의존성에서 제외
+
+  // SearchPage에서 추가된 스팟 처리
+useEffect(() => {
+  const { addedSpot, selectedDay, source, isEditing } = location.state || {};
+  setIsEditing(isEditing);
+  console.log('isEditing', isEditing);
+  if (source === 'course' && addedSpot && selectedDay) {
+    console.log('스팟 추가 처리:', addedSpot);
+    
+    // courseData 업데이트 (새 객체로 생성)
+    setCourseData((prev: any) => {
+      if (!prev) return prev;
+      
+      const newDaySlots = prev.daySlots.map((slot: any) =>
+        slot.day === selectedDay
+          ? {
+              ...slot,
+              selectedSpotIds: [...slot.selectedSpotIds, addedSpot.id]
+            }
+          : slot
+      );
+      
+      return {
+        ...prev,
+        daySlots: newDaySlots // 완전히 새 배열
+      };
     });
-  };
-  
 
-  // 스팟 삭제
-  const removeSpotFromDay = (day: number, index: number) => {
-    setDayDetails((prev) =>
-      prev.map((d) =>
-        d.day === day
-          ? { ...d, spots: d.spots.filter((_, i) => i !== index) }
-          : d
-      )
-    );
-  };
+    // 버전 증가로 스팟 재로드 트리거
+    setCourseVersion(v => v + 1);
 
-
-  /** 특정 Day의 스팟 순서 변경 */
-  const reorderDaySpots = (day: number, fromIndex: number, toIndex: number) => {
-    setDayDetails(prev => {
-      const next = prev.map(d => ({ ...d }));
-      const target = next.find(d => d.day === day);
-      if (!target || fromIndex === toIndex) return prev;
-
-      // spots 배열에서 순서 변경
-      const arr = [...target.spots];
-      const [moved] = arr.splice(fromIndex, 1);
-      arr.splice(toIndex, 0, moved);
-      target.spots = arr;
-
-      // daySlots.selectedSpotIds 배열도 동일하게 순서 변경
-      const slot = courseData.daySlots.find((s: any) => s.day === day);
-      if (slot && Array.isArray(slot.selectedSpotIds)) {
-        const ids = [...slot.selectedSpotIds];
-        const [movedId] = ids.splice(fromIndex, 1);
-        ids.splice(toIndex, 0, movedId);
-        slot.selectedSpotIds = ids;
-      }
-
-      return next;
+    // location.state 클리어
+    const { source: _, addedSpot: __, selectedDay: ___, ...restState } = location.state;
+    navigate(location.pathname, { 
+      replace: true,
+      state: restState
     });
-  };
+  }
+}, [location.state?.source, location.state?.addedSpot, location.state?.selectedDay, location.state?.isEditing]);
 
-  
-
-  /** 각 Day의 스팟 정보 불러오기 */
+  // 각 Day의 스팟 정보 불러오기
   useEffect(() => {
+    if (!courseData?.daySlots) return;
+
     let cancelled = false;
-  
-    const fetchPerDay = async () => {
+
+    const fetchSpotsForAllDays = async () => {
       await Promise.all(
-        courseData.daySlots.map(async (d: any, idx: number) => {
-          const ids: number[] = d.selectedSpotIds || [];
+        courseData.daySlots.map(async (daySlot: any, idx: number) => {
+          const ids: number[] = daySlot.selectedSpotIds || [];
+          
           try {
             const res = await getSpotsByIds(ids);
             if (cancelled) return;
-  
+
             const list = res.data || [];
             const byId = new Map(list.map(s => [s.id, s]));
-  
-            // selectedSpotIds 순서에 맞춰 재정렬
+
             const ordered = ids.map(id => byId.get(id)).filter(Boolean) as SpotDetail[];
             const extras = list.filter(s => !ids.includes(s.id));
             const finalList = [...ordered, ...extras];
-  
+
             setDayDetails(prev => {
               const next = [...prev];
-              next[idx] = { day: d.day, spots: finalList, loading: false, selectedSpotIds: ids };
+              next[idx] = {
+                day: daySlot.day,
+                spots: finalList,
+                selectedSpotIds: ids,
+                loading: false,
+              };
               return next;
             });
-          } catch {
+          } catch (error) {
             if (!cancelled) {
               setDayDetails(prev => {
                 const next = [...prev];
                 next[idx] = {
-                  day: d.day,
+                  day: daySlot.day,
                   spots: [],
                   selectedSpotIds: ids,
                   loading: false,
@@ -276,14 +167,204 @@ const CoursePage: React.FC = () => {
         })
       );
     };
-  
-    fetchPerDay();
+
+    fetchSpotsForAllDays();
+
     return () => {
       cancelled = true;
     };
-  }, [courseData.daySlots]);
+  }, [courseData?.daySlots, courseVersion]);
 
-  /** 여행 기간 포맷 */
+  // Location state에서 데이터 추출
+  const regionCode = location.state?.regionCode || courseData?.regionCode || '11110';
+  const categoriesString = location.state?.categoriesString;
+  const locationString = location.state?.locationString;
+  const regionName = locationString || getRegionName(regionCode) || '';
+
+  // 로딩 중
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // 에러 또는 코스 데이터가 없는 경우  
+  if (error || !courseData) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {error || '코스 데이터를 찾을 수 없습니다'}
+          </h2>
+          <p className="text-gray-600">이전 페이지로 돌아가서 다시 시도해주세요.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 편집 모드 토글
+  const toggleEditAll = () => setIsEditing(prev => !prev);
+
+  // SearchPage로 이동 (장소 추가)
+  const goToSearchPage = (day: number) => {
+    navigate('/search', {
+      state: {
+        returnPath: `/course/${courseId}`,
+        selectedDay: day,
+        isEditing: isEditing,
+        source: 'course',
+        courseData: courseData, // 현재 courseData 전달
+      },
+    });
+  };
+
+  // 드래그 앤 드롭 처리
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination) return;
+  
+    const sourceDay = parseInt(source.droppableId);
+    const destDay = parseInt(destination.droppableId);
+  
+    // 1. dayDetails 업데이트 (화면 표시용)
+    setDayDetails(prev => {
+      const newDetails = prev.map(d => ({ ...d, spots: [...d.spots] }));
+  
+      const sourceDayData = newDetails.find(d => d.day === sourceDay);
+      const destDayData = newDetails.find(d => d.day === destDay);
+      
+      if (!sourceDayData || !destDayData) return prev;
+  
+      const [movedSpot] = sourceDayData.spots.splice(source.index, 1);
+      destDayData.spots.splice(destination.index, 0, movedSpot);
+  
+      return newDetails;
+    });
+
+
+
+// 2. courseData의 daySlots도 동일하게 업데이트
+setCourseData((prev: any) => {
+  if (!prev) return prev;
+
+  const newDaySlots = prev.daySlots.map((slot: any) => {
+    // 같은 day가 아니면 그대로 반환
+    if (slot.day !== sourceDay && slot.day !== destDay) {
+      return slot;
+    }
+
+    // source day인 경우
+    if (slot.day === sourceDay) {
+      const newIds = [...slot.selectedSpotIds];
+      const [movedId] = newIds.splice(source.index, 1);
+      
+      // 같은 day 내 이동이면 destination에 삽입
+      if (sourceDay === destDay) {
+        newIds.splice(destination.index, 0, movedId);
+      }
+      
+      return { ...slot, selectedSpotIds: newIds };
+    }
+
+    // destination day인 경우 (다른 day로 이동)
+    if (slot.day === destDay && sourceDay !== destDay) {
+      const sourceDayData = prev.daySlots.find((s: any) => s.day === sourceDay);
+      const movedId = sourceDayData.selectedSpotIds[source.index];
+      const newIds = [...slot.selectedSpotIds];
+      newIds.splice(destination.index, 0, movedId);
+      
+      return { ...slot, selectedSpotIds: newIds };
+    }
+
+    return slot;
+  });
+
+  return {
+    ...prev,
+    daySlots: newDaySlots
+  };
+});
+};
+
+
+
+
+  // 스팟 삭제
+  const removeSpotFromDay = (day: number, index: number) => {
+    setDayDetails((prev) =>
+      prev.map((d) =>
+        d.day === day
+          ? { ...d, spots: d.spots.filter((_, i) => i !== index) }
+          : d
+      )
+    );
+  };
+
+  // 코스 저장
+  const handleSaveCourse = async () => {
+    if (!courseId) return;
+  
+    try {
+
+      const mapCategoryToSlotType = (category: string): string => {
+        const categoryUpper = category.toUpperCase();
+        
+        // 카테고리에 따라 SlotType 매핑
+        if (categoryUpper.includes('RESTAURANT') || categoryUpper.includes('음식')) {
+          return 'RESTAURANT';
+        }
+        if (categoryUpper.includes('CAFE') || categoryUpper.includes('카페')) {
+          return 'CAFE';
+        }
+        if (categoryUpper.includes('ACCOMMODATION') || categoryUpper.includes('숙박')) {
+          return 'ACCOMMODATION';
+        }
+        if (categoryUpper.includes('TOURISM') || categoryUpper.includes('HISTORY_CULTURE') || categoryUpper.includes('NATURE') || categoryUpper.includes('THEMEPARK') || categoryUpper.includes('ACTIVITY') || categoryUpper.includes('MARKET') || categoryUpper.includes('FESTIVAL') || categoryUpper.includes('INDOOR')) {
+          return 'TOURISM';
+        }        
+        // 기본값
+        return 'TOURISM';
+      };
+
+
+      // dayDetails를 CourseSlot[][] 형태로 변환
+      const courseSlots: CourseSlot[][] = dayDetails.map(dayData => 
+        dayData.spots.map((spot, slotIndex) => ({
+          day: dayData.day,
+          slot: slotIndex + 1,
+          slotType: mapCategoryToSlotType(spot.category || ''),
+          mainCategory: spot.category || null,
+          slotName: spot.name,
+          recommendedSpotIds: [],
+          selectedSpotId: spot.id,
+          isContinue: null,
+          empty: false,
+          hasRecommendations: false,
+          hasSelectedSpot: true,
+        }))
+      );
+  
+      const updateData: TravelCourseUpdateRequest = {
+        totalDistance: courseData.totalDistance,
+        courseSlots: courseSlots,
+        regionCode: courseData.regionCode,
+        selectedCategories: courseData.categories,
+      };
+  
+      const response = await updateCourse(Number(courseId), updateData);
+      console.log('코스 저장 응답:', response);
+      if (response.success) {
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('코스 저장 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 여행 기간 포맷
   const formatDuration = (days: number) => {
     if (days === 1) return '당일치기';
     if (days === 2) return '1박2일';
@@ -291,80 +372,72 @@ const CoursePage: React.FC = () => {
     return `${days - 1}박${days}일`;
   };
 
+  // 총 스팟 수 계산
+  const totalSpots = courseData.daySlots?.reduce(
+    (total: number, daySlot: any) => total + (daySlot.selectedSpotIds?.length || 0),
+    0
+  ) || 0;
 
-
-  /** 스팟의 첫 번째 이미지 URL 반환 */
-  const getFirstImage = (spot: SpotDetail) => {
-    const collected: string[] = [];
-    if (!spot.imageUrls) return undefined;
-
-    if (typeof spot.imageUrls === 'string') {
-      collected.push(...parseImageUrls(spot.imageUrls));
-    } else {
-      for (const entry of spot.imageUrls) {
-        if (typeof entry !== 'string') continue;
-        const trimmed = entry.trim();
-        collected.push(...(trimmed.startsWith('[') ? parseImageUrls(trimmed) : [trimmed]));
-      }
-    }
-
-    return collected.find(u => /^https?:\/\//i.test(u));
-  };
+  // 카테고리 문자열 생성
+  const categoryText = categoriesString || 
+    courseData.categories?.map(translateCategory).join('/') || '';
 
   return (
     <div className="pt-header-extended min-h-screen bg-white">
       {/* 헤더 */}
       <CourseHeader
-        totalDistance={parseFloat(courseData.totalDistance?.toFixed(1))|| 0}
-        totalSpot={
-          courseData.daySlots?.reduce((total: number, daySlot: any) => total + daySlot.selectedSpotIds.length, 0) || 0
-        }
-        LocationCode={regionName} // TODO: 실제 지역명으로 변경
+        courseId={Number(courseId)}
+        totalDistance={parseFloat(courseData.totalDistance?.toFixed(1)) || 0}
+        totalSpot={totalSpots}
+        LocationCode={regionName}
         duration={formatDuration(courseData.days)}
-        Categories= {categoriesString? categoriesString: courseData.categories?.map(translateCategory).join('/') || []}
+        Categories={categoryText}
         isOwner={true}
+        isPublic={isPublic}
+        setIsPublic={setIsPublic}
       />
 
+      {/* 메인 콘텐츠 */}
       <main className="pt-5 w-full flex-1 px-4 lg:px-8 py-6 bg-white">
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="space-y-6">
+            {dayDetails.map((dayData, idx) => (
+              <div key={dayData.day}>
+                {/* Day 헤더 */}
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-medium text-gray-800">Day {dayData.day}</h3>
+                  {idx === 0 && (
+                    <button
+                      onClick={isEditing ? handleSaveCourse : toggleEditAll}
+                      className="px-3 py-1 text-gray-500 text-sm font-medium"
+                    >
+                      {isEditing ? "저장" : "일정편집"}
+                    </button>
+                  )}
+                </div>
 
+                {/* 스팟 목록 */}
+                <DaySpots
+                  dayData={dayData}
+                  isEditing={isEditing}
+                  onDeleteSpot={removeSpotFromDay}
+                />
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="space-y-6">
-        {dayDetails.map((dayData, idx) => (
-  <div key={dayData.day}>
-    <div className="flex justify-between items-center mb-2">
-      <h3 className="font-medium text-gray-800">Day {dayData.day}</h3>
-      {idx === 0 && (
-        <button
-          onClick={toggleEditAll}
-          className="px-3 py-1 text-gray-5 text-sm font-medium font-['Pretendard'] leading-normal "
-        >
-          {isEditing ? "완료" : "일정편집"}
-        </button>
-      )}
-    </div>
-    <DaySpots
-      dayData={dayData}
-      isEditing={isEditing}
-      onDeleteSpot={removeSpotFromDay}
-    />
-    {/* 장소추가 버튼: isEditing일 때만 */}
-    {isEditing && (
-          <div className="mt-2">
-            <button
-              onClick={() => goToSearchPage(dayData.day)} // 함수 구현 필요
-              className="px-3 py-1 text-sm border rounded-md bg-blue-500 text-white hover:bg-blue-600"
-            >
-              장소 추가
-            </button>
+                {/* 장소 추가 버튼 (편집 모드일 때만) */}
+                {isEditing && (
+                 <div className="mt-2">
+                 <button
+                   onClick={() => goToSearchPage(dayData.day)}
+                   className="w-full py-2 text-xs border border-gray-400  bg-white text-gray-5 hover:bg-gray-50 font-medium font-['Pretendard'] leading-normal transition-colors font-medium"
+                 >
+                   장소추가 +
+                 </button>
+               </div>
+                )}
+              </div>
+            ))}
           </div>
-        )}
-  </div>
-))}
-        </div>
-      </DragDropContext>
-    
-      
+        </DragDropContext>
       </main>
     </div>
   );

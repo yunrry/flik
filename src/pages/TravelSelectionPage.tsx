@@ -229,7 +229,8 @@ const handleRecommendationConfirm = async () => {
             selectedSpotIds: daySlots
               .map(slot => slot.selectedSpotId)
               .filter(id => id !== null) // null이 아닌 것만 필터링
-          }))
+          })),
+          isPublic: courseData.isPublic
         };
       
       console.log('추출된 코스 데이터:', extractedData);

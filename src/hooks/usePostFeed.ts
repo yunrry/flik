@@ -19,6 +19,9 @@ export const usePostFeed = ({ region, initialLimit = 6 }: UsePostFeedProps = {})
   // 초기 로드 및 지역 변경 시 재로드
   useEffect(() => {
     const loadPosts = async () => {
+      console.log('usePostFeed 실행 - region:', region);
+      const regionCode = region ? getRegionCode(region) : undefined;
+      console.log('변환된 regionCode:', regionCode);
       setIsLoading(true);
       setPosts([]);
       setCurrentPage(0);

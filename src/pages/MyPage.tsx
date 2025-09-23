@@ -138,7 +138,7 @@ const MyPage: React.FC = () => {
                   ...activity,
                   content: activity.content ?? '',
                   imageUrls: activity.imageUrls ?? [],
-                  author: activity.author,
+                  authorId: activity.authorId,
                   type: activity.type
                 }}
                 onClick={handleActivityClick}
