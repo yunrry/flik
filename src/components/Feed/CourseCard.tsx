@@ -12,9 +12,11 @@ import { translateCategory } from '../../utils/categoryMapper';
 interface CourseCardProps {
   course: TravelCourse;
   onRemove?: (id: number) => void;
+  onCourseSelect?: (course: TravelCourse) => void;
+  fromMyCourse?: boolean;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove, fromMyCourse, onCourseSelect }) => {
   const navigate = useNavigate();
 
   // 디버깅: 받은 course 데이터 확인
@@ -37,7 +39,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove }) => {
         selectedSpotIds: daySlots
           .map(slot => slot.selectedSpotId)
           .filter(id => id !== null) // null이 아닌 것만 필터링
-      }))
+      })),
+      isPublic: courseData.isPublic
     };
 
     console.log('추출된 코스 데이터:', extractedData);
@@ -65,6 +68,13 @@ navigate(`/course/${course.id}`, {
     e.stopPropagation(); // 카드 클릭 이벤트 방지
     if (onRemove) {
       onRemove(course.id);
+    }
+  };
+
+  const handleCourseSelect = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 카드 클릭 이벤트 방지
+    if (onCourseSelect) {
+      onCourseSelect(course);
     }
   };
 
@@ -154,7 +164,7 @@ navigate(`/course/${course.id}`, {
             </div>
 
             {/* 삭제 버튼 */}
-            {onRemove && (
+            {onRemove && !fromMyCourse && (
               <button
                 onClick={handleRemoveClick}
                 className="ml-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -162,6 +172,15 @@ navigate(`/course/${course.id}`, {
               >
                 <X size={18} />
               </button>
+            )}
+
+            {fromMyCourse && (
+             <button
+             onClick={handleCourseSelect}
+             className="w-11 h-7 p-0.5 bg-gray-8 rounded-3xl inline-flex flex-col justify-center items-center gap-2.5"
+           >
+             <text className="text-center justify-start text-gray-3 text-xs font-semibold font-['Pretendard'] leading-normal">선택</text>
+           </button>
             )}
 
             </div>

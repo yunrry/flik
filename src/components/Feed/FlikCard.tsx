@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { NaverBlogIcon, KakaoMapIcon } from '../Icons/SvgIcons';
-import { Spot, parseImageUrls } from '../../types/spot.types';
+import { Spot } from '../../types/spot.types';
+import { parseImageUrls } from '../../utils/imageUrlParser';
 import { useThirdParty } from '../../hooks/useThirdParty';
 interface FlikCardProps {
   spot: Spot;

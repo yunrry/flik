@@ -35,6 +35,7 @@ const RegionPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const { posts, isLoading: postsLoading, hasMore, loadMorePosts } = usePostFeed({ region });
+  console.log('region', region);
 
   const mapApiToTravelCourse = (apiCourse: ApiTravelCourse): TravelCourse => {
     let categories: string[] = [];

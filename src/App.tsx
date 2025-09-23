@@ -34,7 +34,7 @@ import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import OAuthSignupPage from './pages/OAuthSignupPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
 import CoursePage from './pages/CoursePage';
-
+import MyCoursePage from './pages/MyCoursePage';
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -346,7 +346,17 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+
+            <Route 
+              path="/my-course" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper requireNickname={true}>
+                    <MyCoursePage />
+                  </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
             {/* 404 Redirect */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

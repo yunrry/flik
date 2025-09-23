@@ -12,7 +12,7 @@ interface IconProps {
   className?: string;
   isActive?: boolean;
   onClick?: () => void;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl2' | 'xl' | 'xxl';
   color?: 'white' | 'default' | 'outline-gray-1'; // 색상 옵션 추가
 }
 
@@ -22,6 +22,7 @@ const getSizeStyles = (size: string = 'md') => {
     sm: { width: '16px', height: '16px' },
     md: { width: '20px', height: '20px' },
     lg: { width: '24px', height: '24px' },
+    xl2: { width: '26px', height: '26px' },   
       xl: { width: '40px', height: '40px' },
       xxl: { width: '65px', height: '65px' }
   };

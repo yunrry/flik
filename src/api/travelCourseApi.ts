@@ -12,6 +12,15 @@ import { getApiBaseUrl } from '../utils/env';
   };
 
 
+// 코스 업데이트 요청 타입 정의
+export interface TravelCourseUpdateRequest {
+  name?: string;
+  totalDistance?: number;
+  courseSlots?: CourseSlot[][];
+  regionCode?: string;
+  selectedCategories?: string[];
+}
+
   // API 응답 타입 정의
 interface ApiTravelCourseResponse {
   id: number; // Long에서 number로 변환됨
@@ -45,6 +54,14 @@ interface ApiCourseSlot {
 // 매핑 함수 추가
 const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse => {
   console.log('매핑 전 API 코스 ID:', apiCourse.id);
+
+  // courseSlots에서 selectedSpotId가 있는 슬롯 개수 계산
+  const filledSlotsCount = apiCourse.courseSlots.reduce((total, daySlots) => {
+    const dayFilledCount = daySlots.filter(slot => slot.selectedSpotId !== null).length;
+    return total + dayFilledCount;
+  }, 0);
+
+
   const mapped = {
     id: apiCourse.id,
     userId: apiCourse.userId,
@@ -60,7 +77,7 @@ const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse 
     createdAt: apiCourse.createdAt,
     courseType: apiCourse.courseType,
     totalSlots: apiCourse.totalSlots,
-    filledSlots: apiCourse.filledSlots,
+    filledSlots: filledSlotsCount,
     selectedCategories: apiCourse.selectedCategories,
     isPublic: apiCourse.isPublic
   };
@@ -192,6 +209,95 @@ const mapApiToTravelCourse = (apiCourse: ApiTravelCourseResponse): TravelCourse 
       throw error;
     }
   };
+
+
+  /**
+ * 여행 코스 업데이트
+ */
+export const updateCourse = async (
+  courseId: number,
+  updateData: TravelCourseUpdateRequest
+): Promise<ApiResponse<TravelCourse>> => {
+  const accessToken = getAuthToken();
+  
+  if (!accessToken) {
+    throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/travel-courses/${courseId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const rawData: ApiResponse<ApiTravelCourseResponse> = await response.json();
+    return {
+      ...rawData,
+      data: mapApiToTravelCourse(rawData.data)
+    };
+  } catch (error) {
+    console.error('코스 업데이트 API 요청 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+
+/**
+ * 코스 공개 여부 업데이트
+ */
+export const updateCourseVisibility = async (
+  courseId: number,
+  isPublic: boolean
+): Promise<ApiResponse<TravelCourse>> => {
+  const accessToken = getAuthToken();
+  
+  if (!accessToken) {
+    throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/travel-courses/${courseId}/visibility`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isPublic }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const rawData: ApiResponse<ApiTravelCourseResponse> = await response.json();
+    return {
+      ...rawData,
+      data: mapApiToTravelCourse(rawData.data)
+    };
+  } catch (error) {
+    console.error('코스 공개 여부 업데이트 API 요청 중 오류 발생:', error);
+    throw error;
+  }
+};
+
 
 
   export interface RegionCoursesResponse {

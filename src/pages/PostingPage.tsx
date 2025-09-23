@@ -8,6 +8,11 @@ import { translateCategory } from '../utils/categoryMapper';
 import { formatAddress } from '../utils/formater';
 import { createPost } from '../api/postApi';
 import { uploadToCloudinary } from '../utils/cloudinary';
+import { TravelCourse } from '../types/travelCourse.type';
+import CourseIcon from '../components/Icons/CourseIcon';
+import AddSpotIcon from '../components/Icons/AddSpotIcon';
+import CourseCard from '../components/Feed/CourseCard';
+
 
 const PostingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,8 +27,12 @@ const PostingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
     
   // location-select에서 전달받은 장소 정보
-  const [selectedLocation, setSelectedLocation] = useState<SpotDetail | null>(
-    location.state?.selectedLocation || null
+  const [selectedLocations, setSelectedLocations] = useState<SpotDetail[]>(
+    location.state?.selectedLocations || []
+  );
+
+  const [selectedCourse, setSelectedCourse] = useState<TravelCourse | null>(
+    location.state?.selectedCourse || null
   );
 
   // location-select에서 돌아올 때 편집 내용 복원
@@ -31,8 +40,12 @@ const PostingPage: React.FC = () => {
     if (location.state) {
       // 장소 정보 복원
       if (location.state.selectedLocation) {
-        setSelectedLocation(location.state.selectedLocation);
+        setSelectedLocations(location.state.selectedLocations);
       }
+      if (location.state.selectedCourse) {
+        setSelectedCourse(location.state.selectedCourse);
+      }
+
       
       // 편집 내용 복원
       if (location.state.title !== undefined) {
@@ -109,7 +122,8 @@ const PostingPage: React.FC = () => {
     // 장소 선택 페이지로 이동하면서 현재 편집 내용 전달
     navigate('/search', {
       state: { 
-        currentLocation: selectedLocation,
+        currentLocations: selectedLocations, 
+        currentCourse: selectedCourse,
         title: title,
         content: content,
         images: images,
@@ -118,9 +132,50 @@ const PostingPage: React.FC = () => {
     });
   };
 
+    // 장소 삭제 함수 추가
+    const handleLocationDelete = (index: number) => {
+      setSelectedLocations(prev => prev.filter((_, i) => i !== index));
+    };
+
+  // 코스 선택 페이지로 이동
+  const handleCourseClick = () => {
+    navigate('/my-course', { // 또는 코스 목록 페이지 경로
+      state: { 
+        currentLocations: selectedLocations,
+        currentCourse: selectedCourse,
+        title,
+        content,
+        images,
+        returnPath: '/posting',
+      }
+    });
+  };
+
+  // 코스 삭제
+  const handleCourseDelete = () => {
+    setSelectedCourse(null);
+  };
+
   const handleBackClick = () => {
     navigate('/my');
   };
+
+  // relatedSpotIds 생성 로직
+const getRelatedSpotIds = (): number[] => {
+  const spotIds = selectedLocations?.map(location => location.id) || [];
+  
+  if (selectedCourse) {
+    // 코스의 모든 슬롯에서 selectedSpotId 추출 (null 제외)
+    const courseSpotIds = selectedCourse.courseSlots
+      .flat() // 2차원 배열을 1차원으로 변환
+      .map(slot => slot.selectedSpotId)
+      .filter((id): id is number => id !== null); // null 제거 및 타입 가드
+    
+    return [...spotIds, ...courseSpotIds];
+  }
+  
+  return spotIds;
+};
 
   // 게시글 등록
   const handleSubmit = async () => {
@@ -137,10 +192,12 @@ const PostingPage: React.FC = () => {
       const requestData = {
         title,
         content,
-        type: 'review', // 서버에서 정의한 타입 코드
-        imageUrl: uploadedImageUrls, // 변환된 URL 배열
-        spotId: selectedLocation?.id ?? undefined,
-        courseId: undefined, // 코스가 있을 때만 값 설정
+        type: 'review',
+        imageUrl: uploadedImageUrls,
+        spotIds: selectedLocations?.map(location => location.id) ?? undefined,
+        relatedSpotIds: getRelatedSpotIds(),
+        regionCode: selectedLocations?.[0]?.regionCode || selectedCourse?.regionCode || '', // 수정
+        courseId: selectedCourse?.id ?? undefined,
       };
   
       console.log('게시글 작성 요청 데이터:', requestData);
@@ -160,13 +217,14 @@ const PostingPage: React.FC = () => {
   };
 
   // 제출 버튼 활성화 여부 체크
-  useEffect(() => {
-    if (selectedLocation && title.trim() && content.trim()) {
-      setIsSubmitEnabled(true);
-    } else {
-      setIsSubmitEnabled(false);
-    }
-  }, [selectedLocation, title, content]);
+// 제출 버튼 활성화 (장소 또는 코스 중 하나는 필수)
+useEffect(() => {
+  if ((selectedLocations.length > 0 || selectedCourse) && title.trim() && content.trim()) {
+    setIsSubmitEnabled(true);
+  } else {
+    setIsSubmitEnabled(false);
+  }
+}, [selectedLocations, selectedCourse, title, content]);
 
   // 컴포넌트 언마운트 시 이미지 URL 정리
   useEffect(() => {
@@ -199,60 +257,83 @@ const PostingPage: React.FC = () => {
           />
           <div className="h-px bg-gray-200 mt-2"></div>
         </div>
-        
-        {/* 장소 추가 */}
-        <div className="mb-2">
-          {selectedLocation ? (
-            <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
-              {/* 왼쪽: 이미지 + 정보 */}
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
-                  {selectedLocation.imageUrls ? (
-                    <img 
-                      src={selectedLocation.imageUrls[0]} 
-                      alt={selectedLocation.name}
-                      className="w-full h-full object-cover rounded-sm"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 bg-gray-300 rounded"></div>
-                  )}
-                </div>
-                
-                <div>
-                  <div className="text-gray-9 text-[10px] font-normal leading-3">
-                    {translateCategory(selectedLocation.category)} · {formatAddress(selectedLocation.address || '')}
-                  </div>
-                  <div className="text-gray-3 text-base font-semibold leading-normal pt-1.5">
-                    {selectedLocation.name}
-                  </div>
-                </div>
-              </div>
 
-              <button
-                onClick={handleLocationClick}
-                disabled={isLoading}
-                className="w-11 h-7 p-0.5 inline-flex flex-col justify-center items-center gap-2.5"
-              >
-                <span className="text-gray-6 text-xs font-semibold">변경</span>
-              </button>
-            </div>
+        {/* 코스 선택 */}
+        <div className="mb-1">
+          {selectedCourse ? (
+            <>
+            <CourseCard
+              course={selectedCourse}
+              onRemove={handleCourseDelete}
+              fromMyCourse={false}
+            />
+          
+            </>
           ) : (
+            <div className="mb-2">
             <button
-              onClick={handleLocationClick}
+              onClick={handleCourseClick}
               disabled={isLoading}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
             >
-              <LocationIcon size="sm" variant="blurred" />
-              <span className="text-gray-6 text-sm font-medium leading-tight pt-1">
-                장소 추가
-              </span>
+              <CourseIcon />
+              <span className="text-gray-6 text-sm font-medium">코스 추가</span>
             </button>
+            </div>
           )}
         </div>
+
+
+        {/* 장소 추가 */}
+
+          {selectedLocations.length > 0 && (
+            <div className="mb-2 space-y-2">
+              {selectedLocations.map((location, index) => (
+                <div key={index} className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
+                      {location.imageUrls?.[0] ? (
+                        <img 
+                          src={location.imageUrls[0]} 
+                          alt={location.name}
+                          className="w-full h-full object-cover rounded-sm"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <div className="text-gray-9 text-[10px] font-normal">
+                        {translateCategory(location.category)} · {formatAddress(location.address || '')}
+                      </div>
+                      <div className="text-gray-3 text-base font-semibold pt-1.5">
+                        {location.name}
+                      </div>
+                    </div>
+                  </div>
+
+                  {!isLoading && (
+                    <button
+                      onClick={() => handleLocationDelete(index)}
+                      className="text-red-500 text-xs px-2"
+                    >
+                      삭제
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+ 
+
+
+       
         
         {/* 이미지 미리보기 */}
-        <div className="mb-6">
+        
           {imageUrls.length > 0 && (
+            <div className="mb-1">
             <div className="grid grid-cols-1 gap-2 mb-4 p-4">
               {imageUrls.map((url, index) => (
                 <div key={index} className="relative group">
@@ -272,11 +353,12 @@ const PostingPage: React.FC = () => {
                 </div>
               ))}
             </div>
+            </div>
           )}
-        </div>
+        
 
         {/* 내용 입력 */}
-        <div className="mb-6">
+        <div className="mt-4 mb-2">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -286,17 +368,29 @@ const PostingPage: React.FC = () => {
           />
         </div>
 
-        {/* 이미지 업로드 버튼 */}
-        <div className="mb-6 flex items-end bottom-0">
-          {images.length < 5 && !isLoading && (
-            <button
-              onClick={handleImageUploadClick}
-              className="fixed bottom-[5%] left-4 z-40 w-12 h-12 bg-white flex items-center justify-center text-gray-500 hover:border-main-1 hover:text-main-1 transition-colors"
-            >
-              <ImageIcon size="xl" />
-            </button>
-          )}
-        </div>
+
+
+        <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-safe-bottom flex items-center justify-start space-x-4 pb-8 z-50">
+  {/* 이미지 업로드 버튼 */}
+  <button
+    onClick={handleImageUploadClick}
+    disabled={isLoading || images.length >= 5}
+    className="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-gray-800"
+  >
+    <ImageIcon size="lg" />
+    
+  </button>
+
+  {/* 장소 추가 버튼 */}
+  <button
+    onClick={handleLocationClick}
+    disabled={isLoading}
+    className="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-gray-800"
+  >
+    <AddSpotIcon />
+  
+  </button>
+</footer>
       </main>
 
       {/* 숨겨진 파일 입력 */}

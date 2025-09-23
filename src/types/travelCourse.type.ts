@@ -26,4 +26,4 @@ export interface CourseSlot {
     selectedCategories: string[];
     isPublic: boolean;
   }
-  
+    

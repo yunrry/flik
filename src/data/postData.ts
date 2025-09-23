@@ -12,21 +12,23 @@ export interface SpotMetadata {
 }
 
 export interface CourseMetadata {
-  courseId: number;
-  name: string;
-  regionCode: string;
-  spotCount: number;
-  dayCount: number;
-  categories: string[];
+  courseId: number
+  spotIds: number[],
+  name: string,
+  spotCount: number,
+  dayCount: number,
+  regionCode: string,
+  categories: string[]
 }
 
 export interface Post {
   id: string; //from postId
   author: string; //from userId
   title: string;
+  regionCode: string;
   imageUrls: string[];
   imageCount?: number;
-  spot: SpotMetadata[];
+  spots: SpotMetadata[];
   course: CourseMetadata;
   content: string;
   likes: number;
@@ -44,36 +46,47 @@ interface ApiPostResponse {
   title: string;
   content: string;
   imageUrl: string[];
+  regionCode: string;
   createdAt: string;
-  metadata: {
-    spotName: string;
-    location: string;
-    spotId: number;
-    courseId: number;
-    rating: number;
+  courseMetaResponse: {
+    courseId: number,
+    spotIds: number[],
+    name: string,
+    days: number,
+    regionCode: string,
+    categories: string[]
   };
+  spotMetaResponses: {
+    spotId: number;
+    name: string;
+    regionCode: string;
+    imageUrl: string;
+    category: string;
+  }[];
 }
 
 const mapApiToPost = (apiPost: ApiPostResponse): Post => ({
   id: apiPost.id,
   author: apiPost.userId.toString(),
   title: apiPost.title,
+  regionCode: apiPost.regionCode,
   imageUrls: apiPost.imageUrl,
   imageCount: apiPost.imageUrl.length,
-  spot: [{
-    spotId: apiPost.metadata.spotId,
-    name: apiPost.metadata.spotName,
-    category: '', // API에서 제공되지 않음 - 기본값
-    regionCode: apiPost.metadata.location,
-    imageUrl: '' // API에서 제공되지 않음 - 기본값
-  }],
+  spots: apiPost.spotMetaResponses.map(spot => ({
+    spotId: spot.spotId,
+    name: spot.name,
+    category: spot.category,
+    regionCode: spot.regionCode,
+    imageUrl: spot.imageUrl
+  })),
   course: {
-    courseId: apiPost.metadata.courseId,
-    name: '', // API에서 제공되지 않음 - 기본값
-    regionCode: apiPost.metadata.location,
-    spotCount: 0, // API에서 제공되지 않음 - 기본값
-    dayCount: 0, // API에서 제공되지 않음 - 기본값
-    categories: [] // API에서 제공되지 않음 - 기본값
+    courseId: apiPost.courseMetaResponse.courseId,
+    spotIds: apiPost.courseMetaResponse.spotIds,
+    name: apiPost.courseMetaResponse.name,
+    spotCount: apiPost.courseMetaResponse.spotIds.length,
+    dayCount: apiPost.courseMetaResponse.days,
+    regionCode: apiPost.courseMetaResponse.regionCode,
+    categories: apiPost.courseMetaResponse.categories
   },
   content: apiPost.content,
   likes: 0, // API에서 제공되지 않음
@@ -90,19 +103,21 @@ export const mockPostData: Post[] = [
     id: '1',
     author: 'user123',
     title: '강릉 해변',
+    regionCode: '51110',
     imageUrls: ['https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop'],
     imageCount: 13,
-    spot: [{
+    spots: [{
       spotId: 1,
       name: '강릉 해변',
       category: '자연',
-      regionCode: '51',
+      regionCode: '51110',
       imageUrl: REGION_CONFIG.gangwon.imageUrl
     }],
     course: {
       courseId: 1,
+      spotIds: [2, 4],      
       name: '강릉 1박 2일',
-      regionCode: '51',
+      regionCode: '51110',
       spotCount: 5,
       dayCount: 2,
       categories: ['자연', '맛집']
@@ -116,21 +131,23 @@ export const mockPostData: Post[] = [
   },
   {
     id: '2',
-    title: '해운대 맛집',
     author: 'user456',
+    title: '해운대 맛집',
+    regionCode: '26100',
     imageUrls: ['https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&h=600&fit=crop'],
     imageCount: 8,
-    spot: [{
+    spots: [{
       spotId: 2,
       name: '해운대 맛집',
       category: '맛집',
-      regionCode: '26',
+      regionCode: '26100',
       imageUrl: REGION_CONFIG.busan.imageUrl
     }],
     course: {
       courseId: 2,
+      spotIds: [2, 4],
       name: '부산 해운대 코스',
-      regionCode: '26',
+      regionCode: '26100',
       spotCount: 6,
       dayCount: 1,
       categories: ['맛집', '해변']
@@ -146,19 +163,21 @@ export const mockPostData: Post[] = [
     id: '10',
     title: '남산타워',
     author: 'user789',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 10,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 10,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -171,22 +190,24 @@ export const mockPostData: Post[] = [
     createdAt: '2025-09-23 12:00:00'
   },
   {
-    id: '11',
+    id: '11100',
     title: '남산타워',
     author: 'user101',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 11,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 11,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -202,19 +223,21 @@ export const mockPostData: Post[] = [
     id: '12',
     title: '남산타워',
     author: 'user202',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 12,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 12,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -230,19 +253,21 @@ export const mockPostData: Post[] = [
     id: '13',
     title: '남산타워',
     author: 'user303',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 13,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 13,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -258,19 +283,21 @@ export const mockPostData: Post[] = [
     id: '14',
     title: '남산타워',
     author: 'user404',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 14,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 14,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -286,19 +313,21 @@ export const mockPostData: Post[] = [
     id: '15',
     title: '남산타워',
     author: 'user505',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 15,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 15,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -314,19 +343,21 @@ export const mockPostData: Post[] = [
     id: '16',
     title: '남산타워',
     author: 'user606',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 16,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 16,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -342,17 +373,19 @@ export const mockPostData: Post[] = [
     id: '17',
     title: '남산타워',
     author: 'user707',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 17,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 17,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
       regionCode: '서울 용산구',
       spotCount: 4,
@@ -370,19 +403,21 @@ export const mockPostData: Post[] = [
     id: '18',
     title: '남산타워',
     author: 'user808',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 18,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 18,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -398,19 +433,21 @@ export const mockPostData: Post[] = [
     id: '19',
     title: '남산타워',
     author: 'user909',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'],
     imageCount: 5,
-    spot: [{
+    spots: [{
       spotId: 19,
       name: '남산타워',
       category: '관광지',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 19,
+      spotIds: [2, 4],
       name: '서울 야경 코스',
-      regionCode: '11',
+      regionCode: '11100',
       spotCount: 4,
       dayCount: 1,
       categories: ['관광지', '야경']
@@ -426,19 +463,21 @@ export const mockPostData: Post[] = [
     id: '4',
     title: '제주 흑돼지 맛집',
     author: 'user100',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop'],
     imageCount: 15,
-    spot: [{
+    spots: [{
       spotId: 4,
       name: '제주 흑돼지 맛집',
       category: '맛집',
-      regionCode: '50',
+      regionCode: '50100',
       imageUrl: REGION_CONFIG.jeju.imageUrl
     }],
     course: {
       courseId: 4,
-      name: '제주 맛집 투어',
-      regionCode: '50',
+
+spotIds: [2, 4],      name: '제주 맛집 투어',
+      regionCode: '50100',
       spotCount: 8,
       dayCount: 3,
       categories: ['맛집', '흑돼지']
@@ -454,19 +493,21 @@ export const mockPostData: Post[] = [
     id: '5',
     title: '경복궁 카페',
     author: 'user200',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop'],
     imageCount: 6,
-    spot: [{
+    spots: [{
       spotId: 5,
       name: '경복궁 카페',
       category: '카페',
-      regionCode: '11',
+      regionCode: '11100',
       imageUrl: REGION_CONFIG.seoul.imageUrl
     }],
     course: {
       courseId: 5,
-      name: '한옥 카페 투어',
-      regionCode: '11',
+
+spotIds: [2, 4],      name: '한옥 카페 투어',
+      regionCode: '11100',
       spotCount: 3,
       dayCount: 1,
       categories: ['카페', '한옥', '전통']
@@ -482,19 +523,21 @@ export const mockPostData: Post[] = [
     id: '6',
     title: '광안리 해변',
     author: 'user300',
+    regionCode: '11100',
     imageUrls: ['https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop'],
     imageCount: 12,
-    spot: [{
+    spots: [{
       spotId: 6,
       name: '광안리 해변',
       category: '해변',
-      regionCode: '26',
+      regionCode: '26100',
       imageUrl: REGION_CONFIG.busan.imageUrl
     }],
     course: {
       courseId: 6,
-      name: '부산 해변 코스',
-      regionCode: '26',
+
+spotIds: [2, 4],      name: '부산 해변 코스',
+      regionCode: '26100',
       spotCount: 5,
       dayCount: 2,
       categories: ['해변', '노을', '야경']
@@ -549,7 +592,7 @@ if (region) {
   const regionName = region;
   
   filteredPosts = filteredPosts.filter(post => 
-    REGION_CONFIG_FOR_POST[post.spot[0].regionCode as RegionCodeForPost].englishName.toLowerCase() === regionName.toLowerCase()
+    REGION_CONFIG_FOR_POST[post.regionCode.substring(0, 2) as RegionCodeForPost].englishName.toLowerCase() === regionName.toLowerCase()
   );
 }
   

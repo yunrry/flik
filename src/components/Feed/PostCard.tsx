@@ -98,9 +98,9 @@ const PostCard: React.FC<PostCardProps> = ({
         {/* 위치 정보 */}
         <div className="flex items-center space-x-3 mb-3">
           <CategoryCircle
-            id={REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].englishName.toLowerCase()}
-            name={REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].name}
-            icon={REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].imageUrl}
+            id={REGION_CONFIG_FOR_POST[regionCode.substring(0, 2) as RegionCodeForPost].englishName.toLowerCase()}
+            name={REGION_CONFIG_FOR_POST[regionCode.substring(0, 2) as RegionCodeForPost].name}
+            icon={REGION_CONFIG_FOR_POST[regionCode.substring(0, 2) as RegionCodeForPost].imageUrl}
             onClick={handleLocationClick}
             className="flex-shrink-0"
             size="sm"
@@ -111,7 +111,7 @@ const PostCard: React.FC<PostCardProps> = ({
               {title}
             </h3>
             <p className="text-gray-500 text-sm">
-              {REGION_CONFIG_FOR_POST[regionCode as RegionCodeForPost].name}
+              {REGION_CONFIG_FOR_POST[regionCode.substring(0, 2) as RegionCodeForPost].name}
             </p>
           </div>
         </div>
