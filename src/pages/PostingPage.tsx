@@ -8,6 +8,8 @@ import { translateCategory } from '../utils/categoryMapper';
 import { formatAddress } from '../utils/formater';
 import { createPost } from '../api/postApi';
 import { uploadToCloudinary } from '../utils/cloudinary';
+import { TravelCourse } from '../types/travelCourse.type';
+
 
 const PostingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,8 +24,12 @@ const PostingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
     
   // location-select에서 전달받은 장소 정보
-  const [selectedLocation, setSelectedLocation] = useState<SpotDetail | null>(
-    location.state?.selectedLocation || null
+  const [selectedLocations, setSelectedLocations] = useState<SpotDetail[]>(
+    location.state?.selectedLocations || []
+  );
+
+  const [selectedCourse, setSelectedCourse] = useState<TravelCourse | null>(
+    location.state?.selectedCourse || null
   );
 
   // location-select에서 돌아올 때 편집 내용 복원
@@ -31,7 +37,10 @@ const PostingPage: React.FC = () => {
     if (location.state) {
       // 장소 정보 복원
       if (location.state.selectedLocation) {
-        setSelectedLocation(location.state.selectedLocation);
+        setSelectedLocations(location.state.selectedLocations);
+      }
+      if (location.state.selectedCourse) {
+        setSelectedCourse(location.state.selectedCourse);
       }
       
       // 편집 내용 복원
@@ -109,7 +118,7 @@ const PostingPage: React.FC = () => {
     // 장소 선택 페이지로 이동하면서 현재 편집 내용 전달
     navigate('/search', {
       state: { 
-        currentLocation: selectedLocation,
+        currentLocations: selectedLocations, 
         title: title,
         content: content,
         images: images,
@@ -118,9 +127,50 @@ const PostingPage: React.FC = () => {
     });
   };
 
+    // 장소 삭제 함수 추가
+    const handleLocationDelete = (index: number) => {
+      setSelectedLocations(prev => prev.filter((_, i) => i !== index));
+    };
+
+  // 코스 선택 페이지로 이동
+  const handleCourseClick = () => {
+    navigate('/savedCourses', { // 또는 코스 목록 페이지 경로
+      state: { 
+        currentLocations: selectedLocations,
+        currentCourse: selectedCourse,
+        title,
+        content,
+        images,
+        returnPath: '/posting',
+      }
+    });
+  };
+
+  // 코스 삭제
+  const handleCourseDelete = () => {
+    setSelectedCourse(null);
+  };
+
   const handleBackClick = () => {
     navigate('/my');
   };
+
+  // relatedSpotIds 생성 로직
+const getRelatedSpotIds = (): number[] => {
+  const spotIds = selectedLocations?.map(location => location.id) || [];
+  
+  if (selectedCourse) {
+    // 코스의 모든 슬롯에서 selectedSpotId 추출 (null 제외)
+    const courseSpotIds = selectedCourse.courseSlots
+      .flat() // 2차원 배열을 1차원으로 변환
+      .map(slot => slot.selectedSpotId)
+      .filter((id): id is number => id !== null); // null 제거 및 타입 가드
+    
+    return [...spotIds, ...courseSpotIds];
+  }
+  
+  return spotIds;
+};
 
   // 게시글 등록
   const handleSubmit = async () => {
@@ -137,10 +187,12 @@ const PostingPage: React.FC = () => {
       const requestData = {
         title,
         content,
-        type: 'review', // 서버에서 정의한 타입 코드
-        imageUrl: uploadedImageUrls, // 변환된 URL 배열
-        spotId: selectedLocation?.id ?? undefined,
-        courseId: undefined, // 코스가 있을 때만 값 설정
+        type: 'review',
+        imageUrl: uploadedImageUrls,
+        spotIds: selectedLocations?.map(location => location.id) ?? undefined,
+        relatedSpotIds: getRelatedSpotIds(),
+        regionCode: selectedLocations?.[0]?.regionCode || selectedCourse?.regionCode || '', // 수정
+        courseId: selectedCourse?.id ?? undefined,
       };
   
       console.log('게시글 작성 요청 데이터:', requestData);
@@ -160,13 +212,14 @@ const PostingPage: React.FC = () => {
   };
 
   // 제출 버튼 활성화 여부 체크
-  useEffect(() => {
-    if (selectedLocation && title.trim() && content.trim()) {
-      setIsSubmitEnabled(true);
-    } else {
-      setIsSubmitEnabled(false);
-    }
-  }, [selectedLocation, title, content]);
+// 제출 버튼 활성화 (장소 또는 코스 중 하나는 필수)
+useEffect(() => {
+  if ((selectedLocations.length > 0 || selectedCourse) && title.trim() && content.trim()) {
+    setIsSubmitEnabled(true);
+  } else {
+    setIsSubmitEnabled(false);
+  }
+}, [selectedLocations, selectedCourse, title, content]);
 
   // 컴포넌트 언마운트 시 이미지 URL 정리
   useEffect(() => {
@@ -201,51 +254,104 @@ const PostingPage: React.FC = () => {
         </div>
         
         {/* 장소 추가 */}
-        <div className="mb-2">
-          {selectedLocation ? (
-            <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
-              {/* 왼쪽: 이미지 + 정보 */}
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
-                  {selectedLocation.imageUrls ? (
-                    <img 
-                      src={selectedLocation.imageUrls[0]} 
-                      alt={selectedLocation.name}
-                      className="w-full h-full object-cover rounded-sm"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 bg-gray-300 rounded"></div>
+        <div className="mb-2 space-y-2">
+          {selectedLocations.length > 0 ? (
+            <>
+              {selectedLocations.map((location, index) => (
+                <div key={index} className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gray-200 rounded-sm flex items-center justify-center">
+                      {location.imageUrls?.[0] ? (
+                        <img 
+                          src={location.imageUrls[0]} 
+                          alt={location.name}
+                          className="w-full h-full object-cover rounded-sm"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <div className="text-gray-9 text-[10px] font-normal">
+                        {translateCategory(location.category)} · {formatAddress(location.address || '')}
+                      </div>
+                      <div className="text-gray-3 text-base font-semibold pt-1.5">
+                        {location.name}
+                      </div>
+                    </div>
+                  </div>
+
+                  {!isLoading && (
+                    <button
+                      onClick={() => handleLocationDelete(index)}
+                      className="text-red-500 text-xs px-2"
+                    >
+                      삭제
+                    </button>
                   )}
                 </div>
-                
-                <div>
-                  <div className="text-gray-9 text-[10px] font-normal leading-3">
-                    {translateCategory(selectedLocation.category)} · {formatAddress(selectedLocation.address || '')}
-                  </div>
-                  <div className="text-gray-3 text-base font-semibold leading-normal pt-1.5">
-                    {selectedLocation.name}
-                  </div>
-                </div>
-              </div>
-
+              ))}
+              
+              {/* 장소 추가 버튼 */}
               <button
                 onClick={handleLocationClick}
                 disabled={isLoading}
-                className="w-11 h-7 p-0.5 inline-flex flex-col justify-center items-center gap-2.5"
+                className="flex items-center space-x-2 text-blue-500 hover:text-blue-700 py-2"
               >
-                <span className="text-gray-6 text-xs font-semibold">변경</span>
+                <span className="text-sm">+ 장소 추가</span>
               </button>
-            </div>
+            </>
           ) : (
             <button
               onClick={handleLocationClick}
               disabled={isLoading}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
             >
               <LocationIcon size="sm" variant="blurred" />
-              <span className="text-gray-6 text-sm font-medium leading-tight pt-1">
+              <span className="text-gray-6 text-sm font-medium pt-1">
                 장소 추가
               </span>
+            </button>
+          )}
+        </div>
+
+
+        {/* 코스 선택 */}
+        <div className="mb-4">
+          {selectedCourse ? (
+            <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg border border-blue-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-blue-200 rounded-sm flex items-center justify-center">
+                  <span className="text-blue-600 text-xs">{selectedCourse.days-1}박{selectedCourse.days}일</span>
+                </div>
+                
+                <div>
+                  <div className="text-blue-600 text-[10px] font-normal">
+                    코스 · {selectedCourse.filledSlots}개 장소
+                  </div>
+                  <div className="text-gray-3 text-base font-semibold pt-1.5">
+                    {selectedCourse.selectedCategories.join('/')} 코스
+                  </div>
+                </div>
+              </div>
+
+              {!isLoading && (
+                <button
+                  onClick={handleCourseDelete}
+                  className="text-red-500 text-xs px-2"
+                >
+                  삭제
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={handleCourseClick}
+              disabled={isLoading}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <span className="text-gray-6 text-sm font-medium">+ 코스 추가</span>
             </button>
           )}
         </div>

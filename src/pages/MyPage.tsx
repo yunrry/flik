@@ -10,13 +10,15 @@ import FloatingUploadButton from '../components/UI/FloatingUploadButton';
 import MyHeader from '../components/Layout/MyHeader';
 import { getUserPosts } from '../api/postApi';
 import { mapToUserActivity } from '../utils/mapUserActivity';
+import { mapApiToPost } from '../types/post.types';
+import { Post } from '../types/post.types';
 
 const MyPage: React.FC = () => {
   const location = useLocation();
   const { user, setUser, logout } = useAuthStore();
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [reviewActivities, setReviewActivities] = useState<UserActivity[]>([]);
+  const [reviewActivities, setReviewActivities] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -50,8 +52,14 @@ const MyPage: React.FC = () => {
         setError(null);
 
         const response = await getUserPosts();
-        const mappedData = mapToUserActivity(response.data ?? []);
+        console.log('response', response);
+
+
+        if (response.data.content && Array.isArray(response.data.content)) {
+        const mappedData = response.data.content.map(mapApiToPost);
         setReviewActivities(mappedData);
+        console.log('mappedData', mappedData);
+        }
       } catch (err) {
         console.error('리뷰 활동 조회 실패:', err);
         setError('리뷰 내역을 불러올 수 없습니다.');
@@ -63,7 +71,7 @@ const MyPage: React.FC = () => {
     fetchReviewActivities();
   }, []);
 
-  const handleActivityClick = (activity: UserActivity) => {
+  const handleActivityClick = (activity: Post) => {
     navigate(`/post/${activity.id}`);
     console.log('활동 클릭:', activity);
   };
@@ -128,8 +136,10 @@ const MyPage: React.FC = () => {
                 key={activity.id} 
                 activity={{
                   ...activity,
-                  description: activity.description ?? '',
-                  imageUrl: activity.imageUrl ?? undefined
+                  content: activity.content ?? '',
+                  imageUrls: activity.imageUrls ?? [],
+                  author: activity.author,
+                  type: activity.type
                 }}
                 onClick={handleActivityClick}
               />

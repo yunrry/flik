@@ -33,7 +33,7 @@ const SearchPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   // PostingPage에서 전달받은 현재 선택된 장소
-  const currentLocation = location.state?.currentLocation as SpotDetail | null;
+  const currentLocations = location.state?.currentLocations as SpotDetail[];
   const images = location.state?.images as File[];
   const content = location.state?.content as string;
   const title = location.state?.title as string;
@@ -48,11 +48,13 @@ const SearchPage: React.FC = () => {
   };
 
   const handleLocationSelect = (selectedLocation: SpotDetail) => {
+    const updatedLocations = [...(currentLocations || []), selectedLocation];
+  
     if (source === 'course') {
       // CoursePage에서 온 요청
       navigate(returnPath, {
         state: {
-          addedSpot: selectedLocation,
+          addedSpot: currentLocations,
           selectedDay: selectedDay,
           source: 'course',
           isEditing: isEditing,
@@ -63,7 +65,12 @@ const SearchPage: React.FC = () => {
     } else {
       // 기존 PostingPage 요청
       navigate(returnPath, {
-        state: { selectedLocation, images, content, title },
+        state: { 
+          selectedLocations: updatedLocations,
+          images, 
+          content, 
+          title 
+        }
       });
     }
   };

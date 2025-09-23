@@ -2,15 +2,16 @@
 
 import React from 'react';
 import { UserActivity } from '../../types/user.types';
+import { Post } from '../../types/post.types';
 
 interface ActivityItemProps {
-  activity: UserActivity;
-  onClick?: (activity: UserActivity) => void;
+  activity: Post;
+  onClick?: (activity: Post) => void;
 }
 
 const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onClick }) => {
   // 활동 타입별 아이콘 반환
-  const getActivityIcon = (type: UserActivity['type']) => {
+  const getActivityIcon = (type: Post['type']) => {
     switch (type) {
       case 'save':
         return '📑';
@@ -56,9 +57,9 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onClick }) => {
       <div className="flex items-start space-x-4">
         {/* 이미지 또는 아이콘 */}
         <div className="w-16 h-16 flex-shrink-0 bg-gray-200 rounded-lg overflow-hidden">
-          {activity.imageUrl ? (
+          {activity.imageUrls[0] ? (
             <img
-              src={activity.imageUrl}
+              src={activity.imageUrls[0]}
               alt={activity.title}
               className="w-full h-full object-cover"
             />
@@ -79,9 +80,9 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onClick }) => {
           </h3>
 
           {/* 설명 (있는 경우) */}
-          {activity.description && (
+          {activity.content && (
             <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-              {activity.description}
+              {activity.content}
             </p>
           )}
 

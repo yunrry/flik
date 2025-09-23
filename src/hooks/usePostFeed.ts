@@ -1,10 +1,11 @@
 // src/hooks/usePostFeed.ts
-
 import { useState, useEffect, useCallback } from 'react';
-import { Post, getFilteredPosts } from '../data/postData';
+import { mapApiToPost, Post } from '../types/post.types';
+import { getAllPosts } from '../api/postApi';
+import { getRegionCode } from '../types/sigungu.types';
 
 interface UsePostFeedProps {
-  region?: string; // 지역 필터 추가
+  region?: string;
   initialLimit?: number;
 }
 
@@ -12,64 +13,70 @@ export const usePostFeed = ({ region, initialLimit = 6 }: UsePostFeedProps = {})
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [currentLimit, setCurrentLimit] = useState(initialLimit);
-
-  console.log('usePostFeed - region 파라미터:', region);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   // 초기 로드 및 지역 변경 시 재로드
   useEffect(() => {
-    console.log('usePostFeed - useEffect 실행됨, region:', region);
-    
     const loadPosts = async () => {
-      console.log('usePostFeed - loadPosts 호출됨, region:', region, 'limit:', initialLimit);
       setIsLoading(true);
       setPosts([]);
-      setCurrentLimit(initialLimit);
+      setCurrentPage(0);
       setHasMore(true);
+      setError(null);
       
       try {
-        // 지역 필터와 함께 포스트 로드
-        const newPosts = await getFilteredPosts({ 
-          limit: initialLimit, 
-          region: region || undefined 
+        const response = await getAllPosts({ 
+          page: 0,
+          size: initialLimit,
+          type: 'review',
+          regionCode: region ? getRegionCode(region) : undefined
         });
         
-        console.log('usePostFeed - getFilteredPosts 결과:', newPosts);
+        console.log('전체 응답:', response);
         
-        setPosts(newPosts);
-        setHasMore(newPosts.length >= initialLimit);
-      } catch (error) {
-        console.error('Failed to load posts:', error);
+        if (response.data.content && Array.isArray(response.data.content)) {
+          const mappedPosts = response.data.content.map(mapApiToPost);
+          setPosts(mappedPosts);
+          setHasMore(response.data.hasNext);
+        }
+      } catch (err) {
+        console.error('Failed to load posts:', err);
+        setError(err instanceof Error ? err.message : '게시글 로드 실패');
+        setHasMore(false);
+        setPosts([]);
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     loadPosts();
-  }, [region]);
+  }, [region, initialLimit]);
 
   const loadMorePosts = useCallback(async () => {
-    if (!isLoading && hasMore) {
-      console.log('usePostFeed - loadMorePosts 호출됨');
-      setIsLoading(true);
+    if (isLoading || !hasMore || error) return; // error 체크 추가
+    
+    setIsLoading(true);
+    
+    try {
+      const nextPage = currentPage + 1;
+      const response = await getAllPosts({ 
+        page: nextPage,
+        size: initialLimit,
+        type: 'review'
+      });
       
-      try {
-        const newLimit = currentLimit + 6;
-        const allPosts = await getFilteredPosts({ 
-          limit: newLimit, 
-          region: region || undefined 
-        });
-        
-        setPosts(allPosts);
-        setCurrentLimit(newLimit);
-        setHasMore(allPosts.length >= newLimit);
-      } catch (error) {
-        console.error('Failed to load more posts:', error);
-      } finally {
-        setIsLoading(false);
-      }
+      setPosts(prev => [...prev, ...(response.data.content.map(mapApiToPost) as Post[] || [])]);
+      setCurrentPage(nextPage);
+      setHasMore(!response.data.hasNext);
+    } catch (error) {
+      console.error('Failed to load more posts:', error);
+      setError(error instanceof Error ? error.message : '추가 게시글 로드 실패');
+      setHasMore(false); // 에러 시 더 이상 로드하지 않음
+    } finally {
+      setIsLoading(false);
     }
-  }, [currentLimit, isLoading, hasMore, region]);
+  }, [currentPage, isLoading, hasMore, initialLimit]);
 
   const handleLike = (postId: string) => {
     setPosts(prev => 
