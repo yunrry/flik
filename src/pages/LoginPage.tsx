@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
   const [showNicknameSetup, setShowNicknameSetup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  const { socialLogin, user, isAuthenticated, error, clearError } = useAuthStore();
+  const { socialLogin, user, isAuthenticated, error, clearError, guestLogin} = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -204,6 +204,34 @@ const LoginPage: React.FC = () => {
               <span className="px-4 text-sm text-gray-500">또는</span>
               <div className="flex-1 border-t border-gray-200"></div>
             </div>
+
+            {/* 게스트 로그인 버튼 */}
+            <button
+              onClick={async () => {
+                setIsLoading(true);
+                clearError();
+                try {
+                  await guestLogin();
+                  // 로그인 후 홈으로 이동
+                  navigate('/', { replace: true });
+                } catch (error) {
+                  console.error('Guest login failed:', error);
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              disabled={isLoading}
+              className="w-full p-4 rounded-lg font-medium bg-gray-300 text-gray-800 hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-gray-800 border-t-transparent rounded-full animate-spin" />
+                  <span>로그인 중...</span>
+                </>
+              ) : (
+                <span>👤 게스트로 로그인하기</span>
+              )}
+            </button>
 
             {/* <button
               onClick={() => setShowEmailForm(true)}
