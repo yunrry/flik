@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuthStore } from './stores/authStore';
 import { KakaoMapProvider } from './contexts/KakaoMapProvider';
 import { useAuth } from './hooks/useAuth';
+import { useState } from 'react';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -134,7 +135,7 @@ const AppLoading: React.FC = () => {
 
 function App() {
   const { isLoading: authLoading } = useAuth();
-
+  const [travelStep, setTravelStep] = useState(1);
   // 인증 상태 로딩 중인 경우
   if (authLoading) {
     return <AppLoading />;
@@ -253,8 +254,11 @@ function App() {
               path="/travel-select" 
               element={
                 <ProtectedRoute>
-                  <NavigationPageWrapper disableScroll={false} requireNickname={true}>
-                    <TravelSelectionPage />
+                  <NavigationPageWrapper 
+                    disableScroll={travelStep === 5} 
+                    requireNickname={true}
+                  >
+                    <TravelSelectionPage onStepChange={setTravelStep} />
                   </NavigationPageWrapper>
                 </ProtectedRoute>
               } 
