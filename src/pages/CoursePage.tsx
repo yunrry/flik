@@ -6,7 +6,7 @@ import DaySpots from '../components/Layout/DaySpots';
 import CourseHeader from '../components/Layout/CourseHeader';
 import { getSpotsByIds } from '../api/flikCardsApi';
 import { SpotDetail } from '../types/spot.types';
-import { parseImageUrls } from '../utils/imageUrlParser';
+import { formatCategories } from '../utils/formater';
 import { translateCategory } from '../utils/categoryMapper';
 import { getRegionName } from '../types/sigungu.types';
 import { getCourse } from '../api/travelCourseApi';
@@ -30,6 +30,7 @@ const CoursePage: React.FC = () => {
 
   // 상태 관리
   const [courseData, setCourseData] = useState<any>(null);
+  const [categories, setCategories] = useState<string[]>([]);
   const [dayDetails, setDayDetails] = useState<DayDetails[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,6 +45,7 @@ const CoursePage: React.FC = () => {
       // location.state에 courseData가 있으면 그것을 사용
       if (location.state?.courseData) {
         setCourseData(location.state.courseData);
+        setCategories(location.state.courseData.categories || []);
         setIsPublic(location.state.courseData.isPublic);
         setIsLoading(false);
         return;
@@ -61,6 +63,7 @@ const CoursePage: React.FC = () => {
         const response = await getCourse(courseId);
         
         const mappedData = mapApiToCourseData(response.data as ApiCourseResponse);
+        setCategories(mappedData.categories);
         setCourseData(mappedData);
         console.log('API로 불러온 코스 데이터:', mappedData);
         setIsPublic(response.data.isPublic);
@@ -177,7 +180,7 @@ useEffect(() => {
 
   // Location state에서 데이터 추출
   const regionCode = location.state?.regionCode || courseData?.regionCode || '11110';
-  const categoriesString = location.state?.categoriesString;
+  const categoriesString = formatCategories(categories) || location.state?.categoriesString;
   const locationString = location.state?.locationString;
   const regionName = locationString || getRegionName(regionCode) || '';
 
@@ -293,6 +296,7 @@ setCourseData((prev: any) => {
 
   // 스팟 삭제
   const removeSpotFromDay = (day: number, index: number) => {
+    // 1. dayDetails 업데이트 (화면용)
     setDayDetails((prev) =>
       prev.map((d) =>
         d.day === day
@@ -300,6 +304,25 @@ setCourseData((prev: any) => {
           : d
       )
     );
+  
+    // 2. courseData의 selectedSpotIds도 업데이트
+    setCourseData((prev: any) => {
+      if (!prev) return prev;
+  
+      const newDaySlots = prev.daySlots.map((slot: any) =>
+        slot.day === day
+          ? {
+              ...slot,
+              selectedSpotIds: slot.selectedSpotIds.filter((_: any, i: number) => i !== index)
+            }
+          : slot
+      );
+  
+      return {
+        ...prev,
+        daySlots: newDaySlots
+      };
+    });
   };
 
   // 코스 저장
@@ -345,12 +368,23 @@ setCourseData((prev: any) => {
           hasSelectedSpot: true,
         }))
       );
+
+      const selectedCategories = Array.from(
+        new Set(
+          courseSlots
+            .flat()
+            .map(slot => slot.mainCategory)
+            .filter((category): category is string => category !== null)
+        )
+      );
+
+      setCategories(selectedCategories);
   
       const updateData: TravelCourseUpdateRequest = {
         totalDistance: courseData.totalDistance,
         courseSlots: courseSlots,
         regionCode: courseData.regionCode,
-        selectedCategories: courseData.categories,
+        selectedCategories: selectedCategories.map(category => category.toLowerCase()),
       };
   
       const response = await updateCourse(Number(courseId), updateData);

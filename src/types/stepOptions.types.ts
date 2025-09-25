@@ -14,6 +14,20 @@ export const getStepOptions = (step: number, selectedRegion?: RegionName): StepO
     return STEP_OPTIONS[step] || [];
   };
 
+
+  export const getCategoryNameById = (categoryId: string): string => {
+    const step4Options = STEP_OPTIONS[4];
+    if (categoryId === 'RESTAURANT') {
+      return '음식점';
+    }
+    if (categoryId === 'ACCOMMODATION') {
+      return '숙박';
+    }
+    
+    const foundOption = step4Options?.find(option => option.id === categoryId);
+    return foundOption?.name || categoryId;
+  };
+
 export interface StepOption {
     id: string;
     name: string;
@@ -60,5 +74,8 @@ export const STEP_OPTIONS: Record<number, StepOption[]> = {
         { id: 'FESTIVAL', name: '축제', icon: '/assets/theme/festival.jpg' },
         { id: 'MARKET', name: '전통시장', icon: '/assets/theme/market.jpg' },
         { id: 'THEMEPARK', name: '테마파크', icon: '/assets/theme/themePark.jpeg' },
+        { id: 'RESTAURANT', name: '음식점', icon: '/assets/theme/restaurant.jpg' },
+        { id: 'ACCOMMODATION', name: '숙박', icon: '/assets/theme/accommodation.jpg' }
       ]
     };
+    
