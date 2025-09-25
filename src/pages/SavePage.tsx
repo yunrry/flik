@@ -189,6 +189,7 @@ const SavePage: React.FC = () => {
       {activeTab === 'places' && (
       <FloatingMapButton 
         handleMapClick={() => handleMapClick(savedSpots, '/save')}
+        bgColor='bg-main-1'
         />
       )}
     </div>

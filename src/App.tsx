@@ -24,6 +24,7 @@ import TravelSelectionPage from './pages/TravelSelectionPage';
 import LocationSelectPage from './pages/LocationSelectPage';
 import PostDetailPage from './pages/PostDetailPage';
 import SearchPage from './pages/SearchPage';
+import CourseMapPage from './pages/CourseMapPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -273,6 +274,17 @@ function App() {
                   </NavigationPageWrapper>
                 </ProtectedRoute>
               } 
+            />
+
+            <Route
+              path="/map"
+              element={
+                <ProtectedRoute>
+                  <NicknameRequiredRoute>
+                    <CourseMapPage />
+                  </NicknameRequiredRoute>
+                </ProtectedRoute>
+              }
             />
 
             <Route 
