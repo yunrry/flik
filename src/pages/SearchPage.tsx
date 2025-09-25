@@ -6,6 +6,7 @@ import { SpotDetail } from '../types/spot.types';
 import { translateCategory } from '../utils/categoryMapper';
 import { formatAddress } from '../utils/formater';
 import SearchHeader from '../components/Layout/SearchHeader';
+import { searchSpots } from '../api/flikCardsApi';
 
 // 타입 정의
 interface spot {
@@ -27,7 +28,7 @@ interface SearchResponse {
 const SearchPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [savedSpots, setSavedSpots] = useState<SpotDetail[]>([]);
-  const [searchResults, setSearchResults] = useState<spot[]>([]);
+  const [searchResults, setSearchResults] = useState<SpotDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
@@ -128,35 +129,34 @@ const SearchPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // API 요청 (실제 엔드포인트로 변경 필요)
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      
-      if (!response.ok) {
-        throw new Error('검색에 실패했습니다.');
+  
+      const result = await searchSpots(query);
+  
+      if (result.success) {
+        // 백엔드 응답에서 SpotDetail 리스트 추출
+        setSearchResults(result.data.spots);
+      } else {
+        throw new Error(result.message || '검색에 실패했습니다.');
       }
-      
-      const result: SearchResponse = await response.json();
-      setSearchResults(result.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : '검색 중 오류가 발생했습니다.');
       console.error('검색 오류:', err);
-      
-      // 개발용 더미 검색 결과 (실제 배포시 제거)
-      setSearchResults([
-        {
-          id: 101,
-          name: `${query} 관련 장소 1`,
-          category: '음식점',
-          location: '서울시'
-        },
-        {
-          id: 102,
-          name: `${query} 관련 장소 2`,
-          category: '카페',
-          location: '서울시'
-        }
-      ]);
+  
+      // // 개발용 더미 데이터
+      // setSearchResults([
+      //   {
+      //     id: 101,
+      //     name: `${query} 관련 장소 1`,
+      //     category: '음식점',
+      //     location: '서울시'
+      //   },
+      //   {
+      //     id: 102,
+      //     name: `${query} 관련 장소 2`,
+      //     category: '카페',
+      //     location: '서울시'
+      //   }
+      // ]);
     } finally {
       setLoading(false);
     }
@@ -213,11 +213,11 @@ const SearchPage: React.FC = () => {
         </div>
         
         {/* 에러 메시지 */}
-        {error && (
+        {/* {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
             <p className="text-red-600 text-sm">{error}</p>
           </div>
-        )}
+        )} */}
         
         {/* 로딩 상태 */}
         {loading && (

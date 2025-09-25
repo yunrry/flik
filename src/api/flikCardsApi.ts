@@ -9,6 +9,14 @@ import { ApiResponse } from '../types/response.types';
 import { getApiBaseUrl } from '../utils/env';
   
 
+export interface SearchSpotsResponse {
+  keyword: string;
+  page: number;
+  pageSize: number;
+  hasNext: boolean;
+  totalElements: number;
+  spots: SpotDetail[];
+}
 
   // API 기본 설정
   // const API_BASE_URL = 'http://localhost:8080/api/v1';
@@ -18,6 +26,65 @@ import { getApiBaseUrl } from '../utils/env';
   const getAuthToken = (): string | null => {
     return localStorage.getItem('accessToken');
   };
+
+
+
+
+
+  /**
+ * 키워드 기반 장소 검색 API
+ * 
+ * @param keyword 검색어
+ * @param page 페이지 번호 (기본값 1)
+ * @param size 페이지 크기 (기본값 20)
+ * @param sort 정렬 기준 (기본값 'rating')
+ * @returns 검색된 장소 목록
+ */
+export const searchSpots = async (
+  keyword: string,
+  page: number = 1,
+  size: number = 20,
+  sort: string = 'rating'
+): Promise<ApiResponse<SearchSpotsResponse>> => {
+  const accessToken = getAuthToken();
+  if (!accessToken) {
+    throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+  }
+
+  if (!keyword.trim()) {
+    throw new Error('검색 키워드를 입력해주세요.');
+  }
+
+  const params = new URLSearchParams({
+    keyword: keyword.trim(),
+    page: page.toString(),
+    size: size.toString(),
+    sort,
+  });
+
+  const url = `${API_BASE_URL}/v1/spots/search?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      accept: '*/*',
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data: ApiResponse<SearchSpotsResponse> = await response.json();
+  return data;
+};
 
 
 // 스팟 상세 조회 (ids 쿼리 파라미터로 다중 조회)

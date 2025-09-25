@@ -417,7 +417,7 @@ setCourseData((prev: any) => {
     courseData.categories?.map(translateCategory).join('/') || '';
 
   return (
-    <div className="pt-header-extended min-h-screen bg-white flex flex-col">
+    <div className="pt-header-extended min-h-screen bg-white flex flex-col items-center">
   
       {/* 헤더 */}
       <CourseHeader
@@ -433,7 +433,8 @@ setCourseData((prev: any) => {
       />
 
       {/* 메인 콘텐츠 */}
-      <main className="pt-5 w-full flex-1 px-4 lg:px-8 py-6 bg-white">
+    
+      <main className="pt-5 w-full lg:w-[55%] flex flex-col flex-1 px-4 lg:px-8 py-6 bg-white overflow-auto">
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="space-y-6">
             {dayDetails.map((dayData, idx) => (

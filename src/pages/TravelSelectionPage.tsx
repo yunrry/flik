@@ -68,8 +68,12 @@ const TRAVEL_STEPS: TravelStep[] = [
 
 ];
 
+interface TravelSelectionPageProps {
+  onStepChange?: (step: number) => void;
+}
 
-const TravelSelectionPage: React.FC = () => {
+
+const TravelSelectionPage: React.FC<TravelSelectionPageProps> = ({ onStepChange }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -97,6 +101,11 @@ const TravelSelectionPage: React.FC = () => {
   const [requestCategories, setRequestCategories] = useState<string[]>([]);
   const [nextStepButtonCondition, setNextStepButtonCondition] = useState<boolean>(false);
 
+  
+  useEffect(() => {
+    onStepChange?.(currentStep);
+  }, [currentStep, onStepChange]);
+  
   // API 호출 함수
   const fetchSpots = async () => {
     try {
@@ -498,20 +507,23 @@ const handleRecommendationCancel = () => {
 
   {currentStep === 4 && (
     <div className="grid grid-cols-4 gap-x-12 gap-y-5">
-      {currentOptions.map((option) => (
-        <CategoryCircle
-          key={option.id}
-          id={option.id}
-          name={option.name}
-          icon={option.icon}
-          backgroundColor="white"
-          isActive={getCurrentSelections().includes(option.id)}
-          onClick={() => handleSelection(option.id)}
-          className="justify-self-center"
-          variant="selected"
-          size="lg"
-        />
-      ))}
+      {currentOptions
+        .filter(option => !['RESTAURANT', 'ACCOMMODATION'].includes(option.id))
+        .map((option) => (
+          <CategoryCircle
+            key={option.id}
+            id={option.id}
+            name={option.name}
+            icon={option.icon}
+            backgroundColor="white"
+            isActive={getCurrentSelections().includes(option.id)}
+            onClick={() => handleSelection(option.id)}
+            className="justify-self-center"
+            variant="selected"
+            size="lg"
+          />
+        ))
+      }
     </div>
   )}
 

@@ -42,9 +42,9 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
       }}
     >
     
-        <div className="flex flex-col items-center p-[3%]">
+        <div className="flex flex-col items-center">
             
-        <div className="flex flex-row items-center justify-between w-full mb-2 mt-5">
+        <div className="flex flex-row items-center justify-between w-full lg:w-[60%] mb-2 mt-5 px-4 lg:px-[3%]">
          
          <button onClick={onBack}>
           <BackArrowIcon size="lg" color="white" />
@@ -62,6 +62,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
         )}
 
           </div>
+          <div className="w-full lg:w-[60%] px-[3%]">
         <CourseBanner
         totalDistance={totalDistance}
         totalSpot={totalSpot}
@@ -69,7 +70,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
         duration={duration}
         Categories={Categories}
       />
-  
+      </div>
     </div>
     </header>
   );
