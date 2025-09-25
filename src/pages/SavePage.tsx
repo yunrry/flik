@@ -18,7 +18,7 @@ const SavePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [savedSpots, setSavedSpots] = useState<SpotDetail[]>([]);
   const [savedCourses, setSavedCourses] = useState<TravelCourse[]>([]);
-  const [activeTab, setActiveTab] = useState<'places' | 'courses'>('courses');
+  const [activeTab, setActiveTab] = useState<'places' | 'courses'>('places');
   const { handleMapClick } = useThirdParty();
 
   const handleRemoveCourse = (courseId: number): void => {

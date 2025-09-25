@@ -61,7 +61,7 @@ const FlikPage: React.FC = () => {
 
         {/* FlikCardLayout 영역 */}
         <div className="w-full flik-card-adaptive overflow-hidden flex-1 pt-[10%] pb-[5%] flex items-center justify-center">
-          <div className="xs:w-[80%] sm:w-[98%] smTomd:w-[60%] lg:w-[40%]     h-full">
+          <div className="xs:w-[80%] sm:w-[98%] smTomd:w-[60%] lg:w-[40%] h-[95%]">
             <FlikCardLayout
               spots={spots}
               onSave={handleSave}

@@ -29,7 +29,7 @@ interface ApiTravelCourse {
 
 const RegionPage: React.FC = () => {
   const { region } = useParams<{ region: string }>();
-  const [activeTab, setActiveTab] = useState<'blog' | 'courses'>('courses');
+  const [activeTab, setActiveTab] = useState<'blog' | 'courses'>('blog');
   const [regionCourses, setRegionCourses] = useState<TravelCourse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
