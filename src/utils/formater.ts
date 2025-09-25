@@ -1,3 +1,5 @@
+import { translateCategory } from './categoryMapper';
+
 export const formatAddress = (address: string) => {
 
     if (!address) return '';
@@ -51,3 +53,29 @@ export const formatAddress = (address: string) => {
     
     return `${simpleSido} ${gu}`;
 };
+
+export const formatCategories = (categories: string[]): string => {
+    // 각 카테고리 문자열을 분리해서 새로운 배열에 담기
+    const separatedCategories: string[] = [];
+    
+    categories.forEach(category => {
+      // [,]와 , 제거 후 공백으로 분리
+      const cleanCategory = category.replace(/[,\[\]]/g, '');
+      const parts = cleanCategory.split(' ').filter(part => part.trim() !== '');
+      
+      parts.forEach(part => {
+        const trimmedPart = part.trim();
+        if (trimmedPart) {
+          separatedCategories.push(trimmedPart);
+        }
+      });
+    });
+    
+    return separatedCategories
+      .map(category => {
+        // 소문자를 대문자로 변환하고 언더스코어를 언더스코어로 유지
+        const upperCategory = category.toUpperCase();
+        return translateCategory(upperCategory);
+      })
+      .join('/');
+  };

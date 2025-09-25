@@ -76,7 +76,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
       case 'my':
         return (
           <div className="flex items-center pt-[20%]">
-            <h1 className="text-gray-1 text-xl font-semibold font-['Pretendard']leading-normal">마이페이지</h1>
+            <h1 className="text-gray-1 xs:text-lg text-xl font-semibold font-['Pretendard']leading-normal">마이페이지</h1>
           </div>
         );
       
@@ -106,10 +106,10 @@ const HeaderBar: React.FC<HeaderProps> = ({
                 <BackArrowIcon size="lg" color="white" />
               </button>
               </div>
-              <div className="flex flex-col items-start pt-6 pl-0 pb-0 space-y-1 overflow-visible">
-              <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle1}</div>
-              <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle2}</div>
-              <div className="justify-start text-white text-sm font-medium font-['Pretendard'] leading-loose overflow-visible whitespace-nowrap pt-2">{stepSubtitle}</div>
+              <div className="flex flex-col items-start pt-6 pl-0 pb-0 xs:space-y-0 space-y-1 overflow-visible">
+              <div className="justify-start text-white xs:text-lg text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle1}</div>
+              <div className="justify-start text-white xs:text-lg text-xl font-semibold font-['Pretendard'] leading-none whitespace-pre-line">{stepTitle2}</div>
+              <div className="justify-start text-white xs:text-xs text-sm font-medium font-['Pretendard'] leading-loose overflow-visible whitespace-nowrap pt-2">{stepSubtitle}</div>
             </div>
 
             </div>
@@ -131,7 +131,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
             
             {/* 하단 행 - 추가 컨텐츠 */}
             <div className="flex flex-col items-start pt-8 pl-0 pb-0 space-y-2">
-              <div className="justify-start text-white text-xl font-semibold font-['Pretendard'] leading-tight">슥삭 넘기다 보면 전국이 내 맛집 리스트! <br /> 이제, 손끝으로 전국을 플릭하세요.</div>
+              <div className="justify-start text-white xs:text-lg text-xl font-semibold font-['Pretendard'] leading-tight">슥삭 넘기다 보면 전국이 내 맛집 리스트! <br /> 이제, 손끝으로 전국을 플릭하세요.</div>
               <div className="justify-start text-white text-sm font-medium font-['Pretendard'] leading-relaxed">스와이프 한 번에 내 취향에 딱 맞는 맛집을 발견할 수 있어요.</div>
             </div>
           </div>
@@ -150,7 +150,7 @@ const HeaderBar: React.FC<HeaderProps> = ({
               <BackArrowIcon size={isScrolled ? "md" : "lg"} color="white" />
             </button>
             <div className={`text-white font-semibold font-['Pretendard'] leading-snug pl-1 transition-all duration-300 ${
-              isScrolled ? 'text-base' : 'text-xl pt-2'
+              isScrolled ? 'text-base' : 'xs:text-lg text-xl pt-2'
             }`}>
               {currentRegion.name}
             </div>

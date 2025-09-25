@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CategoryCircle from '../components/UI/CategoryCircle';
 import { Category } from '../types/category.types';
 import { getAllCategoryData } from '../data/categoryData';
-import { getStepOptions } from '../types/stepOptions.types';
+import { getCategoryNameById, getStepOptions } from '../types/stepOptions.types';
 import { TravelData } from '../types/travelData.types';
 import { RegionName } from '../types/sigungu.types';
 import FlikCardLayout from '../components/Layout/FlikCardLayout';
@@ -101,7 +101,7 @@ const TravelSelectionPage: React.FC = () => {
   const fetchSpots = async () => {
     try {
       // 기본 카테고리 설정
-
+      
       const tripDuration = parseInt(travelData.duration[0] || '1');
       setTripDuration(tripDuration);
       const categories: string[] = ["RESTAURANT"];
@@ -124,7 +124,7 @@ const TravelSelectionPage: React.FC = () => {
       setRegionCode(regionCode);
       // API 요청 파라미터
       const params = {
-        categories,
+        categories: categories,
         regionCode: regionCode, // 첫 번째 선택된 지역
         tripDuration: parseInt(travelData.duration[0] || '1'),
         limitPerCategory: 21 // 기본값
@@ -371,17 +371,17 @@ const handleRecommendationCancel = () => {
     if (currentStep === 5) {
       console.log('여행 선택 완료:', travelData);
 
-      setSearchLoading(true);
+      setIsLoading(true);
       
       // API 호출
       fetchSpots().finally(() => {
         setTimeout(() => {
-          setSearchLoading(false);
+          setIsLoading(false);
           console.log('searchLoading timeout');
-        }, 5000);
+        },);
       });
     }
-  }, [currentStep]);
+  }, [currentStep]);  
 
   console.log('--travelData---');
   console.log('regions', travelData.regions);
@@ -569,25 +569,6 @@ const handleRecommendationCancel = () => {
       </div>
       )}
 
-      {/* 로딩 오버레이 */}
-      {searchLoading && (
-        <div className="fixed inset-0 bg-white/50 flex items-center justify-center z-50">
-      
-            {/* 로딩 스피너 */}
-            <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-            
-            {/* 로딩 텍스트 */}
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                여행 정보를 분석하고 있어요
-              </h3>
-              <p className="text-sm text-gray-600">
-                잠시만 기다려주세요...
-              </p>
-            </div>
-        
-        </div>
-      )}
 
 
  {/* 추천경로 확인하기 모달 */}
@@ -615,15 +596,15 @@ const handleRecommendationCancel = () => {
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <h4 className="text-sm font-semibold text-gray-700 mb-2">선택된 장소</h4>
                 <div className="space-y-1">
-                  {Object.entries(categoryCounts).map(([category, count]) => (
-                    <div key={category} className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">{category}</span>
+                {Object.entries(categoryCounts).map(([category, count]) => (
+                  <div key={category} className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">{getCategoryNameById(category)}</span>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        category === 'RESTAURANT' 
-                          ? count >= 10 
+                        category === '음식점' 
+                          ? count >= 5 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-yellow-100 text-yellow-800'
-                          : count >= 5
+                          : count >= 3
                             ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                       }`}>
