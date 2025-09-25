@@ -138,7 +138,7 @@ const FlikCardLayout: React.FC<FlikCardLayoutProps> = ({ spots, onSave, onFinish
   };
 
   return (
-    <div className="relative w-full h-full rounded-xl flex items-center justify-center pb-[10%]">
+    <div className="relative w-full h-full rounded-xl flex items-center justify-center">
       {/* 카드 스택 */}
       <div className="relative w-full h-full mx-auto px-2 xs:px-4">
         {hasMoreCards ? (

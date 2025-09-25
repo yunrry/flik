@@ -100,7 +100,7 @@ const SavePage: React.FC = () => {
     <div className="min-h-screen bg-white">
       <HeaderBar variant="logo" />
       
-      <main className="pt-header-default w-full px-0 lg:px-8 py-6">
+      <main className="pt-header-default w-full lg:w-[60%] sm:max-w-7xl sm:mx-auto px-0 sm:px-2 lg:px-8 py-6 flex flex-col flex-1">
         {/* 토글 버튼 */}
         <div className="mx-[5%] mb-2 pt-4">
           <div className="flex h-9 border items-center border-gray-5 overflow-hidden">

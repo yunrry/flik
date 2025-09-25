@@ -71,7 +71,7 @@ const SavedFlikCard: React.FC<{ spot: SpotDetail }> = ({ spot }) => {
             {/* 북마크 아이콘 */}
             </div>
           </div>
-          <button className="absolute right-[5%] translate-y-[-130%]"
+          <button className="absolute right-[5%] lg:right-[25%] translate-y-[-130%]"
           onClick={handleDeleteClick}>
               <SaveMarkIcon isActive={true} size="lg" />
             </button>

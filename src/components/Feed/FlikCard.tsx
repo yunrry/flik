@@ -238,7 +238,7 @@ const FlikCard: React.FC<FlikCardProps> = ({
       onDragStart={(e) => e.preventDefault()} // 드래그 방지
     >
       {/* 이미지 섹션 - 소형 디바이스 최적화 */}
-      <div className="relative h-[55%] sm:h-[53%] xs:h-[50%]">
+      <div className="relative xs:h-[50%] sm:h-[53%] ">
         <img
           src={imageUrls[currentImageIndex]}
           alt={spot.name}
@@ -310,11 +310,15 @@ const FlikCard: React.FC<FlikCardProps> = ({
             </span>
           </div>
 
-          {/* 영업시간 */}
+
+                {/* 영업시간 */}
+        {spot.time &&(
           <div className="text-gray-5 xs:text-xs sm:text-sm font-normal font-['Pretendard'] leading-normal">
             <span>영업시간:</span> {spot.time}
           </div>
+         )}
         </div>
+        
 
         {/* 버튼들 - 소형 디바이스 최적화 */}
         <div className="flex sm:space-x-2 xs:space-x-3 sm:px-2 xs:px-1 mt-1 sm:mb-[1%] xs:mb-1">

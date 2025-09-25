@@ -417,7 +417,8 @@ setCourseData((prev: any) => {
     courseData.categories?.map(translateCategory).join('/') || '';
 
   return (
-    <div className="pt-header-extended min-h-screen bg-white">
+    <div className="pt-header-extended min-h-screen bg-white flex flex-col">
+  
       {/* 헤더 */}
       <CourseHeader
         courseId={Number(courseId)}

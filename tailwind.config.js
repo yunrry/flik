@@ -28,6 +28,7 @@ export default {
       screens: {
         'xs': '375px', // iPhone mini 크기 추가
         'sm': '390px',
+        'smTomd': '640px',
         'md': '768px',
         'lg': '1024px', 
       },

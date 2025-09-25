@@ -19,13 +19,13 @@ const MyHeader: React.FC<MyHeaderProps> = ({
 }) => {
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 bg-white transition-all duration-300 shadow-sm"
-      style={{ height: 'var(--header-height-extended)' }}
+      className="fixed top-0 left-0 right-0 z-50 bg-white w-full lg:w-[60%] sm:max-w-7xl sm:mx-auto  py-6 flex flex-col flex-1 "
+      style={{ height: 'var(--header-height-extended)',  backgroundColor: '#FFFFFF'}} 
     >
-      <div className="flex items-center justify-between px-4 pt-10">
+      <div className="flex items-center justify-between px-4 pt-2 w-full ">
       
         {/* 타이틀 */}
-        <h1 className="text-gray-1 text-xl font-semibold font-['Pretendard'] leading-normal">마이페이지</h1>
+        <h1 className="text-gray-1 text-xl font-semibold font-['Pretendard'] leading-normal ml-[3%]">마이페이지</h1>
 
         {/* 설정 버튼 */}
         <button onClick={handleSettings} className="p-2">
@@ -34,9 +34,9 @@ const MyHeader: React.FC<MyHeaderProps> = ({
       </div>
 
  {/* 프로필 섹션 */}
- <div className="flex flex-row items-center justify-between mt-3 px-4">
+ <div className="flex flex-row items-center justify-between mt-3 px-4 bg-white w-full">
         {/* 프로필 이미지 */}
-        <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden ml-1">
+        <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden ml-[3%]">
           {profileImage ? (
             <img
               src={profileImage}
@@ -47,7 +47,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
           )}
         </div>
 
-<div className="flex flex-col w-[75%] items-start mt-1 px-1 pl-2">
+<div className="flex flex-col w-[75%] items-start mt-1 px-1 pl-2 bg-white" >
         {/* 닉네임 */}
         <p className="text-gray-1 text-base font-semibold font-['Pretendard'] leading-normal pl-0.5">{nickname}</p>
 

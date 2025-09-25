@@ -103,6 +103,7 @@ const MyPage: React.FC = () => {
   };
 
   return (
+    // <main className="pt-header-default w-full sm:max-w-7xl sm:mx-auto px-0 sm:px-2 lg:px-8 py-6 flex flex-col flex-1 overflow-hidden">
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
       <MyHeader
@@ -114,7 +115,7 @@ const MyPage: React.FC = () => {
       />
 
       {/* 메인 콘텐츠 */}
-      <main className="pt-header-extended w-full px-0 lg:px-8 py-6">
+      <main className="pt-header-extended w-full lg:w-[60%] sm:max-w-7xl sm:mx-auto px-0 sm:px-2 lg:px-8 py-6 flex flex-col flex-1">
         {/* 리뷰 활동 목록 */}
         <div className="space-y-1">
           {isLoading ? (
