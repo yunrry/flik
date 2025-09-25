@@ -3,6 +3,7 @@ import { HeaderBar } from '../components/Layout';
 import FlikCardLayout from '../components/Layout/FlikCardLayout';
 import { Spot } from '../types/spot.types';
 import { getRandomSpots } from '../api/flikCardsApi';
+import LoadingScreen from '../components/UI/LoadingScreen';
 
 const FlikPage: React.FC = () => {
   const [spots, setSpots] = useState<Spot[]>([]); // FlikCardLayout에 전달할 전체 스팟 목록
@@ -58,6 +59,12 @@ const FlikPage: React.FC = () => {
         {/* <div className="flex items-center justify-between h-12 sm:mb-2 xs:mb-0 xs:pt-0 sm:pt-[1%] flex-shrink-0"> */}
           {/* 위치 선택 UI 필요시 추가 */}
         {/* </div> */}
+
+        {isLoading && (
+          
+          <LoadingScreen />
+          
+        )}
 
         {/* FlikCardLayout 영역 */}
         <div className="w-full flik-card-adaptive overflow-hidden flex-1 pt-[10%] pb-[5%] flex items-center justify-center">

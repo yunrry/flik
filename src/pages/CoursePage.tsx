@@ -14,6 +14,7 @@ import { mapApiToCourseData, ApiCourseResponse } from '../utils/courseMapper';
 import { TravelCourseUpdateRequest } from '../api/travelCourseApi';
 import { updateCourse } from '../api/travelCourseApi';
 import { CourseSlot } from '../types/travelCourse.type';
+import FloatingMapButton from '../components/UI/FloatingMapButton';
 
 interface DayDetails {
   day: number;
@@ -398,6 +399,20 @@ setCourseData((prev: any) => {
     }
   };
 
+
+  // 지도 버튼 클릭 핸들러
+  const handleMapClick = () => {
+    navigate('/map', {
+      state: {
+        courseData: courseData,
+        dayDetails: dayDetails,
+        from: 'course',
+      },
+    });
+  };
+
+
+
   // 여행 기간 포맷
   const formatDuration = (days: number) => {
     if (days === 1) return '당일치기';
@@ -475,6 +490,10 @@ setCourseData((prev: any) => {
           </div>
         </DragDropContext>
       </main>
+      <FloatingMapButton 
+        handleMapClick={() => handleMapClick()}
+        bgColor="bg-teal-1"
+        />
     </div>
   );
 };
