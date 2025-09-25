@@ -158,7 +158,16 @@ import {
         method: 'POST',
       });
     }
+
+    async guestLogin(): Promise<LoginResponse> {
+      return this.request<LoginResponse['data']>('/v1/auth/guest-login', {
+        method: 'POST',
+      });
+    }
+
   }
+
+  
   
   
   export const authApi = new AuthApi();

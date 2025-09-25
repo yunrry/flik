@@ -76,7 +76,7 @@ const CoursePage: React.FC = () => {
     };
 
     // courseData가 이미 있으면 스킵
-    if (!courseData) {
+    if (!courseData) {  
       fetchCourseData();
     }
   }, [courseId]); // courseData는 의존성에서 제외

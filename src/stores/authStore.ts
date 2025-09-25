@@ -34,6 +34,7 @@ interface AuthState {
   clearError: () => void;
   setLoading: (loading: boolean) => void;
   setUser: (user: User) => void;
+  guestLogin: () => Promise<void>; 
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -44,6 +45,38 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+
+      guestLogin: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authApi.guestLogin();
+
+          if (response.success && response.data) {
+            const { accessToken, refreshToken, user } = response.data;
+
+            // Store tokens
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            authApi.setAccessToken(accessToken);
+
+            set({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+          } else {
+            throw new Error(response.message || '임시 로그인에 실패했습니다.');
+          }
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : '임시 로그인 중 오류가 발생했습니다.',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
 
       // Actions
       login: async (credentials: EmailLoginRequest) => {
@@ -221,11 +254,12 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           console.error('로그아웃 API 호출 실패:', error);
         } finally {
-          // Clear all auth data
+          // 모든 인증 관련 데이터 초기화
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
+          sessionStorage.clear();
           authApi.setAccessToken(null);
-          
+      
           set({
             user: null,
             isAuthenticated: false,
@@ -260,12 +294,12 @@ export const useAuthStore = create<AuthState>()(
       loadUser: async () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) return;
-
+      
         set({ isLoading: true });
         try {
           authApi.setAccessToken(accessToken);
           const response = await authApi.getMe();
-          
+      
           if (response.success && response.data) {
             set({
               user: response.data,
@@ -273,38 +307,49 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
             });
           } else {
-            throw new Error('사용자 정보를 가져올 수 없습니다.');
+            throw new Error(response.message || '사용자 정보를 가져올 수 없습니다.');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('사용자 정보 로드 실패:', error);
-          // 토큰이 유효하지 않으면 로그아웃 처리
-          get().logout();
+      
+          if (error?.response?.status === 401) {
+            // 토큰 만료 → refreshToken으로 갱신 시도
+            await get().refreshToken();
+          } else {
+            // 서버 에러 → 사용자 정보만 초기화
+            set({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+          }
         }
       },
 
       refreshToken: async () => {
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) {
+          console.warn('refreshToken 없음 → 로그아웃 처리');
           get().logout();
           return;
         }
-
+      
         try {
           const response = await authApi.refreshToken({ refreshToken });
-          
+      
           if (response.success && response.data) {
             const { accessToken: newAccessToken, refreshToken: newRefreshToken, user } = response.data;
-            
+      
             localStorage.setItem('accessToken', newAccessToken);
             localStorage.setItem('refreshToken', newRefreshToken);
             authApi.setAccessToken(newAccessToken);
-            
+      
             set({
               user,
               isAuthenticated: true,
             });
           } else {
-            throw new Error('토큰 갱신에 실패했습니다.');
+            throw new Error('토큰 갱신 실패');
           }
         } catch (error) {
           console.error('토큰 갱신 실패:', error);
