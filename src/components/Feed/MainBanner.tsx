@@ -126,7 +126,7 @@ const MainBanner: React.FC<MainBannerProps> = ({
       </div>
 
       {/* 메인 배너 (중앙 80%) */}
-      <div className="absolute inset-0 flex items-center justify-center px-6">
+      <div className="absolute inset-0 flex items-center justify-center px-6 lg:px-10">
         <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
           <div
             className="w-full h-full bg-cover bg-center relative cursor-pointer"

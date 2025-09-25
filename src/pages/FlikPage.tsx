@@ -48,20 +48,20 @@ const FlikPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen-mobile overflow-hidden bg-gray-50 flex flex-col">
+    <div className="h-screen-mobile overflow-hidden bg-gray-50  flex flex-col">
       {/* 헤더 */}
       <HeaderBar variant="logo" />
 
       {/* 메인 콘텐츠 */}
-      <main className="pt-header-default bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
+      <main className="pt-header-light w-full sm:max-w-7xl sm:mx-auto px-0 sm:px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
         {/* 위치 선택 영역 */}
-        <div className="flex items-center justify-between h-12 sm:mb-2 xs:mb-0 xs:pt-0 sm:pt-[3%] flex-shrink-0">
+        {/* <div className="flex items-center justify-between h-12 sm:mb-2 xs:mb-0 xs:pt-0 sm:pt-[1%] flex-shrink-0"> */}
           {/* 위치 선택 UI 필요시 추가 */}
-        </div>
+        {/* </div> */}
 
         {/* FlikCardLayout 영역 */}
-        <div className="w-full flik-card-adaptive overflow-hidden flex-1 pb-[5%] flex items-center justify-center">
-          <div className="sm:w-[98%] xs:w-[90%] h-full">
+        <div className="w-full flik-card-adaptive overflow-hidden flex-1 pt-[10%] pb-[5%] flex items-center justify-center">
+          <div className="xs:w-[80%] sm:w-[98%] smTomd:w-[60%] lg:w-[40%]     h-full">
             <FlikCardLayout
               spots={spots}
               onSave={handleSave}

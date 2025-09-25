@@ -41,8 +41,8 @@ const HomePage: React.FC = () => {
       {/* 헤더 */}
       <HeaderBar variant="logo" />
       {/* 메인 콘텐츠 - 헤더 높이만큼 패딩 추가 */}
-      <main className="pt-header-default w-full px-0 lg:px-8 py-6">
-
+      {/* <main className="pt-header-default w-full px-0 lg:px-8 py-6"> */}
+      <main className="pt-header-default w-full lg:w-[60%] sm:max-w-7xl sm:mx-auto px-0 sm:px-0 lg:px-8 py-6 flex flex-col flex-1">
 
      {/* 메인 배너 섹션 */}
         <div className="w-full mx-auto mb-8">

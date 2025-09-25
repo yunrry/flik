@@ -521,12 +521,15 @@ const handleRecommendationCancel = () => {
       </main>
     ):(
       
-      <main className="pt-header-extended bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
-        <div className="flex flex-1 pt-[3%]">
+      <main className="pt-header-extended items-center bg-white max-w-7xl sm:mx-[1%] xs:mx-[3%] px-2 lg:px-8 flex flex-col flex-1 overflow-hidden">
+      <div className="w-full flik-card-adaptive overflow-hidden flex-1 pb-[10%] flex items-center justify-center">
+      <div className="xs:w-[90%] sm:w-[98%] smTomd:w-[60%] lg:w-[40%]  items-center  h-[90%]">
+                
        <FlikCardLayout
          spots={spotResponse}
          onSave={handleSave}
        />
+      </div>
       </div>
       </main>
     )}

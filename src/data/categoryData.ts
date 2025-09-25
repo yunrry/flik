@@ -167,6 +167,8 @@ export const mainCategoryData: Category[] = [
   }
 ];
 
+
+
 export const mockCategoryData: Category[] = Object.entries(REGION_CONFIG).map(([code, config]) => ({
   id: code,
   name: config.name,
