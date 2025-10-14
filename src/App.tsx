@@ -25,6 +25,7 @@ import LocationSelectPage from './pages/LocationSelectPage';
 import PostDetailPage from './pages/PostDetailPage';
 import SearchPage from './pages/SearchPage';
 import CourseMapPage from './pages/CourseMapPage';
+import SettingsPage from './pages/SettingsPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -224,6 +225,17 @@ function App() {
                 <ProtectedRoute>
                   <NavigationPageWrapper requireNickname={false}>
                     <MyPage />
+                  </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
+
+          <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <NavigationPageWrapper requireNickname={false}>
+                    <SettingsPage />
                   </NavigationPageWrapper>
                 </ProtectedRoute>
               } 

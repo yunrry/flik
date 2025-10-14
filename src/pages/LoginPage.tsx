@@ -233,6 +233,14 @@ const LoginPage: React.FC = () => {
               )}
             </button>
 
+            {/* 개발자 사이트 바로가기 버튼 */}
+            <button
+              onClick={() => window.open('https://yunrry.github.io/', '_blank')}
+              className="w-full p-3 border border-gray-300 rounded-lg font-medium text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors flex items-center justify-center gap-2 mt-3"
+            >
+              <span>🔧</span>
+              <span>개발자 사이트</span>
+            </button>
             {/* <button
               onClick={() => setShowEmailForm(true)}
               disabled={isLoading}
