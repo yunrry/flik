@@ -107,7 +107,7 @@ const MyPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
       <MyHeader
-        handleSettings={() => console.log('설정 이동')}
+        handleSettings={() => handleSettings()}
         profileImage={user?.profileImageUrl || '/assets/profile/defaultProfileImage.png'}
         nickname={user?.nickname || '사용자'}
         onProfileImageChange={handleProfileImageChange}
