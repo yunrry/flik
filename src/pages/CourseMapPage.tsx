@@ -14,10 +14,13 @@ const CourseMapPage: React.FC = () => {
   // CoursePage에서 넘어온 데이터
   const courseData = location.state?.courseData;
   const dayDetails = location.state?.dayDetails || [];
+  const isEditing = location.state?.isEditing || false; // 편집 상태 받기
+  const courseId = location.state?.courseId; // courseId 받기
 
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]); // Day별 지도 Ref
   const kakaoMapRefs = useRef<any[]>([]); // Day별 카카오맵 객체 Ref
 
+  console.log('CourseMapPage isEditing:', isEditing);
 
     const handleDragEnd = (result: any) => {
       console.log(result);
@@ -89,7 +92,14 @@ const CourseMapPage: React.FC = () => {
   }, [dayDetails]);
 
   const handleBackClick = () => {
-    navigate(-1); // 이전 페이지로 이동
+    navigate(`/course/${courseId}`, {
+      state: {
+        courseId: courseId,
+        courseData: courseData,
+        dayDetails: dayDetails,
+        keepEditing: isEditing, // 편집 상태를 keepEditing으로 전달
+      }
+    });
   };
 
 

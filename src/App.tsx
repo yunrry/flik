@@ -359,7 +359,9 @@ function App() {
               path="/post/:postId" 
               element={
                 <ProtectedRoute>
+                    <NavigationPageWrapper disableScroll={false} requireNickname={true}>
                   <PostDetailPage />
+                  </NavigationPageWrapper>
                 </ProtectedRoute>
               } 
             />

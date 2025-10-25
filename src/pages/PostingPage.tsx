@@ -265,9 +265,9 @@ useEffect(() => {
             <CourseCard
               course={selectedCourse}
               onRemove={handleCourseDelete}
-              fromMyCourse={false}
+              fromPath="/posting"
             />
-          
+
             </>
           ) : (
             <div className="mb-2">

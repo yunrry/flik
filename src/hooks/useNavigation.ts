@@ -66,8 +66,11 @@ export const useNavigation = () => {
     
     // 지역 페이지들 (네비게이션 유지)
     const isRegionPage = location.pathname.startsWith('/region/');
+
+    // 게시글 상세 페이지 (네비게이션 유지)
+    const isPostDetailPage = location.pathname.startsWith('/post/');
     
-    return isMainNavigationPage || isHomeSubPage || isRegionPage || isSaveSubPage;
+    return isMainNavigationPage || isHomeSubPage || isRegionPage || isSaveSubPage || isPostDetailPage;
   };
 
   return {

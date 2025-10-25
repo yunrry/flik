@@ -111,7 +111,7 @@ const PostDetailPage: React.FC = () => {
       </div>
 
       {/* 메인 콘텐츠 */}
-      <main className="px-4 py-6">
+      <main className="w-full lg:w-[60%] sm:max-w-7xl sm:mx-auto px-4 sm:px-4 lg:px-8 py-6 flex flex-col flex-1">
         {/* 제목 */}
         <div className="mb-6">
           <h1 className="text-xl font-bold text-gray-900 leading-tight">
@@ -204,7 +204,7 @@ const PostDetailPage: React.FC = () => {
           <div className="mb-6">
             <div className="space-y-2">
               {post.imageUrls.map((url, index) => (
-                <div key={index} className="w-full">
+                <div key={index} className="w-full lg:w-[80%]">
                   <img
                     src={url}
                     alt={`게시글 이미지 ${index + 1}`}

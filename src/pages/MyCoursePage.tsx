@@ -129,7 +129,7 @@ const MyCoursePage: React.FC = () => {
                   course={course}
                   onRemove={handleRemoveCourse}
                   onCourseSelect={handleCourseSelect}
-                  fromMyCourse={true}
+                  fromPath={"/my-course"}
                 />
                 
               </div>

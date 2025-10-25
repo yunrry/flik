@@ -153,7 +153,10 @@ const RegionPage: React.FC = () => {
             {error && <p className="text-red-500">{error}</p>}
             {!loading && regionCourses.length === 0 && <p>등록된 코스가 없습니다.</p>}
             {regionCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard key={course.id} 
+                course={course}
+                fromPath={`/region/${region}`}
+               />
             ))}
           </div>
         )}
