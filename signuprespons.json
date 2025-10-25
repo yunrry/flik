@@ -1,0 +1,15 @@
+{
+    "success": true,
+    "data": {
+      "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5IiwiaWF0IjoxNzYxMzI2MDA1LCJleHAiOjE3NjEzNjIwMDV9.w6G_cgUdI1dMbHW2_pArnVcCJAWAfdtqMafRe4vFQ9w",
+      "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5IiwiaWF0IjoxNzYxMzI2MDA1LCJleHAiOjE3NjE5MzA4MDV9.N7BNS0-Womo9AnfJ5OxouZnZ_i0p6qS27SCJzFvnPno",
+      "user": {
+        "id": 9,
+        "email": "user@example.com",
+        "nickname": "사용자닉네임",
+        "profileImageUrl": null,
+        "provider": "email"
+      }
+    },
+    "message": null
+  }

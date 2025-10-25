@@ -15,6 +15,14 @@ export interface User {
       user: User;
     };
   }
+
+  export interface SignupResponse extends ApiResponse {
+    data?: {
+      accessToken: string;
+      refreshToken: string;
+      user: User;
+    };
+  }
   
   export interface OAuthUrlResponse extends ApiResponse {
     data?: {
@@ -40,7 +48,6 @@ export interface User {
     email: string;
     password: string;
     nickname: string;
-    profileImageUrl?: string;
   }
   
   export interface OAuthSignupRequest {
