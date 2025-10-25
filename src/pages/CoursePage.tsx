@@ -15,6 +15,7 @@ import { TravelCourseUpdateRequest } from '../api/travelCourseApi';
 import { updateCourse } from '../api/travelCourseApi';
 import { CourseSlot } from '../types/travelCourse.type';
 import FloatingMapButton from '../components/UI/FloatingMapButton';
+import CourseMapModal from '../components/CourseMapModal';
 
 interface DayDetails {
   day: number;
@@ -38,19 +39,54 @@ const CoursePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [courseVersion, setCourseVersion] = useState(0);
   const [isPublic, setIsPublic] = useState(false);
+  const [originalFrom, setOriginalFrom] = useState<string>('/'); // 기본값 설정
+  const [showMapModal, setShowMapModal] = useState(false);
 
+    // 첫 로드 시 어디서 왔는지 기록
+    useEffect(() => {
+      console.log('=== First useEffect ===');
+      console.log('location.state?.from:', location.state?.from);
+      console.log('originalFrom:', originalFrom);
+      
+      // originalFrom이 기본값('/')일 때만 업데이트
+      if (originalFrom === '/' && location.state?.from) {
+        console.log('Setting original from:', location.state.from);
+        setOriginalFrom(location.state.from);
+      }
+    }, [location.state?.from, originalFrom]);
+    
+    
+    const handleBack = () => {
+      console.log('Navigating to:', originalFrom);
+      if(originalFrom === '/my-course') {
+        navigate(-1);
+        return;
+      }
+      navigate(originalFrom);
+    };
 
   // courseId로 코스 데이터 불러오기
   useEffect(() => {
+    console.log('location.state 전체:', location.state);
+    console.log('location.state?.from:', location.state?.from);
     const fetchCourseData = async () => {
       // location.state에 courseData가 있으면 그것을 사용
       if (location.state?.courseData) {
         setCourseData(location.state.courseData);
         setCategories(location.state.courseData.categories || []);
         setIsPublic(location.state.courseData.isPublic);
+        
+        // keepEditing이 true면 편집 모드 유지
+        console.log('location.state.keepEditing:', location.state.keepEditing);
+        if (location.state.keepEditing) {
+          setIsEditing(true);
+        }
+        
         setIsLoading(false);
         return;
       }
+
+      
 
       // courseId가 없으면 에러
       if (!courseId) {
@@ -82,10 +118,21 @@ const CoursePage: React.FC = () => {
     }
   }, [courseId]); // courseData는 의존성에서 제외
 
+  useEffect(() => {
+    console.log('isEditing state changed:', isEditing);
+  }, [isEditing]);
+
+
+
   // SearchPage에서 추가된 스팟 처리
 useEffect(() => {
-  const { addedSpot, selectedDay, source, isEditing } = location.state || {};
-  setIsEditing(isEditing);
+  const { addedSpot, selectedDay, source, isEditing: editingState } = location.state || {};
+  // isEditing이 정의되어 있을 때만 상태 업데이트
+  if (editingState !== undefined) {
+    setIsEditing(editingState);
+    console.log('isEditing from location.state:', editingState);
+  }
+  
   console.log('isEditing', isEditing);
   if (source === 'course' && addedSpot && selectedDay) {
     console.log('스팟 추가 처리:', addedSpot);
@@ -220,6 +267,7 @@ useEffect(() => {
         isEditing: isEditing,
         source: 'course',
         courseData: courseData, // 현재 courseData 전달
+        from: originalFrom || '/',
       },
     });
   };
@@ -401,16 +449,21 @@ setCourseData((prev: any) => {
 
 
   // 지도 버튼 클릭 핸들러
-  const handleMapClick = () => {
-    navigate('/map', {
-      state: {
-        courseData: courseData,
-        dayDetails: dayDetails,
-        from: 'course',
-      },
-    });
-  };
+  // const handleMapClick = () => {
+  //   navigate('/map', {
+  //     state: {
+  //       courseId: courseId,
+  //       courseData: courseData,
+  //       dayDetails: dayDetails,
+  //       isEditing: isEditing, // 현재 편집 상태 전달
+  //       from: 'course',
+  //     },
+  //   });
+  // };
 
+  const handleMapClick = () => {
+    setShowMapModal(true);
+  };
 
 
   // 여행 기간 포맷
@@ -445,6 +498,7 @@ setCourseData((prev: any) => {
         isOwner={true}
         isPublic={isPublic}
         setIsPublic={setIsPublic}
+        onBack={handleBack} // 추가
       />
 
       {/* 메인 콘텐츠 */}
@@ -489,6 +543,12 @@ setCourseData((prev: any) => {
             ))}
           </div>
         </DragDropContext>
+
+        <CourseMapModal 
+      dayDetails={dayDetails} 
+      isOpen={showMapModal} 
+      onClose={() => setShowMapModal(false)} 
+    />
       </main>
       <FloatingMapButton 
         handleMapClick={() => handleMapClick()}

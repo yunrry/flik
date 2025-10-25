@@ -180,6 +180,7 @@ const SavePage: React.FC = () => {
                   key={course.id}
                   course={course}
                   onRemove={handleRemoveCourse}
+                  fromPath="/save"
                 />
               ))}
             </div>

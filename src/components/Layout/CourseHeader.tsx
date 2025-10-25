@@ -14,6 +14,7 @@ interface CourseHeaderProps {
     courseId: number;
     isPublic: boolean;
     setIsPublic: (isPublic: boolean) => void;
+    onBack?: () => void; // 추가
 }
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({
@@ -26,13 +27,17 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
     courseId,
     isPublic,
     setIsPublic,
+    onBack, // 추가
 }) => {
   
   const navigate = useNavigate();
-  const onBack = () => {
-    navigate('/save');
+  const onBackClick = () => {
+    if (onBack) {
+      onBack(); // 부모 컴포넌트에서 전달된 함수 실행
+    } else {
+      navigate(-1); // fallback
+    }
   };
-
     
   return (
     <header 
@@ -46,7 +51,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
             
         <div className="flex flex-row items-center justify-between w-full lg:w-[60%] mb-2 mt-5 px-4 lg:px-[3%]">
          
-         <button onClick={onBack}>
+         <button onClick={onBackClick}>
           <BackArrowIcon size="lg" color="white" />
           </button>
         {isOwner?(

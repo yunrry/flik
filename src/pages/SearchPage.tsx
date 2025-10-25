@@ -44,6 +44,7 @@ const SearchPage: React.FC = () => {
   const returnPath = location.state?.returnPath || '/search';
   const currentCourse = location.state?.currentCourse;
   const source = location.state?.source; // 어디서 왔는지 확인
+  const from = location.state?.from;
 
   const handleBack = () => {
     navigate(returnPath);
@@ -61,7 +62,7 @@ const SearchPage: React.FC = () => {
           source: 'course',
           isEditing: isEditing,
           courseData: courseData,
-
+          from: from
         },
       });
     } else {

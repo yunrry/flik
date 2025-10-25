@@ -13,10 +13,10 @@ interface CourseCardProps {
   course: TravelCourse;
   onRemove?: (id: number) => void;
   onCourseSelect?: (course: TravelCourse) => void;
-  fromMyCourse?: boolean;
+  fromPath?: String;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove, fromMyCourse, onCourseSelect }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove, fromPath, onCourseSelect }) => {
   const navigate = useNavigate();
 
   // 디버깅: 받은 course 데이터 확인
@@ -48,7 +48,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onRemove, fromMyCourse,
     // 변수들 디버깅
     const location = formatAddress(getRegionName(course.regionCode) || '');
     const categories = formatCategories(course.selectedCategories);
-    
+    const from = fromPath || '/';
+    console.log('from:', from);
     console.log('location:', location);
     console.log('categories:', categories);
     console.log('regionCode:', course.regionCode);
@@ -58,7 +59,8 @@ navigate(`/course/${course.id}`, {
  state: { 
    courseData: extractedData,
    locationString: location,
-   categoriesString: categories
+   categoriesString: categories,
+   from: from
  } 
 });
 
@@ -140,7 +142,7 @@ navigate(`/course/${course.id}`, {
             </div>
 
             {/* 삭제 버튼 */}
-            {onRemove && !fromMyCourse && (
+            {onRemove && fromPath=='/save' && (
               <button
                 onClick={handleRemoveClick}
                 className="ml-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -150,7 +152,7 @@ navigate(`/course/${course.id}`, {
               </button>
             )}
 
-            {fromMyCourse && (
+            {fromPath=='/my-courses' && (
              <button
              onClick={handleCourseSelect}
              className="w-11 h-7 p-0.5 bg-gray-8 rounded-3xl inline-flex flex-col justify-center items-center gap-2.5"
