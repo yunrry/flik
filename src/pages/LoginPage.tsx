@@ -104,6 +104,7 @@ const LoginPage: React.FC = () => {
                 onSuccess={() => {
                   // 이메일 로그인/회원가입 성공 후 처리
                   setShowEmailForm(false);
+                  navigate('/', { replace: true });
                 }}
               />
             </div>
@@ -233,6 +234,26 @@ const LoginPage: React.FC = () => {
               )}
             </button>
 
+
+            <button
+              onClick={() => setShowEmailForm(true)}
+              disabled={isLoading}
+              className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors gap-2 mt-3"
+            >
+               {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>로그인 중...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>📧 이메일로 로그인/회원가입</span>
+                    </>
+                  )}
+              
+            </button>
+
+
             {/* 개발자 사이트 바로가기 버튼 */}
             <button
               onClick={() => window.open('https://yunrry.github.io/', '_blank')}
@@ -241,13 +262,7 @@ const LoginPage: React.FC = () => {
               <span>🔧</span>
               <span>개발자 사이트</span>
             </button>
-            {/* <button
-              onClick={() => setShowEmailForm(true)}
-              disabled={isLoading}
-              className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors"
-            >
-              📧 이메일로 로그인/회원가입
-            </button> */}
+
 
             <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
               로그인 시{' '}

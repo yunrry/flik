@@ -11,6 +11,7 @@ import {
     RefreshTokenRequest,
     OAuthSignupRequest,
     User,
+    SignupResponse,
   } from '../types/auth';
   import { getApiBaseUrl } from '../utils/env';
   
@@ -107,7 +108,7 @@ import {
     }
   
     // 이메일 회원가입
-    async signup(request: EmailSignupRequest): Promise<LoginResponse> {
+    async signup(request: EmailSignupRequest): Promise<SignupResponse> {
       return this.request<LoginResponse['data']>('/v1/auth/signup', {
         method: 'POST',
         body: JSON.stringify(request),
