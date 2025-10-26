@@ -128,8 +128,8 @@ const MyPage: React.FC = () => {
             </div>
           ) : reviewActivities.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-gray-500">작성한 리뷰가 없습니다.</p>
-              <p className="text-sm text-gray-400 mt-2">맛집을 방문하고 리뷰를 남겨보세요!</p>
+              <p className="text-gray-500">작성한 게시물이 없습니다.</p>
+              <p className="text-sm text-gray-400 mt-2">여행지를 방문하고 여행을 기록해보세요!</p>
             </div>
           ) : (
             reviewActivities.map((activity) => (

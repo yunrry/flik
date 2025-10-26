@@ -14,6 +14,15 @@ export interface FeaturedLocation {
 
 export const featuredLocationData: FeaturedLocation[] = [
   {
+    id: 'gangneung-hot',
+    description: '지금 가장 핫한 도시',
+    city: '강릉',
+    imageUrl: REGION_CONFIG.gangwon.imageUrl,
+    region: '강원',
+    rating: 4.7,
+    highlights: ['강릉 커피거리', '안목해변', '정동진', '도깨비 촬영지']
+  },
+  {
     id: 'gangneung-current',
     description: '지금 가장 핫한 도시',
     city: '공주시', // name을 city로 변경
