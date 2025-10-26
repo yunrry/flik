@@ -153,9 +153,14 @@ const LoginPage: React.FC = () => {
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
                 <LogoIcon size="xxl" className="mx-auto" />
               </h1>
+              <div className="text-start items-center ml-2">
               <p className="text-gray-600 text-sm sm:text-base">
-                관광지 맛집 고르는 고민, 스와이프로 끝
+                여행지 고르는 고민, 스와이프로 끝
               </p>
+              <p className="text-gray-600 text-sm sm:text-base">
+                일정 생성도 한번에!
+              </p>
+              </div>
             </div>
 
             {error && (
@@ -230,7 +235,7 @@ const LoginPage: React.FC = () => {
                   <span>로그인 중...</span>
                 </>
               ) : (
-                <span>👤 게스트로 로그인하기</span>
+                <span>👤 게스트로 로그인하기 👈🏼 심사위원님 </span>
               )}
             </button>
 
@@ -255,13 +260,13 @@ const LoginPage: React.FC = () => {
 
 
             {/* 개발자 사이트 바로가기 버튼 */}
-            <button
+            {/* <button
               onClick={() => window.open('https://yunrry.github.io/', '_blank')}
               className="w-full p-3 border border-gray-300 rounded-lg font-medium text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors flex items-center justify-center gap-2 mt-3"
             >
               <span>🔧</span>
               <span>개발자 사이트</span>
-            </button>
+            </button> */}
 
 
             <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
@@ -269,7 +274,9 @@ const LoginPage: React.FC = () => {
               <a href="#" className="text-blue-600 hover:underline">이용약관</a>
               {' '}및{' '}
               <a href="#" className="text-blue-600 hover:underline">개인정보처리방침</a>
-              에<br />동의한 것으로 간주됩니다.
+              에<br />동의한 것으로 간주됩니다.{' '}   
+
+              <a href="https://yunrry.github.io/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">개발자 사이트</a>
             </p>
 
             <div className="text-center mt-8 pt-4 border-t border-gray-100">

@@ -153,11 +153,11 @@ const SavePage: React.FC = () => {
           ) : currentData.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-500">
-                저장된 {activeTab === 'places' ? '맛집이' : '플랜이'} 없습니다.
+                저장된 {activeTab === 'places' ? '장소가' : '플랜이'} 없습니다.
               </p>
               <p className="text-sm text-gray-400 mt-2">
                 {activeTab === 'places' 
-                  ? '플릭 카드에서 맛집을 저장해보세요!' 
+                  ? '플릭카드를 스와이프하여 장소를 저장해보세요!' 
                   : '여행 플랜을 저장해보세요!'
                 }
               </p>
