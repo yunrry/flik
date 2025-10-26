@@ -124,7 +124,7 @@ export const REGION_CONFIG: Record<RegionCode, RegionConfig> = {
   },
   gangwon: {
     name: '강원',
-    code: '52',
+    code: '51',
     englishName: 'Gangwon',
     imageUrl: '/assets/sidoImgaes/Gangwon.jpg'
   },
@@ -229,7 +229,7 @@ export const REGION_CONFIG_FOR_POST: Record<RegionCodeForPost, RegionConfig> = {
   },
   '51': {
     name: '강원',
-    code: '52',
+    code: '51',
     englishName: 'Gangwon',
     imageUrl: '/assets/sidoImgaes/Gangwon.jpg'
   },
