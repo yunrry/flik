@@ -40,6 +40,13 @@ import { PostSearchResponse } from '../types/post.types';
     type?: string;
     regionCode?: string; // 커서 기반 페이지네이션용
   }
+
+  // 추가: 게시물 수정 요청 타입
+  export interface UpdatePostRequest {
+    title?: string;
+    content?: string;
+    imageUrl?: string[];
+  }
   
   export const createPost = async (postData: CreatePostRequest): Promise<CreatePostResponse> => {
     const accessToken = getAuthToken();
@@ -184,6 +191,147 @@ import { PostSearchResponse } from '../types/post.types';
       throw error;
     }
   };
+
+
+
+
+// 추가: 게시물 수정 API
+  export const updatePost = async (
+    id: number,
+    request: UpdatePostRequest
+  ): Promise<ApiResponse<ApiPostResponse>> => {
+    const accessToken = getAuthToken();
+
+    if (!accessToken) {
+      throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/posts/${id}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      }
+
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          // ignore parse error
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data: ApiResponse<ApiPostResponse> = await response.json();
+      return data;
+    } catch (error) {
+      console.error('게시글 수정 API 요청 중 오류 발생:', error);
+      throw error;
+    }
+  };
+
+  // 추가: 게시물 삭제 API
+  export const deletePost = async (id: number): Promise<ApiResponse<null>> => {
+    const accessToken = getAuthToken();
+
+    if (!accessToken) {
+      throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      }
+
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          // ignore parse error
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data: ApiResponse<null> = await response.json();
+      return data;
+    } catch (error) {
+      console.error('게시글 삭제 API 요청 중 오류 발생:', error);
+      throw error;
+    }
+  };
+
+
+  // src/api/postApi.ts
+
+// 추가: 유저 게시물 ID 목록 응답 타입
+export interface UserPostIdsResponse {
+  ids: number[];
+}
+
+// 추가: 유저 게시물 ID 목록 조회
+export const getMyPostIds = async (): Promise<ApiResponse<UserPostIdsResponse>> => {
+  const accessToken = getAuthToken();
+
+  if (!accessToken) {
+    throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/posts/get/my`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+    }
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // ignore parse error
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data: ApiResponse<UserPostIdsResponse> = await response.json();
+    return data;
+  } catch (error) {
+    console.error('유저 게시물 ID 목록 조회 중 오류:', error);
+    throw error;
+  }
+};
 
 // // 커서 기반 페이지네이션 (옵션)
 // export const getPostsWithCursor = async (params: GetPostsParams = {}): Promise<PostSearchResponse> => {

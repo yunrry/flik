@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { Post } from '../types/post.types';  // data/postData가 아닌 types에서 import
-import { getPostById } from '../api/postApi';
+import { getPostById, deletePost, updatePost } from '../api/postApi';
 import { mapApiToPost } from '../types/post.types';  // 매핑 함수 추가
 import CourseCard from '../components/Feed/CourseCard';
+import PostActionMenu from '../components/UI/PostActionMenu';
 import { REGION_CONFIG_FOR_POST, RegionCodeForPost } from '../types/region.types';
 import { translateCategory } from '../utils/categoryMapper';
 import { getRegionName } from '../types/sigungu.types';
 import { getUserProfile } from '../api/userApi';
+import DeleteConfirmModal from '../components/UI/DeleteConfirmModal';
 
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -16,8 +18,18 @@ const PostDetailPage: React.FC = () => {
   const location = useLocation();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);  
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const handleOpenMenu = () => setIsMenuOpen(true);
+  const handleCloseMenu = () => setIsMenuOpen(false);
+  const handleEdit = () => {
+     if (!postId || !post) return;
+     setIsMenuOpen(false);
+     navigate(`/post/${postId}/edit`, { state: { postData: post } });
+   };
   const [error, setError] = useState<string | null>(null);
   const postData = location.state?.postData;
+  const isMyPost = Boolean(location.state?.isMyPost);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -62,6 +74,23 @@ const PostDetailPage: React.FC = () => {
     fetchPost();
   }, [postId, postData]);
 
+
+  const handleDeleteClick = () => {
+    setIsMenuOpen(false);
+    setIsDeleteConfirmOpen(true);
+  };
+  
+  const handleDeleteConfirm = async () => {
+    if (!postId) return;
+    try {
+      await deletePost(Number(postId));
+      setIsDeleteConfirmOpen(false);
+      navigate(-1);
+    } catch {
+      alert('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
+  };
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -100,13 +129,43 @@ const PostDetailPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       {/* 헤더 */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
           <button
             onClick={handleBackClick}
             className="p-2 -ml-2 text-gray-600 hover:text-gray-800"
+            aria-label="뒤로가기"
           >
             <ChevronLeftIcon className="w-6 h-6" />
           </button>
+
+          {isMyPost && (
+            <div className="relative">
+              <button
+                onClick={handleOpenMenu}
+                className="p-2 -mr-2 text-gray-700 hover:text-gray-900 transition-colors"
+                aria-label="더보기"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+
+              <PostActionMenu
+                open={isMenuOpen}
+                onClose={handleCloseMenu}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+              />
+            </div>
+          )}
+
+           {/* 삭제 확인 모달 */}
+           <DeleteConfirmModal
+             open={isDeleteConfirmOpen}
+             onCancel={() => setIsDeleteConfirmOpen(false)}
+             onConfirm={handleDeleteConfirm}
+           />
         </div>
       </div>
 

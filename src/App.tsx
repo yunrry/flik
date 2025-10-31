@@ -26,6 +26,7 @@ import PostDetailPage from './pages/PostDetailPage';
 import SearchPage from './pages/SearchPage';
 import CourseMapPage from './pages/CourseMapPage';
 import SettingsPage from './pages/SettingsPage';
+import PostEditPage from './pages/PostEditPage';
 
 // Layouts
 import NavigationLayout from './components/Layout/NavigationLayout';
@@ -362,6 +363,17 @@ function App() {
                     <NavigationPageWrapper disableScroll={false} requireNickname={true}>
                   <PostDetailPage />
                   </NavigationPageWrapper>
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/post/:postId/edit" 
+              element={
+                <ProtectedRoute>
+                        <NicknameRequiredRoute>
+                  <PostEditPage />
+                  </NicknameRequiredRoute>
                 </ProtectedRoute>
               } 
             />
