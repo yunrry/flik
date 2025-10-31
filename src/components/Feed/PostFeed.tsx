@@ -1,8 +1,9 @@
 // src/components/Feed/PostFeed.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PostCard from './PostCard';
 import { useNavigate } from 'react-router-dom';
 import { Post } from '../../types/post.types';
+import { getMyPostIds } from '../../api/postApi';
 
 interface PostFeedProps {
   posts: Post[];
@@ -20,6 +21,47 @@ const PostFeed: React.FC<PostFeedProps> = ({
   const navigate = useNavigate();
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const MY_POST_IDS_CACHE_KEY = 'myPostIdsCache';
+  const MY_POST_IDS_CACHE_TTL_MS = 5 * 60 * 1000; // 5분
+  const [myPostIdSet, setMyPostIdSet] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    // 비로그인 시 스킵
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    // 캐시 확인
+    try {
+      const cachedRaw = localStorage.getItem(MY_POST_IDS_CACHE_KEY);
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw) as { ids: number[]; ts: number };
+        const isValid = Date.now() - cached.ts < MY_POST_IDS_CACHE_TTL_MS;
+        if (isValid) {
+         setMyPostIdSet(new Set<number>(cached.ids));
+         return; // 유효 캐시 존재 시 호출 생략
+        }
+      }
+    } catch {
+      // 캐시 파싱 실패 시 무시
+    }
+
+    // 최초 접속 시 조회 후 캐시
+    (async () => {
+      try {
+        const res = await getMyPostIds();
+        if (res?.success && Array.isArray(res.data?.ids)) {
+          localStorage.setItem(
+            MY_POST_IDS_CACHE_KEY,
+            JSON.stringify({ ids: res.data.ids, ts: Date.now() })
+          );
+          setMyPostIdSet(new Set<number>(res.data.ids));
+        }
+      } catch {
+        // 인증 만료/네트워크 오류 등은 홈 로딩에 영향 주지 않음
+      }
+    })();
+  }, []);
+
 
   // Intersection Observer로 무한 스크롤 구현
   useEffect(() => {
@@ -48,7 +90,8 @@ const PostFeed: React.FC<PostFeedProps> = ({
   const handlePostClick = (postId: string) => {
     const post = posts.find(p => p.id === postId);
     if (post) {
-      navigate(`/post/${postId}`, { state: { postData: post } });
+      const isMy = myPostIdSet.has(Number(postId));
+      navigate(`/post/${postId}`, { state: { postData: post, isMyPost: isMy } });
     }
   };
 
