@@ -6,10 +6,13 @@ import {
   UserProfileResponse, 
   UpdateUserProfileRequest, 
   UpdateProfileImageRequest, 
-  UserActivitiesResponse 
+  UserActivitiesResponse,
+  UserNicknameResponse
 } from '../types/user.types';
-
+import { ApiResponse } from '../types/response.types';
 const API_BASE_URL = getApiBaseUrl();
+
+
 
 // 사용자 프로필 조회
 export const getUserProfile = async (userId?: string): Promise<UserProfile> => {
@@ -205,6 +208,46 @@ export const checkNicknameAvailability = async (nickname: string): Promise<boole
   } catch (error) {
     console.error('닉네임 중복 확인 실패:', error);
     throw new Error('닉네임 중복 확인에 실패했습니다.');
+  }
+};
+
+export const getUserNickname = async (userId: number): Promise<ApiResponse<UserNicknameResponse>> => {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/users/nickname/${userId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+    }
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // ignore parse error
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data: ApiResponse<UserNicknameResponse> = await response.json();
+    return data;
+  } catch (error) {
+    console.error('닉네임 조회 API 요청 중 오류 발생:', error);
+    throw error;
   }
 };
 

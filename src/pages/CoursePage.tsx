@@ -16,6 +16,8 @@ import { updateCourse } from '../api/travelCourseApi';
 import { CourseSlot } from '../types/travelCourse.type';
 import FloatingMapButton from '../components/UI/FloatingMapButton';
 import CourseMapModal from '../components/CourseMapModal';
+import { getUserNickname } from '../api/userApi';
+import { useAuthStore } from '../stores/authStore';
 
 interface DayDetails {
   day: number;
@@ -29,7 +31,7 @@ const CoursePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { courseId } = useParams();
-
+  const { user } = useAuthStore();
   // 상태 관리
   const [courseData, setCourseData] = useState<any>(null);
   const [categories, setCategories] = useState<string[]>([]);
@@ -41,7 +43,8 @@ const CoursePage: React.FC = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [originalFrom, setOriginalFrom] = useState<string>('/'); // 기본값 설정
   const [showMapModal, setShowMapModal] = useState(false);
-
+  const [authorNickname, setAuthorNickname] = useState<string>('');
+  const [isOwner, setIsOwner] = useState(false);
     // 첫 로드 시 어디서 왔는지 기록
     useEffect(() => {
       console.log('=== First useEffect ===');
@@ -75,6 +78,11 @@ const CoursePage: React.FC = () => {
         setCourseData(location.state.courseData);
         setCategories(location.state.courseData.categories || []);
         setIsPublic(location.state.courseData.isPublic);
+
+        if (user?.id && location.state.courseData.userId) {
+          setIsOwner(user.id === Number(location.state.courseData.userId));
+        }
+      
         
         // keepEditing이 true면 편집 모드 유지
         console.log('location.state.keepEditing:', location.state.keepEditing);
@@ -82,11 +90,24 @@ const CoursePage: React.FC = () => {
           setIsEditing(true);
         }
         
-        setIsLoading(false);
-        return;
-      }
 
-      
+      console.log('location.state.courseData.userId:', location.state.courseData.userId);
+        // userId로 닉네임 조회
+      if (location.state.courseData.userId) {
+        getUserNickname(location.state.courseData.userId)
+          .then((res) => {
+            if (res?.success && res.data?.nickname) {
+              setAuthorNickname(res.data.nickname);
+              console.log('닉네임 조회 성공:', res.data.nickname);
+            }
+          })
+          .catch((err) => {
+            console.error('닉네임 조회 실패:', err);
+          });
+      }
+      setIsLoading(false);
+      return;
+    }
 
       // courseId가 없으면 에러
       if (!courseId) {
@@ -104,6 +125,23 @@ const CoursePage: React.FC = () => {
         setCourseData(mappedData);
         console.log('API로 불러온 코스 데이터:', mappedData);
         setIsPublic(response.data.isPublic);
+        console.log('mappedData.userId:', mappedData.userId);
+        if (user?.id && mappedData.userId) {
+          setIsOwner(user.id === Number(mappedData.userId));
+        }
+        if (mappedData.userId) {
+             getUserNickname(mappedData.userId)
+               .then((res) => {
+                 if (res?.success && res.data?.nickname) {
+                   setAuthorNickname(res.data.nickname);
+                 }
+                 console.log('닉네임 조회 성공:', res.data.nickname);
+               })
+               .catch((err) => {
+                 console.error('닉네임 조회 실패:', err);
+               });
+           }
+
       } catch (error) {
         console.error('코스 조회 실패:', error);
         setError('코스 정보를 불러올 수 없습니다.');
@@ -116,7 +154,7 @@ const CoursePage: React.FC = () => {
     if (!courseData) {  
       fetchCourseData();
     }
-  }, [courseId]); // courseData는 의존성에서 제외
+  }, [courseId, user?.id]); // courseData는 의존성에서 제외
 
   useEffect(() => {
     console.log('isEditing state changed:', isEditing);
@@ -495,10 +533,11 @@ setCourseData((prev: any) => {
         LocationCode={regionName}
         duration={formatDuration(courseData.days)}
         Categories={categoryText}
-        isOwner={true}
+        isOwner={isOwner}
         isPublic={isPublic}
         setIsPublic={setIsPublic}
         onBack={handleBack} // 추가
+        authorNickname={authorNickname}
       />
 
       {/* 메인 콘텐츠 */}
@@ -511,7 +550,7 @@ setCourseData((prev: any) => {
                 {/* Day 헤더 */}
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-medium text-gray-800">Day {dayData.day}</h3>
-                  {idx === 0 && (
+                  {idx === 0 && isOwner && (
                     <button
                       onClick={isEditing ? handleSaveCourse : toggleEditAll}
                       className="px-3 py-1 text-gray-500 text-sm font-medium"
@@ -529,7 +568,7 @@ setCourseData((prev: any) => {
                 />
 
                 {/* 장소 추가 버튼 (편집 모드일 때만) */}
-                {isEditing && (
+                {isEditing && isOwner && (
                  <div className="mt-2">
                  <button
                    onClick={() => goToSearchPage(dayData.day)}
