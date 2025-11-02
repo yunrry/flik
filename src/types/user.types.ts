@@ -94,3 +94,8 @@ export interface User {
     data: UserProfile;
     message?: string;
   }
+
+  export interface UserNicknameResponse {
+    nickname: string;
+  }
+ 

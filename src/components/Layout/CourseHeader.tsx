@@ -15,6 +15,7 @@ interface CourseHeaderProps {
     isPublic: boolean;
     setIsPublic: (isPublic: boolean) => void;
     onBack?: () => void; // 추가
+    authorNickname?: string;
 }
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({
@@ -28,6 +29,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
     isPublic,
     setIsPublic,
     onBack, // 추가
+    authorNickname,
 }) => {
   
   const navigate = useNavigate();
@@ -62,9 +64,11 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
                 setIsPublic={setIsPublic}
                 />
             
-        ):(
-            <text className="text-white text-lg font-medium font-['Pretendard'] leading-normal">-- 님의 여행코스</text>
-        )}
+           ):(
+               <text className="text-white text-lg font-medium font-['Pretendard'] leading-normal">
+                 {authorNickname || '--'} 님의 여행코스
+               </text>
+           )}
 
           </div>
           <div className="w-full lg:w-[60%] px-[3%]">
